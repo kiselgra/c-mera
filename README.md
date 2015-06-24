@@ -1,8 +1,8 @@
 # C-Mera
-C-Mera is a very simple source-to-source compiler.
+C-Mera is a very simple source-to-source compiler
 that utilize Lisp's macro system for meta programming of C-like languages.
-One of its main goals is to be easily extensible to other C-like 
-	and the different versions based on C-Mera's core illustrate that this is a simple process.
+One of its main goals is to be easily extensible to other C-like languages
+and the different versions based on C-Mera's core illustrate that this is a simple process.
 
 The C-Mera system is a very simple compiler as it simply
 transforms a notation based on S-Expressions (sexp)
@@ -54,6 +54,21 @@ We require SBCL at the moment, sorry.
 
 ### Emacs Integration
 tbd
+
+Once C-Mera is configured for the use with Emacs it is possible to use Slime for the development process. Yet the relevant C-Mera modules have to be loaded manually:
+
+``` lisp
+(asdf:load-system :cgen)
+(asdf:load-system :cxxgen)
+(in-package :cg-user)
+(switch-reader)
+```
+
+After that it should be possible to enter the following Lisp statement that prints valid C Code to the REPL.
+``` lisp
+(simple-print (function main () -> int (return 0)))
+```
+
 
 ### Examples
 In the following we show a few examples of how to use cgen.
