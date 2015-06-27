@@ -1,6 +1,6 @@
 # C-Mera
 C-Mera is a very simple source-to-source compiler
-that utilize Lisp's macro system for meta programming of C-like languages.
+that utilizes Lisp's macro system for meta programming of C-like languages.
 One of its main goals is to be easily extensible to other C-like languages
 and the different versions based on C-Mera's core illustrate that this is a simple process.
 
