@@ -4,7 +4,17 @@ that utilizes Lisp's macro system for meta programming of C-like languages.
 One of its main goals is to be easily extensible to other C-like languages
 and the different versions based on C-Mera's core illustrate that this is a simple process.
 
-The C-Mera system is a very simple compiler as it simply
+## Contents
+1. [Overview](#Overview)
+1. [License](#License)
+1. [Usage](#Usage)
+	1. [Build Instructions](#BuildInstructions)
+	1. [Emacs Integration](#EmacsIntegration)
+	1. [Examples](#Examples)
+	1. [Compilation Process](#CompilationProcess)
+
+## C-Mera<a name="Overview">
+The C-Mera system is a very simple compiler that
 transforms a notation based on S-Expressions (sexp)
 for C-like languages to the native syntax of that language,
 e.g. from sexp-C to C, and from sexp-CUDA to CUDA. The
@@ -12,7 +22,7 @@ semantics of the sexp-based notation is identical to that of
 the native language, i.e. no inherent abstraction or layering
 is introduced.
 
-There are a number of different code generators available, all based on c-mera with a few syntactic extensions.
+There are a number of different code generators available, all based on C-Mera with a few syntactic extensions.
 
 - **cgen** is the default C code generator
 - **cxxgen** is an extension supporting a subset of C++
@@ -21,16 +31,16 @@ There are a number of different code generators available, all based on c-mera w
 - **shadergen** extends glslgen such that it produces output suitable for the cgl rendering framework
 - **multigen** is the combination of all of the above, the blunt axe of the generator family, so to say.
 
-The code for cgen is found in src/{core,usr} and rather comprehensive while to
+The code for cgen is found in src/{core,usr} and is rather comprehensive while the
 other generators (each in their own subdirectory) are quite concise. Browse the
 files of the derived generators to see how far the respective language support
 has grown.
 
-## License
+## License<a name="License">
 The C-Mera system (which is the collective term for the code in the repository)
 is provided under the conditions of the GNU GPL version 3 or later, see the file COPYING.
 
-## Usage
+## Usage<a name="Usage">
 
 To generate a C source file choose the appropriate generator and simply add the input 
 and output file:
@@ -40,19 +50,20 @@ and output file:
 
 For more details see [Compilation Process](#compilation)
 
-### Build Instructions
+### Build Instructions<a name="BuildInstructions">
 
 We require SBCL at the moment, sorry.
 
 - Install SBCL
-- Install Quicklisp (See the example there)
+- Install Quicklisp (See the example [there](https://www.quicklisp.org/))
 - Build C-Mera
+	- autoreconf -if  (when building from a fresh repo)
 	- ./configure
 	- make
 	- make install
 
 
-### Emacs Integration
+### Emacs Integration<a name="EmacsIntegration">
 tbd
 
 Once C-Mera is configured for the use with Emacs it is possible to use Slime for the development process. Yet the relevant C-Mera modules have to be loaded manually:
@@ -70,7 +81,7 @@ After that it should be possible to enter the following Lisp statement that prin
 ```
 
 
-### Examples
+### Examples<a name="Examples">
 In the following we show a few examples of how to use cgen.
 Note that we give also give it thorough treatment in [our ELS paper](http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/).
 
@@ -95,8 +106,9 @@ It, too, is a straightforward transcription of the example in the K&R book.
           i++)
         (while (!= (set p[i++] q[j++]) #\null))))
 
-Implementation of `wc -l`
-This shows a main function and forward-declares the EOF symbol.
+#### Implementation of `wc -l`
+This example shows a main function 
+	and how to forward-declare externally defined symbols originating from C libraries.
 There is also `use-functions` to declare externally defined functions.
 These forms are required as the underlying lisp implementation checks if the symbols used are actually defined.
 
@@ -125,7 +137,7 @@ Lots of loops:
                    v[j] (aref v (+ j gap))
                    (aref v (+ j gap)) temp))))))
 
-### Compilaton Process<a name="compilation">
+### Compilation Process<a name="CompilationProcess">
 Suppose the file `wc-l.lisp` contains the code of the line counting example shown above.
 Here is a cmdline session:
 
