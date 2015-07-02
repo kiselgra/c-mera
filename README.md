@@ -64,22 +64,31 @@ We require SBCL at the moment, sorry.
 
 
 ### Emacs Integration<a name="EmacsIntegration">
-tbd
+The easiest way to configure your Lisp to load C-Mera is by adding it to quicklisp, as follows
 
-Once C-Mera is configured for the use with Emacs it is possible to use Slime for the development process. Yet the relevant C-Mera modules have to be loaded manually:
+	$ ln -s <path-to-cmera> ~/quicklisp/local-projects/c-mera
 
-``` lisp
-(asdf:load-system :cgen)
-(asdf:load-system :cxxgen)
-(in-package :cg-user)
-(switch-reader)
-```
+#### Slime
+With this setup  it is possible to use Slime for the development process. 
+The relevant C-Mera modules can be loaded by
 
-After that it should be possible to enter the following Lisp statement that prints valid C Code to the REPL.
-``` lisp
-(simple-print (function main () -> int (return 0)))
-```
+	(asdf:load-system :cgen)     ; or :cxxgen, etc.
+	(in-package :cg-user)        ; cl-user equivalent with c-mera environment
+	(switch-reader)              ; optional for prototyping
 
+After that you can enter Lisp expressions that print valid C Code to the REPL.
+
+	(simple-print 
+	  (function main () -> int 
+	    (return 0)))
+
+#### Proper Indentation
+When you have not loaded C-Mera as described above the default indentation of Emacs will not be what you want
+  (because it does not know how most of the macros are defined).
+To counter this we provide a very simple indent script, `util/c-mera-lisp-indent-hack.el`.
+You can copy it to your `load-path` and `(require 'c-mera-lisp-indent-hack)` in your `.emacs` file.
+
+This script looks for `cgen.indent` files in the current working directory and adds indentation information as specified. An example is provided in `util/cgen.indent`.
 
 ### Examples<a name="Examples">
 In the following we show a few examples of how to use cgen.
