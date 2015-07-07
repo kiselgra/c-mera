@@ -278,8 +278,10 @@
 ;; (defnodemacro instantiate (name &rest parameters)
 ;;   `(make-node (list 'instantiate ',name ,@(loop for i in parameters collect `,i))))
 
+;;; Make sure the decl-blocker-traverser handles classes correctly.
+(cgen::decl-blocker-extra-nodes cxx-class)
 
-
+;;; Standard definitions
 (in-package :cg-user)
 (use-variables cout cerr endl cin)
 
