@@ -76,6 +76,8 @@
 
 ;; pretty-print override
 
+;; override function declaration with empty parameter list
+;; from "(void)" to "()"
 (with-pp
   "pretty-print function definition"
 
@@ -115,6 +117,28 @@
 	  (pop-sign)
 	  (format stream ", ")))))
 
+;; Overwrite declaration item behaviour:
+;; "int i { 1 }" instead of "int i = 1"
+;; except in for-loop-initialization.
+(with-pp
+  (with-proxynodes (value)
+    
+    (defprettymethod :before declaration-item
+      (make-proxy value value))
+
+    (defprettymethod :after declaration-item
+      (del-proxy value))
+
+    (defproxyprint :before value
+      (if (slot-value item 'proxy-subnode)
+	  (if (eql (top-info) 'for)
+	      (format stream " = ")
+	      (format stream " { "))))
+
+    (defproxyprint :after value
+      (if (slot-value item 'proxy-subnode)
+	  (if (not (eql (top-info) 'for))
+	      (format stream " }"))))))
 
 
 
@@ -279,23 +303,7 @@
 	   (pop-info)
 	   (format stream " ,")))))
 
-;;overwrite declaration item behaviour: "int i(1)" instead of "int i = 1"
-(with-pp
-  (with-proxynodes (value)
-    
-    (defprettymethod :before cgen::declaration-item
-      (make-proxy cgen::value value))
 
-    (defprettymethod :after cgen::declaration-item
-      (del-proxy cgen::value))
-
-    (defproxyprint :before value
-      (if (slot-value item 'cgen::proxy-subnode)
-	  (format stream " { ")))
-
-    (defproxyprint :after value
-      (if (slot-value item 'cgen::proxy-subnode)
-	  (format stream " }")))))
 
 ;;syntax
 (prepare-handler)
