@@ -134,6 +134,7 @@
 
     (defprettymethod :before declaration-list
       (make-proxy bindings declaration-item)
+      (push-info 'decl)
       (if (slot-value item 'brackets)
 	  (progn
 	    (format stream "~&~a{" indent)
@@ -141,6 +142,7 @@
 
     (defprettymethod :after declaration-list
       (del-proxy bindings)
+      (pop-info)
       (if (slot-value item 'brackets)
 	  (progn
 	    --indent

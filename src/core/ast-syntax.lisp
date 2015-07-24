@@ -143,7 +143,14 @@
       `(make-node (list 'prefix ,(car numbers) '+))
       `(make-node (list '+ ,@numbers))))
 
+(defnodemacro continue ()
+  `(make-node (list 'continue)))
 
+(defnodemacro break ()
+  `(make-node (list 'break)))
+
+(defnodemacro return (value)
+  `(make-node (list 'return ,value)))
 
 ;;; Switch context to cgen
 (defmacro with-cgen (&body body)
