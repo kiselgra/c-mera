@@ -74,6 +74,48 @@
       (pop *chars-per-line*)
       nodes))
 
+;; pretty-print override
+
+(with-pp
+  "pretty-print function definition"
+
+  (with-proxynodes (parameters parameter)
+
+    ;; Begin new line and add proxy-nodes.
+    (defprettymethod :before function-definition
+      (make-proxy parameter parameters)
+      (format stream "~&~%~a" indent))
+
+    ;; Remove temporary proxy-nodes
+    (defprettymethod :after function-definition
+      (del-proxy parameter))
+
+    ;; Begin parameter-list.
+    ;; Differs from standard core implementation
+    (defproxyprint :before parameters
+	  (format stream "("))
+
+    ;; Close parameter-list.
+    (defproxyprint :after parameters
+      (format stream ")"))
+
+    ;; Handle parameters
+    ;; Add proxy-node and info-token.
+    (defprettymethod :before parameter-list
+      (push-sign 'skip-first)
+      (make-proxy parameters parameter))
+
+    ;; Remove proxy node
+    (defprettymethod :after parameter-list
+      (del-proxy parameters))
+
+    ;; Print parameters
+    (defproxyprint :before parameter
+      (if (eql (top-sign) 'skip-first)
+	  (pop-sign)
+	  (format stream ", ")))))
+
+
 
 
 ;;cxxgen stuff:
