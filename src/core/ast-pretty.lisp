@@ -70,6 +70,7 @@
 
   (defprettymethod :after c-type
     (if (and (not (eql (top-info) 'cast))
+	     (not (eql (top-info) 'funcall))
 	     (not (eql (top-info) 'function-pointer)))
 	(format stream " "))))
 
@@ -501,7 +502,12 @@
     (defproxyprint :before parameter
       (if (eql (top-info) 'skip-first)
 	  (pop-info)
-	  (format stream ", ")))))
+	  (format stream ", "))
+      (push-info 'funcall))
+
+    (defproxyprint :after parameter
+      (pop-info))))
+      
 
 ;;; Include directive
 (with-pp

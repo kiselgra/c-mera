@@ -147,6 +147,9 @@
       `(make-node (list 'prefix ,(car numbers) '+))
       `(make-node (list '+ ,@numbers))))
 
+(defnodemacro sizeof (&rest type)
+  `(make-node (list 'funcall 'sizeof (make-node ',type 'declaration-item-handler))))
+
 ;;; Switch context to cgen
 (defmacro with-cgen (&body body)
   `(macrolet ,*with-cgen-declaration*
