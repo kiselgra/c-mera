@@ -252,7 +252,8 @@
 
     (defprettymethod :before infix-expression
       (if (or (eql (top-info) 'infix)
-	      (eql (top-info) 'oref))
+	      (eql (top-info) 'oref)
+	      (eql (top-info) 'cast))
 	  (format stream "("))
       (push-info 'infix)
       (cond ((eql (slot-value item 'operator) 'or)
@@ -271,7 +272,8 @@
       (pop-sign)
       (del-proxy members)
       (if (or (eql (top-info) 'infix)
-	      (eql (top-info) 'oref))
+	      (eql (top-info) 'oref)
+	      (eql (top-info) 'cast))
 	  (format stream ")")))
     
     (defproxyprint :before member
