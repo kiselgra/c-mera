@@ -428,10 +428,12 @@
 
     (defprettymethod :before c-list
       (make-proxy items list-item)
-      (push-info 'skip-first))
+      (push-info 'skip-first)
+      (format stream "{ "))
 
     (defprettymethod :after c-list
-      (del-proxy items))
+      (del-proxy items)
+      (format stream " }"))
 
     (defproxyprint :before list-item
       (if (eql (top-info) 'skip-first)

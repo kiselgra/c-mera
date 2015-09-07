@@ -117,7 +117,7 @@
 	  (pop-sign)
 	  (format stream ", ")))))
 
-;; Overwrite declaration item behaviour:
+;; Overrite declaration item behaviour:
 ;; "int i { 1 }" instead of "int i = 1"
 ;; except in for-loop-initialization.
 (with-pp
@@ -139,6 +139,24 @@
       (if (slot-value item 'proxy-subnode)
 	  (if (not (eql (top-info) 'for))
 	      (format stream " }"))))))
+
+;; Override C-list / vector brackets.
+;; Does not emmit brackets.
+;; Brackets already handled by declaration.
+(with-pp
+  (with-proxynodes (list-item)
+
+    (defprettymethod :before c-list
+      (make-proxy items list-item)
+      (push-info 'skip-first))
+
+    (defprettymethod :after c-list
+      (del-proxy items))
+
+    (defproxyprint :before list-item
+      (if (eql (top-info) 'skip-first)
+	  (pop-info)
+	  (format stream ", ")))))
 
 
 
