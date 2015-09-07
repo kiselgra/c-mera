@@ -147,8 +147,6 @@
       `(make-node (list 'prefix ,(car numbers) '+))
       `(make-node (list '+ ,@numbers))))
 
-
-
 ;;; Switch context to cgen
 (defmacro with-cgen (&body body)
   `(macrolet ,*with-cgen-declaration*

@@ -533,7 +533,7 @@
 ;;; typedef
 (with-pp
   (defprettymethod :before typedef
-    (format stream "~&~aitypedef " indent))
+    (format stream "~&~atypedef " indent))
   (defprettymethod :after typedef
     (format stream ";")))
 
