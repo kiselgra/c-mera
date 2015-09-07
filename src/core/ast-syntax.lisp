@@ -120,9 +120,13 @@
   `(make-node (list 'aref ,name ,@initialization)))
 
 (defnodemacro comment (comment &optional &key prefix)
-  (if prefix
-      `(make-node (list 'comment ',(cg-user::cintern comment) ',(cg-user::cintern prefix)))
-      `(make-node (list 'comment ',(cg-user::cintern comment) ',(cg-user::cintern "//")))))
+  (if (stringp comment)
+      (if prefix
+	  `(make-node (list 'comment ',(cg-user::cintern comment) ',(cg-user::cintern prefix)))
+	  `(make-node (list 'comment ',(cg-user::cintern comment) ',(cg-user::cintern "//"))))
+      (if prefix
+	  `(make-node (list 'comment `,(cg-user::cintern ,comment) ',(cg-user::cintern prefix)))
+	  `(make-node (list 'comment `,(cg-user::cintern ,comment) ',(cg-user::cintern "//"))))))
 
 (defnodemacro typedef (&rest rest)
   (let ((typename (if (listp (first (butlast rest)))
