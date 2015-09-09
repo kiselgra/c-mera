@@ -12,6 +12,7 @@ and the different versions based on C-Mera's core illustrate that this is a simp
 	1. [Emacs Integration](#EmacsIntegration)
 	1. [Examples](#Examples)
 	1. [Compilation Process](#CompilationProcess)
+	1. [Programming Guide](#ProgGuide)
 
 ## C-Mera<a name="Overview">
 The C-Mera system is a very simple compiler that
@@ -172,5 +173,160 @@ Here is a cmdline session:
     wc-l.c wc-l.lisp
     $ gcc wc-l.c -o wc-l
 
-		
+	
+## Programming Guilde<a name="ProgGuide">
+
+This section describes how some aspects of the system work.
+We only describe what we believe may be noteworthy for either the seasoned Lisp or the seasoned C programmer.
+This part will be in motion as we add information that some of our users would have liked to have :)
+
+### Simple Syntax
+
+#### Conditionals
+
+```if``` statements have exactly one or two subforms. The second one is optional, and if present, represents the ```else``` part. The following examples is thus not correct:
+
+	(if (!= a 0)
+	    (printf "all is safe")
+	    (return (/ b a)))
+
+You can use ```progn``` to group multiple sub-forms
+
+	(if (!= a 0)
+	    (progn
+	      (printf "all is safe")
+	      (return (/ b a))))
+
+or, equivalently, ```when```
+
+	(when (!= a 0)
+	   (printf "all is safe")
+	   (return (/ b a)))
+
+which expands to the previous form using ```progn```, which, in turn, expands to:
+
+	if (a != 0) {
+	    ...
+	}
+
+In contrast, the first example expands to
+
+	if (a != 0) {
+	    printf(...);
+	else
+	    return ...;
+
+We also support ```cond```.
+
+##### Open Issues
+We currently don't have ```unless```.
+
+
+#### Loops
+A for loop is written with the loop-head grouped:
+
+	(for ((int i 0) (< i n) (+= i 1))
+	  ...)
+
+Note that C-Mera supports C-like increments and decrements for simple expressions:
+
+	(for ((int i 0) (< i n) ++i)
+	  ...)
+
+```while''' is straighforward
+
+	(while (< a b)
+	   ...
+	   ...)
+
+##### Open Issues
+```do-while``` is not implemented at the moment.
+
+
+#### Declarations
+A set of declarations is introduced with
+
+	(decl ((T name [init])
+	       ...)
+	  ...)
+
+the initializer is optional and C-Mera collects as many symbols to be part of the type as possible,
+e.g.
+
+	(decl ((const unsigned long int x 0)) ...)
+
+is correctly identified. This is enabled by having a list of valid 'qualifiers' that can add to a type.
+Type names do not have to be introduced and thus the syntax for one decl-item is
+
+	[qualifier]* typename variablename [initializer]
+
+If you work in an environment that supports further qualifiers you can use
+
+	(add-qualifier ...)
+
+e.g.
+
+	(add-qualifier __kernel __global)
+
+to introduce a number of them.
+
+As mentioned above, typenames are not checked. However, variables have to be declared before they are used, as in
+
+	(decl ((int a 0)
+	       (int b 0))
+	  (return (+ a b)))
+
+If you want to use global variables or functions you can make them know by
+
+	(use-variables ...)
+	(use-functions ...)
+
+In declarations (such as ```decl```, in function parameters and ```(sizeof ...)```) the type does not have to
+	be enclosed in parens (and must not be). There are places, however, 
+	where for the sake of simplicity type names must be grouped, as e.g. in function return values:
+
+	(function foo ((const int *i) ...) -> (unsigned int)
+	  ...)
+
+As shown in this example C-Mera also supports some C-style decorations, i.e.
+
+	(decl ((int *i 0)) ...)
+	(decl ((int* i 0)) ...)
+
+are both recognized.
+
+
+### Namespace (Lisp vs C-Mera)
+Some C-Mera symbols are also defined in Common Lisp.
+Initially C-Mera starts out in the ```cg-user``` (code generator user package) which imports
+	all ```cl``` symbols that do not conflicts to provide metaprogramming as seamlessly as possible.
+
+Especially with symbols like ```if``` etc care has to be taken to use the right one.
+This can be done by explicitly naming the symbol ```cl:if```, but to define lisp functions
+or lisp-heavy parts of the meta code it is often more convenient to use the ```lisp``` form, such as
+in the example from our ELS presentation:
+
+	(defmacro match (expression &rest clauses)
+	  `(macrolet 
+	     ((match-int (expression &rest clauses)
+	        `(progn 
+	           (set reg_err 
+	                (regcomp &reg ,(caar clauses) REG_EXTENDED))
+	           (if (regexec &reg ,expression 0 0 0)
+	               (progn ,@(cdar clauses))
+	               ,(lisp (if (cdr clauses)      
+	                          `(match-int 
+	                             ,expression 
+	                             ,@(cdr clauses))))))))
+	     (decl ((regex_t reg)
+	            (int reg_err))
+	       (match-int ,expression ,@clauses))))
+
+Here we define a recursively expanding macrolet, ```match-int```, that inserts conditional clauses (as in ```(if (regexec ....))``` and also checks to terminate the iteration (with ```,(lisp (if ...))```).
+
+For convenience we provide a sibling to ```defmacro```, ```deflmacro```, which starts out in the Lisp namespace.
+
+
+### Codestrings
+tbd.
 
