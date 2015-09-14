@@ -104,18 +104,13 @@
 
 (defelement declaration-item () (qualifier type identifier decorator value) (&rest item)
   (let ((qualifiers nil) (item item))
-    (loop while (or (gethash (cond ((symbolp (first item)) (intern (symbol-name (first item)) :cgen))
-				   ((listp (first item)) nil)
-				   (t (first item)))
-			     *qualifier*)
-
-		    ;; workaround for glsl layout, TODO check for problems
-		    (eql (class-of (first item)) (find-class 'source-position))) do
+    (loop while (gethash (cond ((symbolp (first item)) (intern (symbol-name (first item)) :cgen))
+			       ((listp (first item)) nil)
+			       (t (first item)))
+			 *qualifier*) do
 	 (push (pop item) qualifiers))
     
-    ;;workaround for glsl, TODO rebuild
-    ;;(destructuring-bind (type &optional identifier value) item
-    (destructuring-bind (&optional type identifier value) item
+    (destructuring-bind (type &optional identifier value) item
       (if value (setf value (make-node value)))
       (if identifier (setf identifier (make-node (if (symbolp identifier)
 						     (clear identifier '(#\& #\*))

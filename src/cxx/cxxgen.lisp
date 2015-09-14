@@ -158,6 +158,25 @@
 	  (pop-info)
 	  (format stream ", ")))))
 
+;; Override c-type
+;; enables more coples types. e.g. templates
+(defelement c-type () (type) (type)
+  (let ((type (cond ((symbolp type) (clear type '(#\& #\*)))
+		    ((listp type) (first (reverse (flatten type))))
+		    (t type))))
+    (if (symbolp type)
+	(progn
+	  (if (not (gethash type *type*))
+	      (setf (gethash type *type*) t))
+	  (make-instance 'c-type
+			 :type type
+			 :values '(type)
+			 :subnodes '()))
+	(make-instance 'c-type
+		       :type type
+		       :values '()
+		       :subnodes '(type)))))
+
 
 
 ;;cxxgen stuff:
@@ -313,7 +332,7 @@
        (pop-info)
        (if (eql (top-info) 'template-instantiation)
 	   (format stream ">")
-	   (format stream "> ")))
+	   (format stream ">")))
      (defproxyprint :after template
        (format stream "<"))
      (defproxyprint :before arguments
