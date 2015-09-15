@@ -1,0 +1,10 @@
+#!/usr/local/bin/sbcl --script
+(require :asdf)
+(require :sb-introspect)
+(require :cg-user "cgen.asd")
+(require :cg-user)
+(require :cxxgen)
+(require :oclgen)
+(in-package :cg-user)
+(cgen::save "oclgen")
+(sb-ext:quit)

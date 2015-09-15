@@ -24,6 +24,9 @@
 	   :switch-reader
 	   :tag))
 
+(cl:defpackage :oclgen
+  (:use :common-lisp :cgen))
+
 (cl:defpackage :cugen
   (:use :common-lisp :cgen))
 
@@ -85,6 +88,13 @@
   :version "0.0.1"
   :serial t
   :components ((:file "src/cuda/cugen"))
+  :depends-on ("cxxgen"))
+
+(asdf:defsystem oclgen
+  :name "oclgen"
+  :version "0.0.1"
+  :serial t
+  :components ((:file "src/ocl/oclgen"))
   :depends-on ("cxxgen"))
 
 (asdf:defsystem cg-user
