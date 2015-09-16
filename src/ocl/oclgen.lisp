@@ -40,6 +40,43 @@
 	  (format stream ", ")))))
 
 (in-package :oclgen)
+;;; Node definition
+
+;;; Vector initialization
+(macrolet ((def-vector-types (types sizes)
+	     (let ((vector-types nil))
+	       (loop for i in types do
+		    (setf vector-types (append vector-types (loop for k in sizes collect
+								 (intern (format nil "~a~a" i k))))))
+	       `(defelement vector-initialization ,vector-types (tag parameter) (tag &rest parameter)
+		  (make-instance 'vector-initialization
+				 :tag tag
+				 :parameter (make-node parameter 'cgen::nodelist-handler)
+				 :values '(tag)
+				 :subnodes '(parameter))))))
+  (def-vector-types
+      (char uchar short ushort int uint long ulong half float double)
+      (2 4 8 16)))
+
+;;; Pretty print
+
+;;; Vector initialization
+(with-pp
+  (with-proxynodes (parameter)
+    (defprettymethod :self vector-initialization
+      (make-proxy parameter parameter)
+      (push-info 'skip-first)
+      (format stream "(~a)(" (slot-value item 'tag)))
+    (defprettymethod :after vector-initialization
+      (del-proxy parameter)
+      (format stream ")"))
+    (defproxyprint :before parameter
+      (if (eql (top-info) 'skip-first)
+	  (pop-info)
+	  (format stream ", ")))))
+
+;;; syntax
+(prepare-handler)
 
 (add-qualifier '__global 'global
 	       '__local 'local
@@ -50,11 +87,9 @@
 	       '__read_only 'read_only
 	       '__write_only 'write_only
 	       '__read_write 'read_write
-	       'uniform 'pip)
+	       'uniform 'pipe)
 
 (in-package :cg-user)
-
-
 
 ;; Variables are lower case due to the inverted case-reading behaviour,
 (use-variables |clk_local_mem_fence|
