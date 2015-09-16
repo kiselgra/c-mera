@@ -373,7 +373,25 @@
 (use-variables cout cerr endl cin)
 
 (defmacro mcall (member &rest args)
-  `(funcall ,(append '(oref) member) ,@args))
+  (lisp (let ((cascade nil)
+	      (rmember (rest (reverse member)))
+	      (first-elem (first (reverse member))))
+	  
+	  (loop for i in rmember do
+	       (if (eq i (first rmember))
+		   (setf cascade `(oref ,i ,first-elem))
+		   (setf cascade `(oref ,i ,cascade))))
+	  
+  ;; (let ((cascade nil)
+  ;; 	(last-element (last member))
+  ;; 	(hint (second (reverse member))))
+  ;;   (loop for i in (butlast member) do
+  ;; 	 (if (eq i hint)
+  ;; 	     (append cascade `(oref ,i ,last-element))
+  ;; 	     (append cascade `(oref ,i))))
+
+	  `(funcall ,cascade ,@args))))
+  ;;`(funcall ,(append '(oref) member) ,@args))
 
 (deflmacro use-templates (&rest templates)
   `(progn
