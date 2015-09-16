@@ -288,23 +288,24 @@
 
 (with-pp
   (defprettymethod :before using
-    (push-sign 'using)
+    (push-info 'using)
     (format stream "~&~ausing " indent))
   (defprettymethod :after using
-    (pop-sign)
+    (pop-info)
     (format stream ";~%")))
 
 (with-pp
     (defprettymethod :before from-namespace
-      (push-sign 'from-namespace))
+      (push-info 'from-namespace))
     (defprettymethod :self from-namespace
       (if (slot-value item 'namespace)
 	  (format stream "~a::" (slot-value item 'namespace))
 	  (format stream "::")))
     (defprettymethod :after from-namespace
-      (pop-sign)
-      (if (and (not (eql (top-sign) 'from-namespace))
-	       (not (eql (top-sign) 'using)))
+      (pop-info)
+      (if (and (not (eql (top-info) 'from-namespace))
+	       (not (eql (top-info) 'using))
+	       (not (eql (top-info) 'cgen::funcall-function)))
 	  (format stream " "))))
     
 (with-pp
@@ -376,22 +377,11 @@
   (lisp (let ((cascade nil)
 	      (rmember (rest (reverse member)))
 	      (first-elem (first (reverse member))))
-	  
 	  (loop for i in rmember do
 	       (if (eq i (first rmember))
 		   (setf cascade `(oref ,i ,first-elem))
 		   (setf cascade `(oref ,i ,cascade))))
-	  
-  ;; (let ((cascade nil)
-  ;; 	(last-element (last member))
-  ;; 	(hint (second (reverse member))))
-  ;;   (loop for i in (butlast member) do
-  ;; 	 (if (eq i hint)
-  ;; 	     (append cascade `(oref ,i ,last-element))
-  ;; 	     (append cascade `(oref ,i))))
-
 	  `(funcall ,cascade ,@args))))
-  ;;`(funcall ,(append '(oref) member) ,@args))
 
 (deflmacro use-templates (&rest templates)
   `(progn

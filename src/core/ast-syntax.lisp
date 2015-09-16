@@ -66,8 +66,10 @@
 
 (defnodemacro funcall (function &optional &rest parameter)
   (if (and
-       (listp function)
-       (find-handler (cg-user::cintern (format nil "~a" (first function)) 'cgen)))
+	(listp function)
+	(or 
+	  (find-handler (cg-user::cintern (format nil "~a" (first function)) 'cgen))
+	  (fboundp (first function))))
       `(make-node (list 'funcall ,function ,@parameter))
       `(make-node (list 'funcall ',function ,@parameter))))
 

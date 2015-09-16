@@ -496,7 +496,11 @@
       (del-proxy function)
       (format stream ")"))
 
+    (defproxyprint :before function
+      (push-info 'funcall-function))
+
     (defproxyprint :after function
+      (pop-info)
       (format stream "("))
 
     (defproxyprint :before parameter
