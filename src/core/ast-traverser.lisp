@@ -231,6 +231,7 @@
 	  alr-checked
 	  (labels ((check-char (x) (alpha-char-p x))
 		   (check-underscore (x) (eql #\_ x))
+		   (check-asterisk (x) (eql #\* x))
 		   (check-num (x)
 		     (numberp
 		      (parse-integer
@@ -241,6 +242,7 @@
 		     (or
 		      (check-char x)
 		      (check-underscore x)
+		      (check-asterisk x)
 		      (check-num x)))
 		 (check-nall (x)
 		   (not (check-all x))))
