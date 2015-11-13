@@ -535,3 +535,39 @@
   (format t "~&~a~a~%" 
 	  (eval `(concatenate 'string ,@(loop for i from 0 to level collect " ")))
 	  (class-name (class-of item))))
+
+(defclass copy-traverser ()
+  ((stack :initform '())
+   (result :initform nil)))
+
+(defmethod traverser :before ((copy copy-traverser) (item node) level)
+  (with-slots (stack) copy
+    (push '() stack)))
+
+(defmethod traverser :after ((copy copy-traverser) (item node) level)
+  (with-slots (stack result) copy
+    (with-slots (values subnodes) item
+      (let ((node-type (class-of item)))
+	(let ((node-copy nil)
+	      (subnodes subnodes) ; changes can occur
+	      (subnode-copies (reverse (pop stack))))
+	  (if (eq node-type (find-class 'nodelist))
+	      (setf node-copy (make-instance 'nodelist
+					     :nodes subnode-copies
+					     :values '()
+					     :subnodes '(nodes)))
+	      (progn
+		(setf node-copy (allocate-instance node-type))
+		(dolist (slot (mapcar #'sb-pcl::slot-definition-name (sb-pcl::class-slots node-type)))
+		  (when (slot-boundp item slot)
+		    (when (eq (slot-value item slot) nil)
+		      (setf subnodes (remove slot subnodes))) 
+		    (let ((position (position slot subnodes)))
+		      (setf (slot-value node-copy slot)
+			    (if position
+				(nth position subnode-copies)
+				(slot-value item slot))))))))
+	  (if (eq level 0)
+	      (setf result node-copy)
+	      (push node-copy (first stack))))))))
+	  

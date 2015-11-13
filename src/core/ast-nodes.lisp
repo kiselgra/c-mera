@@ -24,7 +24,7 @@
 		 :subnodes '(nodes)))
 
 ;;; An additionaly handler for the nodelist.
-;;; Subnodes are not handled automatically, but the
+;;; Subnodes are not handled automatically but the
 ;;; handler cat be set.
 (defhandler set-nodelist-handler () (item-list handler)
   (make-instance 'nodelist
@@ -184,7 +184,7 @@
   (if (eql (class-of qualifier) (find-class 'source-position))
       qualifier
       (make-instance 'qualifier
-		     :qualifier qualifier
+		     :qualifier (make-node qualifier 'identifier-handler)
 		     :values '()
 		     :subnodes '(qualifier))))
       ;; (make-instance 'qualifier

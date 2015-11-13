@@ -341,11 +341,9 @@
 
 ;;; Qualifiers
 (with-pp
-
+  
   (defprettymethod :after qualifier
-    (format stream "~a " (slot-value item 'qualifier))))
-    ;; (loop for i in (slot-value item 'qualifier) do
-    ;; 	 (format stream "~a " i))))
+    (format stream " ")))
 
 ;;; Pointer-de-reference
 (with-pp
