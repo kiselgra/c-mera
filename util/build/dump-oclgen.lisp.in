@@ -2,6 +2,7 @@
 (require :asdf)
 (require :sb-introspect)
 (let ((asdf:*central-registry* (cons #P"@abs_top_srcdir@/" asdf:*central-registry*)))
+  (require :cgen)
   (require :cxxgen)
   (require :oclgen)
   (require :cg-user))
