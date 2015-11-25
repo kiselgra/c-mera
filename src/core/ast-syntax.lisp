@@ -149,15 +149,6 @@
       `(make-node (list 'prefix ,(car numbers) '+))
       `(make-node (list '+ ,@numbers))))
 
-(defnodemacro continue ()
-  `(make-node (list 'continue)))
-
-(defnodemacro break ()
-  `(make-node (list 'break)))
-
-(defnodemacro return (value)
-  `(make-node (list 'return ,value)))
-
 (defnodemacro sizeof (&rest type)
   `(make-node (list 'funcall 'sizeof (make-node ',type 'declaration-item-handler))))
 

@@ -56,7 +56,7 @@
 		  (eql (top-info) 'else))
 	      (format stream "{~%")
 	      (format stream "~&~a{~%" indent))
-	  (if (eql (top-info) 'else)
+h	  (if (eql (top-info) 'else)
 	      (push-info 'block))))
     ++indent)
 
@@ -76,7 +76,8 @@
     (if (and (not (eql (top-info) 'cast))
 	     (not (eql (top-info) 'funcall))
 	     (not (eql (top-info) 'function-pointer)))
-	(format stream " "))))
+	(if (slot-value item 'type)
+	    (format stream " ")))))
 
 ;;; Function definition
 (with-pp
