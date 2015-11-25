@@ -24,7 +24,11 @@
 			    ((eql val #\newline)
 			     (format stream "'\\n'"))
 			    (t (format stream "'~a'" val))))
-			 ((floatp val) (format stream "~,5f" val))
+
+			 ;;((floatp val) (format stream "~,5f" val))
+			 ((floatp val) (format stream "~a"
+					       (substitute #\e #\d
+							  (format nil "~,8e" val))))
 			 (t (format stream "~a" val)))))))))
 
 ;;; Expression-Statement
