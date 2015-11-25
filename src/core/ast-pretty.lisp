@@ -76,8 +76,7 @@ h	  (if (eql (top-info) 'else)
     (if (and (not (eql (top-info) 'cast))
 	     (not (eql (top-info) 'funcall))
 	     (not (eql (top-info) 'function-pointer)))
-	(if (slot-value item 'type)
-	    (format stream " ")))))
+	(format stream " "))))
 
 ;;; Function definition
 (with-pp
