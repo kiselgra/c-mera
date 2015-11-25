@@ -66,8 +66,10 @@
 
 (defnodemacro funcall (function &optional &rest parameter)
   (if (and
-       (listp function)
-       (find-handler (cg-user::cintern (format nil "~a" (first function)) 'cgen)))
+	(listp function)
+	(or 
+	  (find-handler (cg-user::cintern (format nil "~a" (first function)) 'cgen))
+	  (fboundp (first function))))
       `(make-node (list 'funcall ,function ,@parameter))
       `(make-node (list 'funcall ',function ,@parameter))))
 
@@ -155,6 +157,9 @@
 
 (defnodemacro return (value)
   `(make-node (list 'return ,value)))
+
+(defnodemacro sizeof (&rest type)
+  `(make-node (list 'funcall 'sizeof (make-node ',type 'declaration-item-handler))))
 
 ;;; Switch context to cgen
 (defmacro with-cgen (&body body)

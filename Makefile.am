@@ -1,4 +1,4 @@
-bin_PROGRAMS = cgen glslgen shgen cugen cxxgen multigen
+bin_PROGRAMS = cgen glslgen shgen cugen cxxgen oclgen multigen
 
 cgen_SOURCES = 	cgen.asd \
 				src/core/cl-loader.lisp \
@@ -20,24 +20,31 @@ cugen_SOURCES = src/cuda/cugen.lisp
 
 cxxgen_SOURCES = src/cxx/cxxgen.lisp
 
+oclgen_SOURCES = src/ocl/oclgen.lisp
+
 multigen_SOURCES = src/cxx/cxxgen.lisp
 
 cgen$(EXEEXT): $(cgen_SOURCES)
-	@LISP_PROG@ --script dump-cgen.lsp
+	@LISP_PROG@ --script util/build/dump-cgen.lisp
 
 glslgen$(EXEEXT) : $(cgen_SOURCES) $(glslgen_SOURCES)
-	@LISP_PROG@ --script dump-glslgen.lsp
+	@LISP_PROG@ --script util/build/dump-glslgen.lisp
 
 shgen$(EXEEXT): $(cgen_SOURCES) $(glslgen_SOURCES) $(shgen_SOURCES)
-	@LISP_PROG@ --script dump-shgen.lsp
+	@LISP_PROG@ --script util/build/dump-shgen.lisp
 
 cxxgen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES)
-	@LISP_PROG@ --script dump-cxxgen.lsp
+	@LISP_PROG@ --script util/build/dump-cxxgen.lisp
 
 cugen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES) $(cugen_SOURCES)
-	@LISP_PROG@ --script dump-cugen.lsp
+	@LISP_PROG@ --script util/build/dump-cugen.lisp
+
+oclgen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES) $(oclgen_SOURCES)
+	@LISP_PROG@ --script util/build/dump-oclgen.lisp
 
 multigen$(EXEEXT): $(cgen_SOURCES) $(glslgen_SOURCES) $(cugen_SOURCES) $(cxxgen_SOURCES)
-	@LISP_PROG@ --script dump-multi.lsp
+	@LISP_PROG@ --script util/build/dump-multi.lisp
 
-EXTRA_DIST = dump-cgen.lsp dump-glslgen.lsp dump-shgen.lsp dump-cxxgen.lsp dump-cugen.lsp dump-multi.lsp
+EXTRA_DIST = util/build/dump-cgen.lisp   util/build/dump-glslgen.lisp util/build/dump-shgen.lisp \
+			 util/build/dump-cxxgen.lisp util/build/dump-cugen.lisp   util/build/dump-oclgen.lisp \
+			 util/build/dump-multi.lisp

@@ -70,6 +70,7 @@
 
   (defprettymethod :after c-type
     (if (and (not (eql (top-info) 'cast))
+	     (not (eql (top-info) 'funcall))
 	     (not (eql (top-info) 'function-pointer)))
 	(format stream " "))))
 
@@ -254,7 +255,8 @@
 
     (defprettymethod :before infix-expression
       (if (or (eql (top-info) 'infix)
-	      (eql (top-info) 'oref))
+	      (eql (top-info) 'oref)
+	      (eql (top-info) 'cast))
 	  (format stream "("))
       (push-info 'infix)
       (cond ((eql (slot-value item 'operator) 'or)
@@ -273,7 +275,8 @@
       (pop-sign)
       (del-proxy members)
       (if (or (eql (top-info) 'infix)
-	      (eql (top-info) 'oref))
+	      (eql (top-info) 'oref)
+	      (eql (top-info) 'cast))
 	  (format stream ")")))
     
     (defproxyprint :before member
@@ -340,11 +343,9 @@
 
 ;;; Qualifiers
 (with-pp
-
+  
   (defprettymethod :after qualifier
-    (format stream "~a " (slot-value item 'qualifier))))
-    ;; (loop for i in (slot-value item 'qualifier) do
-    ;; 	 (format stream "~a " i))))
+    (format stream " ")))
 
 ;;; Pointer-de-reference
 (with-pp
@@ -430,10 +431,12 @@
 
     (defprettymethod :before c-list
       (make-proxy items list-item)
-      (push-info 'skip-first))
+      (push-info 'skip-first)
+      (format stream "{ "))
 
     (defprettymethod :after c-list
-      (del-proxy items))
+      (del-proxy items)
+      (format stream " }"))
 
     (defproxyprint :before list-item
       (if (eql (top-info) 'skip-first)
@@ -493,13 +496,22 @@
       (del-proxy function)
       (format stream ")"))
 
+    (defproxyprint :before function
+      (push-info 'funcall-function))
+
     (defproxyprint :after function
+      (pop-info)
       (format stream "("))
 
     (defproxyprint :before parameter
       (if (eql (top-info) 'skip-first)
 	  (pop-info)
-	  (format stream ", ")))))
+	  (format stream ", "))
+      (push-info 'funcall))
+
+    (defproxyprint :after parameter
+      (pop-info))))
+      
 
 ;;; Include directive
 (with-pp
@@ -533,7 +545,7 @@
 ;;; typedef
 (with-pp
   (defprettymethod :before typedef
-    (format stream "~&~aitypedef " indent))
+    (format stream "~&~atypedef " indent))
   (defprettymethod :after typedef
     (format stream ";")))
 

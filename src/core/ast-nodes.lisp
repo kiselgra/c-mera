@@ -24,7 +24,7 @@
 		 :subnodes '(nodes)))
 
 ;;; An additionaly handler for the nodelist.
-;;; Subnodes are not handled automatically, but the
+;;; Subnodes are not handled automatically but the
 ;;; handler cat be set.
 (defhandler set-nodelist-handler () (item-list handler)
   (make-instance 'nodelist
@@ -104,18 +104,13 @@
 
 (defelement declaration-item () (qualifier type identifier decorator value) (&rest item)
   (let ((qualifiers nil) (item item))
-    (loop while (or (gethash (cond ((symbolp (first item)) (intern (symbol-name (first item)) :cgen))
-				   ((listp (first item)) nil)
-				   (t (first item)))
-			     *qualifier*)
-
-		    ;; workaround for glsl layout, TODO check for problems
-		    (eql (class-of (first item)) (find-class 'source-position))) do
+    (loop while (gethash (cond ((symbolp (first item)) (intern (symbol-name (first item)) :cgen))
+			       ((listp (first item)) nil)
+			       (t (first item)))
+			 *qualifier*) do
 	 (push (pop item) qualifiers))
     
-    ;;workaround for glsl, TODO rebuild
-    ;;(destructuring-bind (type &optional identifier value) item
-    (destructuring-bind (&optional type identifier value) item
+    (destructuring-bind (type &optional identifier value) item
       (if value (setf value (make-node value)))
       (if identifier (setf identifier (make-node (if (symbolp identifier)
 						     (clear identifier '(#\& #\*))
@@ -189,7 +184,7 @@
   (if (eql (class-of qualifier) (find-class 'source-position))
       qualifier
       (make-instance 'qualifier
-		     :qualifier qualifier
+		     :qualifier (make-node qualifier 'identifier-handler)
 		     :values '()
 		     :subnodes '(qualifier))))
       ;; (make-instance 'qualifier

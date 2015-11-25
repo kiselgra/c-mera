@@ -1,16 +1,37 @@
 <h1>C-Mera</h1>
-<p>C-Mera is a very simple source-to-source compiler.
-that utilize Lisp's macro system for meta programming of C-like languages.
-One of its main goals is to be easily extensible to other C-like 
-    and the different versions based on C-Mera's core illustrate that this is a simple process.</p>
-<p>The C-Mera system is a very simple compiler as it simply
+
+<p>C-Mera is a very simple source-to-source compiler
+that utilizes Lisp's macro system for meta programming of C-like languages.
+One of its main goals is to be easily extensible to other C-like languages
+and the different versions based on C-Mera's core illustrate that this is a simple process.</p>
+
+<h2>Contents</h2>
+
+<ol>
+<li><a href="#Overview">Overview</a></li>
+<li><a href="#License">License</a></li>
+<li><a href="#Usage">Usage</a>
+<ol>
+<li><a href="#BuildInstructions">Build Instructions</a></li>
+<li><a href="#EmacsIntegration">Emacs Integration</a></li>
+<li><a href="#Examples">Examples</a></li>
+<li><a href="#CompilationProcess">Compilation Process</a></li>
+<li><a href="#ProgGuide">Programming Guide</a></li>
+</ol></li>
+</ol>
+
+<h2>C-Mera<a name="Overview"></h2>
+
+<p>The C-Mera system is a very simple compiler that
 transforms a notation based on S-Expressions (sexp)
 for C-like languages to the native syntax of that language,
 e.g. from sexp-C to C, and from sexp-CUDA to CUDA. The
 semantics of the sexp-based notation is identical to that of
 the native language, i.e. no inherent abstraction or layering
 is introduced.</p>
-<p>There are a number of different code generators available, all based on c-mera with a few syntactic extensions.</p>
+
+<p>There are a number of different code generators available, all based on C-Mera with a few syntactic extensions.</p>
+
 <ul>
 <li><strong>cgen</strong> is the default C code generator</li>
 <li><strong>cxxgen</strong> is an extension supporting a subset of C++</li>
@@ -19,40 +40,87 @@ is introduced.</p>
 <li><strong>shadergen</strong> extends glslgen such that it produces output suitable for the cgl rendering framework</li>
 <li><strong>multigen</strong> is the combination of all of the above, the blunt axe of the generator family, so to say.</li>
 </ul>
-<p>The code for cgen is found in src/{core,usr} and rather comprehensive while to
+
+<p>The code for cgen is found in src/{core,usr} and is rather comprehensive while the
 other generators (each in their own subdirectory) are quite concise. Browse the
 files of the derived generators to see how far the respective language support
 has grown.</p>
-<h2>License</h2>
+
+<h2>License<a name="License"></h2>
+
 <p>The C-Mera system (which is the collective term for the code in the repository)
 is provided under the conditions of the GNU GPL version 3 or later, see the file COPYING.</p>
-<h2>Usage</h2>
+
+<h2>Usage<a name="Usage"></h2>
+
 <p>To generate a C source file choose the appropriate generator and simply add the input 
 and output file:</p>
+
 <pre><code>$ cgen input.lisp -o test.c
 $ cxxgen input.lisp -o test.cpp
 </code></pre>
+
 <p>For more details see <a href="#compilation">Compilation Process</a></p>
-<h3>Build Instructions</h3>
+
+<h3>Build Instructions<a name="BuildInstructions"></h3>
+
 <p>We require SBCL at the moment, sorry.</p>
+
 <ul>
 <li>Install SBCL</li>
-<li>Install Quicklisp (See the example there)</li>
-<li>Build C-Mera<ul>
+<li>Install Quicklisp (See the example <a href="https://www.quicklisp.org/">there</a>)</li>
+<li>Build C-Mera
+<ul>
+<li>autoreconf -if  (when building from a fresh repo)</li>
 <li>./configure</li>
 <li>make</li>
 <li>make install</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3>Emacs Integration</h3>
-<p>tbd</p>
-<h3>Examples</h3>
+
+<h3>Emacs Integration<a name="EmacsIntegration"></h3>
+
+<p>The easiest way to configure your Lisp to load C-Mera is by adding it to quicklisp, as follows</p>
+
+<pre><code>$ ln -s &lt;path-to-cmera&gt; ~/quicklisp/local-projects/c-mera
+</code></pre>
+
+<h4>Slime</h4>
+
+<p>With this setup  it is possible to use Slime for the development process. 
+The relevant C-Mera modules can be loaded by</p>
+
+<pre><code>(asdf:load-system :cgen)     ; or :cxxgen, etc.
+(in-package :cg-user)        ; cl-user equivalent with c-mera environment
+(switch-reader)              ; optional for prototyping
+</code></pre>
+
+<p>After that you can enter Lisp expressions that print valid C Code to the REPL.</p>
+
+<pre><code>(simple-print 
+  (function main () -&gt; int 
+    (return 0)))
+</code></pre>
+
+<h4>Proper Indentation</h4>
+
+<p>When you have not loaded C-Mera as described above the default indentation of Emacs will not be what you want
+  (because it does not know how most of the macros are defined).
+To counter this we provide a very simple indent script, <code>util/c-mera-lisp-indent-hack.el</code>.
+You can copy it to your <code>load-path</code> and <code>(require 'c-mera-lisp-indent-hack)</code> in your <code>.emacs</code> file.</p>
+
+<p>This script looks for <code>cgen.indent</code> files in the current working directory and adds indentation information as specified. An example is provided in <code>util/cgen.indent</code>.</p>
+
+<h3>Examples<a name="Examples"></h3>
+
 <p>In the following we show a few examples of how to use cgen.
 Note that we give also give it thorough treatment in <a href="http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/">our ELS paper</a>.</p>
+
 <h4>Implementation of <code>strcmp(3)</code></h4>
+
 <p>This example illustrates the basic function definition syntax.  It's a
 straightforward transcription of the example in the K&amp;R book.</p>
+
 <pre><code>(function strcmp ((char *p) (char *q)) -&gt; int
   (decl ((int i 0))
     (for (() (== p[i] q[i]) i++)
@@ -60,19 +128,26 @@ straightforward transcription of the example in the K&amp;R book.</p>
           (return 0)))
     (return (- p[i] q[i]))))
 </code></pre>
+
 <h4>Implementation of <code>strcat(3)</code></h4>
+
 <p>Here we add arrays to the mix.
 It, too, is a straightforward transcription of the example in the K&amp;R book.</p>
+
 <pre><code>(function strcat ((char p[]) (char q[])) -&gt; void
   (decl ((int i 0) (int j 0))
     (while (!= p[i] #\null)
       i++)
     (while (!= (set p[i++] q[j++]) #\null))))
 </code></pre>
-<p>Implementation of <code>wc -l</code>
-This shows a main function and forward-declares the EOF symbol.
+
+<h4>Implementation of <code>wc -l</code></h4>
+
+<p>This example shows a main function 
+    and how to forward-declare externally defined symbols originating from C libraries.
 There is also <code>use-functions</code> to declare externally defined functions.
 These forms are required as the underlying lisp implementation checks if the symbols used are actually defined.</p>
+
 <pre><code>(use-variables EOF)
 
 (include &lt;stdio.h&gt;)
@@ -86,8 +161,11 @@ These forms are required as the underlying lisp implementation checks if the sym
     (printf "%d\n" nl)
     (return 0)))
 </code></pre>
+
 <h4>Implementation of Shellsort</h4>
+
 <p>Lots of loops:</p>
+
 <pre><code>(function shellsort ((int *v) (int n)) -&gt; void
   (decl ((int temp))
     (for ((int gap (/ n 2)) (&gt; gap 0) (/= gap 2))
@@ -97,9 +175,12 @@ These forms are required as the underlying lisp implementation checks if the sym
                v[j] (aref v (+ j gap))
                (aref v (+ j gap)) temp))))))
 </code></pre>
-<h3>Compilaton Process<a name="compilation"></h3>
+
+<h3>Compilation Process<a name="CompilationProcess"></h3>
+
 <p>Suppose the file <code>wc-l.lisp</code> contains the code of the line counting example shown above.
 Here is a cmdline session:</p>
+
 <pre><code>$ ls
 wc-l.lisp
 $ cgen wc-l.lisp
@@ -122,3 +203,179 @@ $ ls
 wc-l.c wc-l.lisp
 $ gcc wc-l.c -o wc-l
 </code></pre>
+
+<h2>Programming Guilde<a name="ProgGuide"></h2>
+
+<p>This section describes how some aspects of the system work.
+We only describe what we believe may be noteworthy for either the seasoned Lisp or the seasoned C programmer.
+This part will be in motion as we add information that some of our users would have liked to have :)</p>
+
+<h3>Simple Syntax</h3>
+
+<h4>Conditionals</h4>
+
+<p><code>if</code> statements have exactly one or two subforms. The second one is optional, and if present, represents the <code>else</code> part. The following examples is thus not correct:</p>
+
+<pre><code>(if (!= a 0)
+    (printf "all is safe")
+    (return (/ b a)))
+</code></pre>
+
+<p>You can use <code>progn</code> to group multiple sub-forms</p>
+
+<pre><code>(if (!= a 0)
+    (progn
+      (printf "all is safe")
+      (return (/ b a))))
+</code></pre>
+
+<p>or, equivalently, <code>when</code></p>
+
+<pre><code>(when (!= a 0)
+   (printf "all is safe")
+   (return (/ b a)))
+</code></pre>
+
+<p>which expands to the previous form using <code>progn</code>, which, in turn, expands to:</p>
+
+<pre><code>if (a != 0) {
+    ...
+}
+</code></pre>
+
+<p>In contrast, the first example expands to</p>
+
+<pre><code>if (a != 0) {
+    printf(...);
+else
+    return ...;
+</code></pre>
+
+<p>We also support <code>cond</code>.</p>
+
+<h5>Open Issues</h5>
+
+<p>We currently don't have <code>unless</code>.</p>
+
+<h4>Loops</h4>
+
+<p>A for loop is written with the loop-head grouped:</p>
+
+<pre><code>(for ((int i 0) (&lt; i n) (+= i 1))
+  ...)
+</code></pre>
+
+<p>Note that C-Mera supports C-like increments and decrements for simple expressions:</p>
+
+<pre><code>(for ((int i 0) (&lt; i n) ++i)
+  ...)
+</code></pre>
+
+<p>```while''' is straighforward</p>
+
+<pre><code>(while (&lt; a b)
+   ...
+   ...)
+</code></pre>
+
+<h5>Open Issues</h5>
+
+<p><code>do-while</code> is not implemented at the moment.</p>
+
+<h4>Declarations</h4>
+
+<p>A set of declarations is introduced with</p>
+
+<pre><code>(decl ((T name [init])
+       ...)
+  ...)
+</code></pre>
+
+<p>the initializer is optional and C-Mera collects as many symbols to be part of the type as possible,
+e.g.</p>
+
+<pre><code>(decl ((const unsigned long int x 0)) ...)
+</code></pre>
+
+<p>is correctly identified. This is enabled by having a list of valid 'qualifiers' that can add to a type.
+Type names do not have to be introduced and thus the syntax for one decl-item is</p>
+
+<pre><code>[qualifier]* typename variablename [initializer]
+</code></pre>
+
+<p>If you work in an environment that supports further qualifiers you can use</p>
+
+<pre><code>(add-qualifier ...)
+</code></pre>
+
+<p>e.g.</p>
+
+<pre><code>(add-qualifier __kernel __global)
+</code></pre>
+
+<p>to introduce a number of them.</p>
+
+<p>As mentioned above, typenames are not checked. However, variables have to be declared before they are used, as in</p>
+
+<pre><code>(decl ((int a 0)
+       (int b 0))
+  (return (+ a b)))
+</code></pre>
+
+<p>If you want to use global variables or functions you can make them know by</p>
+
+<pre><code>(use-variables ...)
+(use-functions ...)
+</code></pre>
+
+<p>In declarations (such as <code>decl</code>, in function parameters and <code>(sizeof ...)</code>) the type does not have to
+    be enclosed in parens (and must not be). There are places, however, 
+    where for the sake of simplicity type names must be grouped, as e.g. in function return values:</p>
+
+<pre><code>(function foo ((const int *i) ...) -&gt; (unsigned int)
+  ...)
+</code></pre>
+
+<p>As shown in this example C-Mera also supports some C-style decorations, i.e.</p>
+
+<pre><code>(decl ((int *i 0)) ...)
+(decl ((int* i 0)) ...)
+</code></pre>
+
+<p>are both recognized.</p>
+
+<h3>Namespace (Lisp vs C-Mera)</h3>
+
+<p>Some C-Mera symbols are also defined in Common Lisp.
+Initially C-Mera starts out in the <code>cg-user</code> (code generator user package) which imports
+    all <code>cl</code> symbols that do not conflicts to provide metaprogramming as seamlessly as possible.</p>
+
+<p>Especially with symbols like <code>if</code> etc care has to be taken to use the right one.
+This can be done by explicitly naming the symbol <code>cl:if</code>, but to define lisp functions
+or lisp-heavy parts of the meta code it is often more convenient to use the <code>lisp</code> form, such as
+in the example from our ELS presentation:</p>
+
+<pre><code>(defmacro match (expression &amp;rest clauses)
+  `(macrolet 
+     ((match-int (expression &amp;rest clauses)
+        `(progn 
+           (set reg_err 
+                (regcomp &amp;reg ,(caar clauses) REG_EXTENDED))
+           (if (regexec &amp;reg ,expression 0 0 0)
+               (progn ,@(cdar clauses))
+               ,(lisp (if (cdr clauses)      
+                          `(match-int 
+                             ,expression 
+                             ,@(cdr clauses))))))))
+     (decl ((regex_t reg)
+            (int reg_err))
+       (match-int ,expression ,@clauses))))
+</code></pre>
+
+<p>Here we define a recursively expanding macrolet, <code>match-int</code>, that inserts conditional clauses (as in <code>(if (regexec ....))</code> and also checks to terminate the iteration (with <code>,(lisp (if ...))</code>).</p>
+
+<p>For convenience we provide a sibling to <code>defmacro</code>, <code>deflmacro</code>, which starts out in the Lisp namespace.</p>
+
+<h3>Codestrings</h3>
+
+<p>tbd.</p>

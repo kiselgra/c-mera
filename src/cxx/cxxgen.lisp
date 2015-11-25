@@ -117,7 +117,7 @@
 	  (pop-sign)
 	  (format stream ", ")))))
 
-;; Overwrite declaration item behaviour:
+;; Overrite declaration item behaviour:
 ;; "int i { 1 }" instead of "int i = 1"
 ;; except in for-loop-initialization.
 (with-pp
@@ -139,6 +139,43 @@
       (if (slot-value item 'proxy-subnode)
 	  (if (not (eql (top-info) 'for))
 	      (format stream " }"))))))
+
+;; Override C-list / vector brackets.
+;; Does not emmit brackets.
+;; Brackets already handled by declaration.
+(with-pp
+  (with-proxynodes (list-item)
+
+    (defprettymethod :before c-list
+      (make-proxy items list-item)
+      (push-info 'skip-first))
+
+    (defprettymethod :after c-list
+      (del-proxy items))
+
+    (defproxyprint :before list-item
+      (if (eql (top-info) 'skip-first)
+	  (pop-info)
+	  (format stream ", ")))))
+
+;; Override c-type
+;; enables more coples types. e.g. templates
+(defelement c-type () (type) (type)
+  (let ((type (cond ((symbolp type) (clear type '(#\& #\*)))
+		    ((listp type) (first (reverse (flatten type))))
+		    (t type))))
+    (if (symbolp type)
+	(progn
+	  (if (not (gethash type *type*))
+	      (setf (gethash type *type*) t))
+	  (make-instance 'c-type
+			 :type type
+			 :values '(type)
+			 :subnodes '()))
+	(make-instance 'c-type
+		       :type type
+		       :values '()
+		       :subnodes '(type)))))
 
 
 
@@ -251,23 +288,24 @@
 
 (with-pp
   (defprettymethod :before using
-    (push-sign 'using)
+    (push-info 'using)
     (format stream "~&~ausing " indent))
   (defprettymethod :after using
-    (pop-sign)
+    (pop-info)
     (format stream ";~%")))
 
 (with-pp
     (defprettymethod :before from-namespace
-      (push-sign 'from-namespace))
+      (push-info 'from-namespace))
     (defprettymethod :self from-namespace
       (if (slot-value item 'namespace)
 	  (format stream "~a::" (slot-value item 'namespace))
 	  (format stream "::")))
     (defprettymethod :after from-namespace
-      (pop-sign)
-      (if (and (not (eql (top-sign) 'from-namespace))
-	       (not (eql (top-sign) 'using)))
+      (pop-info)
+      (if (and (not (eql (top-info) 'from-namespace))
+	       (not (eql (top-info) 'using))
+	       (not (eql (top-info) 'cgen::funcall-function)))
 	  (format stream " "))))
     
 (with-pp
@@ -295,7 +333,7 @@
        (pop-info)
        (if (eql (top-info) 'template-instantiation)
 	   (format stream ">")
-	   (format stream "> ")))
+	   (format stream ">")))
      (defproxyprint :after template
        (format stream "<"))
      (defproxyprint :before arguments
@@ -336,7 +374,14 @@
 (use-variables cout cerr endl cin)
 
 (defmacro mcall (member &rest args)
-  `(funcall ,(append '(oref) member) ,@args))
+  (lisp (let ((cascade nil)
+	      (rmember (rest (reverse member)))
+	      (first-elem (first (reverse member))))
+	  (loop for i in rmember do
+	       (if (eq i (first rmember))
+		   (setf cascade `(oref ,i ,first-elem))
+		   (setf cascade `(oref ,i ,cascade))))
+	  `(funcall ,cascade ,@args))))
 
 (deflmacro use-templates (&rest templates)
   `(progn

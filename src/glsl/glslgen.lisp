@@ -1,3 +1,29 @@
+(in-package :cgen)
+
+;;; Extend declatation item with glsl layout qualifier
+(defelement declaration-item () (qualifier type identifier decorator value) (&rest item)
+  (let ((qualifiers nil) (item item))
+    (loop while (or (gethash (cond ((symbolp (first item)) (intern (symbol-name (first item)) :cgen))
+				   ((listp (first item)) nil)
+				   (t (first item)))
+			     *qualifier*)
+		    (if (eql (class-of (first item)) (find-class 'source-position))
+			(eql (class-of (slot-value (first item) 'subnode)) (find-class 'glslgen::layout)))) do
+	 (push (pop item) qualifiers))
+    (destructuring-bind (&optional type identifier value) item
+      (if value (setf value (make-node value)))
+      (if identifier (setf identifier (make-node (if (symbolp identifier)
+						     (clear identifier '(#\& #\*))
+						     identifier))))
+      (make-instance 'declaration-item
+		     :qualifier (make-node (list (reverse qualifiers) 'qualifier-handler) 'set-nodelist-handler)
+		     :type (make-node (list type) 'c-type-handler)
+		     :identifier identifier
+		     :decorator (make-node (list type identifier) 'decorator-handler)
+		     :value value
+		     :values '()
+		     :subnodes '(qualifier type decorator identifier value)))))
+
 (in-package :glslgen)
 
 ;;; Nodes
@@ -75,7 +101,7 @@
 			       'cgen::set-nodelist-handler)) 'shader-handler))
 
 
-(defnodemacro layout (parameter-list)
+(defnodemacro layout (&rest parameter-list)
   ;;; TODO check in paramter list if item is qualifier, then quote or not.
   `(make-node (list 'layout (list ,@(loop for i in parameter-list collect
 					 (if (rest i)

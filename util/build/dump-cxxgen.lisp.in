@@ -1,0 +1,10 @@
+;; @configure_input@
+(require :asdf)
+(require :sb-introspect)
+(let ((asdf:*central-registry* (cons #P"@abs_top_srcdir@/" asdf:*central-registry*)))
+  (require :cgen)
+  (require :cxxgen)
+  (require :cg-user))
+(in-package :cg-user)
+(cgen::save "cxxgen")
+(sb-ext:quit)

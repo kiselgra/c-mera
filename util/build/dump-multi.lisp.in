@@ -1,0 +1,12 @@
+;; @configure_input@
+(require :asdf)
+(require :sb-introspect)
+(let ((asdf:*central-registry* (cons #P"@abs_top_srcdir@/" asdf:*central-registry*)))
+  (require :cgen)
+  (require :cugen)
+  (require :shgen)
+  (require :cxxgen)
+  (require :cg-user))
+(in-package :cg-user)
+(cgen::save "multigen")
+(sb-ext:quit)

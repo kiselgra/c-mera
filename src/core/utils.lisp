@@ -110,6 +110,7 @@
 	 (set-macro-character #\Space #'pre-process)
 	 (setf (readtable-case *readtable*) :invert))
 	((eql *cgen-reader* 'cgen)
+	 (setf *cgen-reader* 'cl)
 	 (setf *readtable* *readtable-backup*))))
 
 ;;; be verbose and print info text for 'using functions..' and so on

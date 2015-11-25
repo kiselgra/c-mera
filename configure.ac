@@ -7,7 +7,10 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([cgen.asd])
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(Makefile
+				util/build/dump-cgen.lisp    util/build/dump-cugen.lisp util/build/dump-cxxgen.lisp
+				util/build/dump-glslgen.lisp util/build/dump-multi.lisp util/build/dump-oclgen.lisp
+				util/build/dump-shgen.lisp)
 
 AC_PROG_CC
 

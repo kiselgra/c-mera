@@ -222,8 +222,9 @@
 	  ((listp name)
 	   (cond ((eql (first name) 'cg-user::fpointer) (second name))
 		 ((and (not fp) (eql (first name) 'cg-user::aref)) (second name))
+		 ((and (not fp) (eql (first name) 'cg-user::array)) (second name)) 
 		 ((and (not fp) (eql (first name) 'cg-user::funcall)) (second name))
-		 ((and (not fp) (eql (first name) 'cg-user::array)) (second name))
+		 ((and (not fp) (eql (first (macroexpand-1 name)) 'cg-user::funcall)) (first name))
 		 ((not fp) (first (reverse (flatten name))))))
 	  (t (error "'~a' not useable as variable identifier~%" name)))))
 

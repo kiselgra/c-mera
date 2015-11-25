@@ -1,3 +1,44 @@
+(in-package :cgen)
+
+;;; pretty print override/restore
+
+;;; copy from ast-pretty.lisp
+;;; restores original behaviour
+;;; Declaration item
+;;; Handle declaration assignment.
+(with-pp
+  (with-proxynodes (value)
+
+    (defprettymethod :before cgen::declaration-item
+      (make-proxy value value))
+
+    (defprettymethod :after cgen::declaration-item
+      (del-proxy value))
+
+    (defproxyprint :before value
+      (if (slot-value item 'proxy-subnode)
+	  (format stream " = ")))))
+
+;;; copy from ast-pretty.lisp
+;;; restores original behavious
+;;; C-list / vectors
+(with-pp
+  (with-proxynodes (list-item)
+
+    (defprettymethod :before cgen::c-list
+      (make-proxy items list-item)
+      (push-info 'skip-first)
+      (format stream "{ "))
+
+    (defprettymethod :after cgen::c-list
+      (del-proxy items)
+      (format stream " }"))
+
+    (defproxyprint :before list-item
+      (if (eql (top-info) 'skip-first)
+	  (pop-info)
+	  (format stream ", ")))))
+
 (in-package :cugen)
 
 ;;nodes
@@ -59,18 +100,19 @@
   (let* ((gbs nil)
 	 (tmp (first parameter))
 	 (cgen-node (if (and (listp function)
-			     (cgen::find-handler (cg-user::cintern (format nil "~a" (first function)) 'cgen)))
+			     (or (fboundp (first function))
+				 (cgen::find-handler (cg-user::cintern (format nil "~a" (first function)) 'cgen))))
 			t nil)))
-    (if (listp tmp)
-	(if (and (or (= (length tmp) 3) (= (length tmp) 2))
-		 (not (eql (first tmp) 'quote))
-		 (not (cgen::find-handler (cg-user::cintern (format nil "~a" (first tmp)) 'cgen))))
-	    (progn (setf gbs tmp)
-		   ;(format t "handler-in-cuda-config not found ~a, ~s, ~s~%" (first tmp) (first tmp) (cg-user::cintern (format nil "~a" (first tmp)) 'cgen))
-		   ;(if (cgen::find-handler (cg-user::cintern (format nil "~a" (first tmp)) 'cgen))
-		   ;    (format t "FOUND~%")
-		   ;    (format t "NOT-FOUND~%"))
-		   (setf parameter (rest parameter)))))
+    (labels ((set-gbs ()
+	       (setf gbs tmp)
+	       (setf parameter (rest parameter))))
+      (if (listp tmp)
+	  (if (or (= (length tmp) 3) (= (length tmp) 2))
+	      (if (symbolp (first tmp))
+		  (if (and (not (fboundp (first tmp)))
+			   (not (cgen::find-handler (cg-user::cintern (format nil "~a" (first tmp)) 'cgen))))
+		      (set-gbs))
+		  (set-gbs)))))
     `(make-node (list 'cgen::funcall (make-node (list ,(if cgen-node function `',function) ,(first gbs)
 						      ,(second gbs)
 						      ,(third gbs))
