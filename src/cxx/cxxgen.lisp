@@ -348,8 +348,17 @@
 
 (add-qualifier 'inline)
 
+;; Declare a C++ class and provide c'tor and d'tor definitions.
 (defnodemacro class (name superclasses &body body)
-  `(make-node (list 'cxx-class ',name ',superclasses ,@body)))
+  `(macrolet ((cg-user::constructor (args &body body)
+		`(cg-user::function ,',name ,args -> nil
+		   ,@body))
+	      ;; We rely on cintern/format to prepend the d'tor's prefix.
+	      (cg-user::destructor (&body body)
+		`(cg-user::function ,',(cg-user::cintern (format nil "~~~a" name)) nil -> nil
+		   ,@body)))
+     (make-node (list 'cxx-class ',name ',superclasses ,@body))))
+
 
 (defnodemacro using (item)
   `(make-node (list 'using ',item)))
