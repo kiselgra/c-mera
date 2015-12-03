@@ -56,7 +56,7 @@
 		  (eql (top-info) 'else))
 	      (format stream "{~%")
 	      (format stream "~&~a{~%" indent))
-h	  (if (eql (top-info) 'else)
+	  (if (eql (top-info) 'else)
 	      (push-info 'block))))
     ++indent)
 
