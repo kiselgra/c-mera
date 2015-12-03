@@ -24,7 +24,11 @@
 			    ((eql val #\newline)
 			     (format stream "'\\n'"))
 			    (t (format stream "'~a'" val))))
-			 ((floatp val) (format stream "~,5f" val))
+
+			 ;;((floatp val) (format stream "~,5f" val))
+			 ((floatp val) (format stream "~a"
+					       (substitute #\e #\d
+							  (format nil "~,8e" val))))
 			 (t (format stream "~a" val)))))))))
 
 ;;; Expression-Statement
@@ -52,7 +56,7 @@
 		  (eql (top-info) 'else))
 	      (format stream "{~%")
 	      (format stream "~&~a{~%" indent))
-	  (if (eql (top-info) 'else)
+h	  (if (eql (top-info) 'else)
 	      (push-info 'block))))
     ++indent)
 
@@ -135,6 +139,7 @@
 
     (defprettymethod :before declaration-list
       (make-proxy bindings declaration-item)
+      (push-info 'decl)
       (if (slot-value item 'brackets)
 	  (progn
 	    (format stream "~&~a{" indent)
@@ -142,6 +147,7 @@
 
     (defprettymethod :after declaration-list
       (del-proxy bindings)
+      (pop-info)
       (if (slot-value item 'brackets)
 	  (progn
 	    --indent

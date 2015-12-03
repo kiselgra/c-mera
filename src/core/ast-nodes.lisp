@@ -278,7 +278,7 @@
 		 :subnodes '(function parameter)))
 
 ;;; Technically a statement but much simpler to handle as an expression.
-(defexpression jump-statement (goto continue break return) (tag members) (tag &rest rest)
+(defexpression jump-statement (continue break return) (tag members) (tag &rest rest)
   (make-instance 'jump-statement
 		 :tag tag
 		 :members (make-node rest 'nodelist-handler)
