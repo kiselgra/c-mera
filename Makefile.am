@@ -12,7 +12,7 @@ cgen_SOURCES = 	cgen.asd \
 				src/core/cgen.lisp \
 				src/usr/cgu-base.lisp
 
-glslgen_SOURCES = src/glsl/glslgen.lisp
+glslgen_SOURCES = src/glsl/glslgen.lisp src/glsl/gl-symbols.lisp
 
 shgen_SOURCES = src/shader/shgen.lisp
 
@@ -45,6 +45,14 @@ oclgen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES) $(oclgen_SOURCES)
 multigen$(EXEEXT): $(cgen_SOURCES) $(glslgen_SOURCES) $(cugen_SOURCES) $(cxxgen_SOURCES)
 	@LISP_PROG@ --script util/build/dump-multi.lisp
 
+src/glsl/gl-types.lisp: src/glsl/gl.xml
+	@xmlstarlet sel -t  -m '//type/name' -v . -n $< > src/glsl/gl.types
+
+src/glsl/gl-symbols.lisp: src/glsl/gl.xml
+	@bash util/build/generate-gl-enum-list.sh "$<" > $@
+
 EXTRA_DIST = util/build/dump-cgen.lisp   util/build/dump-glslgen.lisp util/build/dump-shgen.lisp \
 			 util/build/dump-cxxgen.lisp util/build/dump-cugen.lisp   util/build/dump-oclgen.lisp \
-			 util/build/dump-multi.lisp
+			 util/build/dump-multi.lisp \
+			 src/glsl/gl.xml src/glsl/gl-symbols.lisp util/build/generate-gl-enum-list.sh
+

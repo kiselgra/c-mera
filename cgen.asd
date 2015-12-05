@@ -66,7 +66,8 @@
   :name "glslgen"
   :version "0.0.1"
   :serial t
-  :components ((:file "src/glsl/glslgen"))
+  :components ((:file "src/glsl/glslgen")
+               (:file "src/glsl/gl-symbols"))
   :depends-on ("cgen"))
 
 (asdf:defsystem shgen
