@@ -37,6 +37,16 @@
       (pop *chars-per-line*)
       nodes))
 
+(defun add-cmdline-definition (str)
+  (let* ((=pos (position #\= str))
+	 (white '(#\space #\newline #\tab))
+	 (key str)
+	 val)
+    (when =pos
+	(setf key (subseq str 0 =pos))
+	(setf val (string-trim white (subseq str (1+ =pos)))))
+    (setf key (string-trim white key))
+    (eval `(defparameter ,(read-from-string (format nil "*~a*" key)) ,val))))
 
 ; does not work:
 ; (net.didierverna.clon:nickname-package :clon)
@@ -47,6 +57,8 @@
   (flag :short-name "h" :long-name "help"    :description "Print this help and exit.")
   (stropt :short-name "i" :long-name "in"      :description "Input file name (can also be given as non-option argument).")
   (stropt :short-name "o" :long-name "out"     :description "Output file name (if not specified we print to stdout).")
+  (stropt :short-name "D" :long-name "defparameter"
+	  :description "Define given value as parameter. -Dfoo=9 will have the effect of (defparameter *foo* 9).")
   (flag :short-name "g" :long-name "debug"   :description "Add debugging information such as line numbers in the output.")
   (flag :short-name "v" :long-name "verbose" :description "Be verbose."))
 
@@ -63,6 +75,8 @@
 	(cond ((s= name "h" "help")
 	       (net.didierverna.clon:help)
 	       (return-from parse-cmdline (values nil nil nil)))
+	      ((s= name "D" "defparameter")
+	       (add-cmdline-definition value))
 	      (t (format t "Unnrecognized option ~a.~%" name))))
       (cond ((> (length args) 1)
 	     (setf in nil)
