@@ -37,43 +37,43 @@
       (pop *chars-per-line*)
       nodes))
 
+
+; does not work:
+; (net.didierverna.clon:nickname-package :clon)
+
+(net.didierverna.clon:defsynopsis
+    (:postfix "inputfile")
+    (text :contents "A source-to-source compiler.")
+  (flag :short-name "h" :long-name "help"    :description "Print this help and exit.")
+  (stropt :short-name "i" :long-name "in"      :description "Input file name (can also be given as non-option argument).")
+  (stropt :short-name "o" :long-name "out"     :description "Output file name (if not specified we print to stdout).")
+  (flag :short-name "g" :long-name "debug"   :description "Add debugging information such as line numbers in the output.")
+  (flag :short-name "v" :long-name "verbose" :description "Be verbose."))
+
 (defun parse-cmdline (cmdline)
-  (multiple-value-bind (args opts) (getopt cmdline
-					   '(("in" :required)
-					     ("out" :required)
-					     ("debug" :none)
-					     ("g" :none)
-					     ("verbose" :none)
-					     ("h" :none help)))
-    (flet ((flag-set (flag)
-	     (member flag opts :key #'first :test #'string=))
-	   (opt-val (opt)
-	     (cdr (first (member opt opts :key #'first :test #'string=)))))
-      (if (flag-set "verbose")
-	  (setf *be-verbose* t))
-      (let ((debug (if (or (flag-set "g") (flag-set "debug")) :debug nil)))
-	(cond ((flag-set "h")
-		(values nil nil))
-	       ;; here are a few different cases covering some common gcc style invocations, too.
-	       ;; --in and --out given
-	       ((and (flag-set "in")
-		     (flag-set "out"))
-		(values (opt-val "in")
-			(opt-val "out")
-			debug))
-	       ;; --in not given (taken from argument 1), out may be nil, too.
-	       ((and (= (length args) 1)
-		     (not (flag-set "in")))
-		(values (first args)
-			(opt-val "out")
-			debug))
-	       ;; --in is given but out may not be
-	       ((and (= (length args) 0)
-		     (flag-set "in"))
-		(values (opt-val "in")
-			(opt-val "out")
-			debug))
-	       (t (error "unhandled case in parse cmdline.")))))))
+  (net.didierverna.clon:make-context)
+  (flet ((s= (a b c) (or (string-equal a b) (string-equal a c))))
+    (let ((in    (net.didierverna.clon:getopt :short-name "i"))
+	  (out   (net.didierverna.clon:getopt :short-name "o"))
+	  (debug (net.didierverna.clon:getopt :short-name "g"))
+	  (verb  (net.didierverna.clon:getopt :short-name "v"))
+	  (args  (net.didierverna.clon:remainder)))
+      (if in (push in args))
+      (net.didierverna.clon:do-cmdline-options (option name value source)
+	(cond ((s= name "h" "help")
+	       (net.didierverna.clon:help)
+	       (return-from parse-cmdline (values nil nil nil)))
+	      (t (format t "Unnrecognized option ~a.~%" name))))
+      (cond ((> (length args) 1)
+	     (setf in nil)
+	     (net.didierverna.clon:help)
+	     (format t "Excess command line arguments.~%"))
+	    ((= (length args) 0)
+	     (setf in nil)
+	     (net.didierverna.clon:help)
+	     (format t "No input specified.~%"))
+	    (t (setf in (first args))))
+	(values in out debug))))
 
 ;;; Defines the start-up command of the lisp-executable.
 (defmacro define-script-command (&rest extra-traverser)
@@ -81,53 +81,40 @@
 		    (loop for i in extra-traverser collect
 			 `(traverser (make-instance ',i) tree 0)))))
     `(defun script-command (args)
-       (labels ((print-usage ()
-		  (format t (concatenate 'string
-					 "~&Usage: $code-generator [OPTION...] [inputfile].~%"
-					 "Options:~%"
-					 "  -i, --in=src-file    Input file. A single non-option argument is treated as -i.~%"
-					 "  -o, --out=dest-file  Output file. Output is written to stdout if not given.~%"
-					 "  -d, --debug          Generate File with source line information.~%"
-					 "  -v, --verbose        Verbose output. ~%"
-					 "~%"
-					 "Mandatory or optional arguments to long options are also mandatory or optional~%"
-					 "for any corresponding short options.~%"))))
-	 (multiple-value-bind (input output debug) (parse-cmdline args)
-	   (if (not input)
-	       (print-usage)
-	       (let ((tree nil)
-		     (nodelist-cleanup (make-instance 'nodelist-traverser))
-		     (else-if-cleanup (make-instance 'else-if-traverser))
-		     (rename (make-instance 'renamer))
-		     (decl-block (make-instance 'decl-blocker))
-		     (if-block (make-instance 'if-blocker))
-		     ;(debug-tree (make-instance 'debug-traverser))
-		     (pprint (make-instance 'pretty-printer)))
-		 (setf tree (build-ast (read-in input :debug debug)))
-		 ,@extras
-		 (traverser nodelist-cleanup tree 0)
-		 (traverser else-if-cleanup tree 0)
-		 (traverser rename tree 0)
-		 (traverser decl-block tree 0)
-		 (traverser if-block tree 0)
-		 ;(traverser debug-tree tree 0)
-		 (if output
-		     (with-open-file
-			 (stream output
-				 :direction :output
-				 :if-exists :supersede
-				 :if-does-not-exist :create)
-		       (setf (slot-value pprint 'stream) stream)
-		       (traverser pprint tree 0))
-		     (progn
-		       (setf (slot-value pprint 'stream) *standard-output*)
-		       (traverser pprint tree 0)
-		       (format t "~&")))
-		 )))))))
+       (multiple-value-bind (input output debug) (parse-cmdline args)
+	 (when input
+	   (let ((tree nil)
+		 (nodelist-cleanup (make-instance 'nodelist-traverser))
+		 (else-if-cleanup (make-instance 'else-if-traverser))
+		 (rename (make-instance 'renamer))
+		 (decl-block (make-instance 'decl-blocker))
+		 (if-block (make-instance 'if-blocker))
+		 ;(debug-tree (make-instance 'debug-traverser))
+		 (pprint (make-instance 'pretty-printer)))
+	     (setf tree (build-ast (read-in input :debug debug)))
+	     ,@extras
+	     (traverser nodelist-cleanup tree 0)
+	     (traverser else-if-cleanup tree 0)
+	     (traverser rename tree 0)
+	     (traverser decl-block tree 0)
+	     (traverser if-block tree 0)
+					;(traverser debug-tree tree 0)
+	     (if output
+		 (with-open-file
+		     (stream output
+			     :direction :output
+			     :if-exists :supersede
+			     :if-does-not-exist :create)
+		   (setf (slot-value pprint 'stream) stream)
+		   (traverser pprint tree 0))
+		 (progn
+		   (setf (slot-value pprint 'stream) *standard-output*)
+		   (traverser pprint tree 0)
+		   (format t "~&")))
+	     ))))))
 
 ;;; Standard start command (without extra traversers)
 (define-script-command)
-
 
 ;;; Simply prints the ast, intended for REPL usage.
 (defun simple-print (tree)
@@ -150,8 +137,6 @@
 	     (in-package :cg-user)
 	     (setf (readtable-case *readtable*) :invert)
 	     (cgen::script-command (rest sb-ext:*posix-argv*))))
-    (sb-ext:save-lisp-and-die
-     x 
-     :toplevel #'dump-start 
-     :executable t)))
+    (net.didierverna.clon:dump x dump-start)))
+
 

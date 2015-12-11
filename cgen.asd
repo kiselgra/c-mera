@@ -4,10 +4,10 @@
     (when (probe-file quicklisp-init)
       (load quicklisp-init)))
 
-(ql:quickload :getopt)
+(ql:quickload :net.didierverna.clon)
 
 (cl:defpackage :cgen
-  (:use :common-lisp :getopt)
+  (:use :common-lisp)
   (:export :add-qualifier :defnodes :defhandler :defelement :defnodemacro :make-node
 	   :defstatement :defexpression
 	   :prepare-handler
