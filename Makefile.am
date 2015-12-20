@@ -1,4 +1,6 @@
-bin_PROGRAMS = cgen glslgen shgen cugen cxxgen oclgen multigen
+bin_PROGRAMS = cgen glslgen shgen cugen cxxgen oclgen multigen cm
+
+AUTOMAKE_OPTIONS = subdir-objects
 
 cgen_SOURCES = 	cgen.asd \
 				src/core/cl-loader.lisp \
@@ -23,6 +25,9 @@ cxxgen_SOURCES = src/cxx/cxxgen.lisp
 oclgen_SOURCES = src/ocl/oclgen.lisp
 
 multigen_SOURCES = src/cxx/cxxgen.lisp
+
+cm_SOURCES = src/front/cm.c
+cm_CFLAGS = -DBINDIR=\"$(bindir)\"
 
 cgen$(EXEEXT): $(cgen_SOURCES)
 	@LISP_PROG@ --script util/build/dump-cgen.lisp
