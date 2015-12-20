@@ -30,25 +30,25 @@ cm_SOURCES = src/front/cm.c
 cm_CFLAGS = -DBINDIR=\"$(bindir)\"
 
 cgen$(EXEEXT): $(cgen_SOURCES)
-	@LISP_PROG@ --script util/build/dump-cgen.lisp
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-cgen.lisp
 
 glslgen$(EXEEXT) : $(cgen_SOURCES) $(glslgen_SOURCES)
-	@LISP_PROG@ --script util/build/dump-glslgen.lisp
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-glslgen.lisp
 
 shgen$(EXEEXT): $(cgen_SOURCES) $(glslgen_SOURCES) $(shgen_SOURCES)
-	@LISP_PROG@ --script util/build/dump-shgen.lisp
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-shgen.lisp
 
 cxxgen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES)
-	@LISP_PROG@ --script util/build/dump-cxxgen.lisp
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-cxxgen.lisp
 
 cugen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES) $(cugen_SOURCES)
-	@LISP_PROG@ --script util/build/dump-cugen.lisp
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-cugen.lisp
 
 oclgen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES) $(oclgen_SOURCES)
-	@LISP_PROG@ --script util/build/dump-oclgen.lisp
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-oclgen.lisp
 
 multigen$(EXEEXT): $(cgen_SOURCES) $(glslgen_SOURCES) $(cugen_SOURCES) $(cxxgen_SOURCES)
-	@LISP_PROG@ --script util/build/dump-multi.lisp
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-multi.lisp
 
 src/glsl/gl-types.lisp: src/glsl/gl.xml
 	@xmlstarlet sel -t  -m '//type/name' -v . -n $< > src/glsl/gl.types
