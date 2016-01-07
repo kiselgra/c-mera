@@ -11,6 +11,9 @@
   (:export :add-qualifier :defnodes :defhandler :defelement :defnodemacro :make-node
 	   :defstatement :defexpression
 	   :prepare-handler
+
+	   ;;utilities
+	   :flatten
 	   
 	   ;;pretty printing
 	   :defprettymethod :defproxyprint :with-proxynodes
@@ -41,7 +44,7 @@
 
 (cl:defpackage :cg-user
   (:import-from :common-lisp :nil)
-  (:import-from :cgen :simple-print :switch-reader)
+  (:import-from :cgen :simple-print :switch-reader :flatten)
   (:export :deflmacro :defun :defmacro :cgen :lisp :cintern :use-functions :use-variables))
 
 (cl:defpackage :cg-swap)

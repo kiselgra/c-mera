@@ -42,7 +42,7 @@
 
 
 (lisp
-  ;; Code proposted by plops on issue #17
+  ;; Code proposed by plops on issue #17
   ;; https://github.com/kiselgra/c-mera/issues/17
   
   (defun replace-newline-with-backslash-newline (string)
@@ -74,3 +74,25 @@
 
 (defmacro add-qualifier (&rest qualifiers)
   `(cgen::add-qualifier ,@(loop for i in qualifiers collect `,i)))
+
+(lisp
+ (defun symbol-append (&rest symbols)
+   "Generate a symbol by combining the names of a number of symbols."
+   (intern (apply #'concatenate 'string
+		  (mapcar #'symbol-name symbols)))))
+
+(lisp
+ (defun extract-parameter-names-from-lambda-list (args)
+   "Find the names of all parameters in a DEFMACRO-sytle (i.e. nested) lambda list."
+   (let* ((special 0)
+	  (plain (loop
+		    for arg in args
+		    for i from 1
+		    until (member arg lambda-list-keywords)
+		    if (listp arg) append (extract-parameter-names-from-lambda-list arg)
+		    else collect arg
+		    finally (setf special i))))
+     (append plain
+	     (loop for arg in (common-lisp:subseq args special)
+		if (listp arg) collect (first arg)
+		else if (not (member arg lambda-list-keywords)) collect arg)))))
