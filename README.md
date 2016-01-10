@@ -83,13 +83,18 @@ After that you can enter Lisp expressions that print valid C Code to the REPL.
 	  (function main () -> int 
 	    (return 0)))
 
-#### Proper Indentation
-When you have not loaded C-Mera as described above the default indentation of Emacs will not be what you want
-  (because it does not know how most of the macros are defined).
-To counter this we provide a very simple indent script, `util/c-mera-lisp-indent-hack.el`.
-You can copy it to your `load-path` and `(require 'c-mera-lisp-indent-hack)` in your `.emacs` file.
+#### Emacs Minor Mode (cm-mode)
+To support proper indentation and highlighting of keywords, especially when your forms are not known to a SLIME session, we provide a simple minor mode for Emacs. You can set it up by
 
-This script looks for `cgen.indent` files in the current working directory and adds indentation information as specified. An example is provided in `util/cgen.indent`.
+	$ cp <path-to-cmera>/util/emacs/cm-mode.el <load-path>/cm-mode.el
+	$ cp <path-to-cmera>/util/emacs/cm.indent ~/.emacs.d/cm.indent
+   
+You can then add `(require 'cm-mode)` to your `.emacs` file and load it using `M-x cm-mode`.
+To load it automatically you can add a mode specification to the top of your file:
+
+	; -*- mode: Lisp; eval: (cm-mode 1); -*-
+
+You can extend the indentation and keyword information by having an additional file called `cm.indent` along your source files, see the provided `cm.indent` for the layout.
 
 ### Examples<a name="Examples">
 In the following we show a few examples of how to use cgen.

@@ -1,0 +1,9 @@
+(decl 1)
+(function 4)
+(implement 2)
+(for 1)
+:keywords (for decl function class continue return sizeof private protected public template instantiate typedef virtual
+	   void int float double long char unsigned signed short auto bool
+       inline const volatile
+       true false
+	   main printf)
