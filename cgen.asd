@@ -104,7 +104,9 @@
 (asdf:defsystem cg-user
   :name "cg-user"
   :version "0.0.1"
-  :components ((:file "src/usr/cgu-base")) ;basic functions and macros
+  :serial t
+  :components ((:file "src/usr/cgu-base") ; basic functions and macros
+               (:file "src/usr/tree"))    ; tree-related methods
   :depends-on ("cgen"))
 
 (asdf:defsystem cg-swap

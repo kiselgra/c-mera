@@ -12,7 +12,8 @@ cgen_SOURCES = 	cgen.asd \
 				src/core/ast-pretty.lisp \
 				src/core/pre-processing.lisp \
 				src/core/cgen.lisp \
-				src/usr/cgu-base.lisp
+				src/usr/cgu-base.lisp \
+				src/usr/tree.lisp
 
 glslgen_SOURCES = src/glsl/glslgen.lisp src/glsl/gl-symbols.lisp
 
