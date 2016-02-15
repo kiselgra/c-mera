@@ -104,10 +104,11 @@
 (defnodemacro addr-of (item)
   `(make-node (list 'prefix ,item '&)))
 
-(defnodemacro cast (&rest rest)
-  `(make-node (list 'cast ',(loop for i in 
-				 (reverse (rest (reverse rest)))
-				 collect i) ,@(last rest))))
+;;; This version caused problems with cast composed of mutliple works/types/qualifiers
+;; (defnodemacro cast (&rest rest)
+;;   `(make-node (list 'cast ',(loop for i in 
+;; 				 (reverse (rest (reverse rest)))
+;; 				 collect i) ,@(last rest))))
 
 (defnodemacro cast (&rest rest)
   `(make-node (list 'cast ',(reverse (rest (reverse rest))) ,@(last rest))))
