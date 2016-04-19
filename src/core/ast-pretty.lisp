@@ -351,6 +351,13 @@
   (defprettymethod :after qualifier
     (format stream " ")))
 
+
+;;; Float
+(with-pp
+
+  (defprettymethod :after float-type
+	(format stream "f")))
+
 ;;; Pointer-de-reference
 (with-pp
 

@@ -2,6 +2,7 @@
 ;;;; Contains function for reading and printing the cgen ast.
 
 (in-package :cgen)
+(require :sb-sprof)
 
 (defun read-in (file &optional &key (debug nil))
   "reads cgen file and returns the cgen-ast"
@@ -170,13 +171,34 @@
 		 (if-block (make-instance 'if-blocker))
 		 ;(debug-tree (make-instance 'debug-traverser))
 		 (pprint (make-instance 'pretty-printer)))
+	     ;(sb-sprof:start-profiling)
+	     ;(format t "profiling~%")
+	     ;(format t "reading tree~%")
+	     ;(time
 	     (setf tree (build-ast (read-in input :debug debug)))
+	     
 	     ,@extras
-	     (traverser nodelist-cleanup tree 0)
-	     (traverser else-if-cleanup tree 0)
-	     (traverser rename tree 0)
-	     (traverser decl-block tree 0)
-	     (traverser if-block tree 0)
+	     
+	     ;(format t "nodelist cleanup~%")
+	     ;(time
+	      (traverser nodelist-cleanup tree 0)
+
+	     ;(format t "else-if eleanup~%")
+	     ;(time
+	      (traverser else-if-cleanup tree 0)
+
+	     ;(format t "rename~%")
+	     ;(time
+	      (traverser rename tree 0)
+
+	     ;(format t "decl-block~%")
+	     ;(time
+	      (traverser decl-block tree 0)
+
+	     ;(format t "if-block~%")
+	     ;(time
+	      (traverser if-block tree 0)
+	     ;(sb-sprof:stop-profiling)
 					;(traverser debug-tree tree 0)
 	     (if output
 		 (with-open-file

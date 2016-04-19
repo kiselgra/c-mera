@@ -123,7 +123,7 @@
     `(if (macrop ,gbs)
 	 (make-node (list 'cgen::funcall ',function ,gbs ,@parameter))
 	 (make-node (list 'cgen::funcall (make-node (list ,(if cgen-node function `',function)
-							  ,@gbs)
+							  ,(first gbs) ,(second gbs) ,(third gbs))
 						    'cuda-funcall-handler) ,@parameter)))))
     ;; `(make-node (list 'cgen::funcall (make-node (list ,(if cgen-node function `',function) ,(first gbs)
     ;; 						      ,(second gbs)

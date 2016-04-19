@@ -206,6 +206,14 @@
 		   :subnodes '())))
 
 
+(defelement float-type (float-type) (number) (tag number)
+  (make-instance 'float-type
+		  :number (make-node number 'constant-handler)
+		  :values '()
+		  :subnodes '(number)))
+  
+
+
 ;;;
 ;;; Expressions
 ;;;
