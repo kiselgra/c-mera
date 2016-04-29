@@ -245,10 +245,11 @@
 		 :values '()
 		 :subnodes '(parameters body)))
 
-(defelement instantiate (instantiate) (template arguments) (tag template &optional &rest parameter)
+(defelement instantiate (instantiate) (template arguments) (tag template parameter)
   (make-instance 'instantiate
 		 :template (make-node template)
-		 :arguments (make-node parameter 'cgen::nodelist-handler)
+		 ;;:arguments (make-node parameter 'cgen::nodelist-handler)
+		 :arguments parameter
 		 :values '()
 		 :subnodes '(template arguments)))
 
@@ -331,15 +332,16 @@
        (del-proxy template)
        (del-proxy arguments)
        (pop-info)
-       (if (eql (top-info) 'template-instantiation)
-	   (format stream ">")
-	   (format stream ">")))
+       (format stream ">"))
+       ;; (if (eql (top-info) 'template-instantiation)
+       ;; 	   (format stream ">")
+       ;; 	   (format stream ">")))
      (defproxyprint :after template
        (format stream "<"))
      (defproxyprint :before arguments
        (if (eql (top-info) 'skip-first)
-	   (pop-info)
-	   (format stream " ,")))))
+     	   (pop-info)
+     	   (format stream ",")))))
 
 
 
@@ -374,8 +376,12 @@
     `(let ,lets
        (make-node (list 'template ,(cgen::prepare-bindings template-parameters) ,@body)))))
 
-;; (defnodemacro instantiate (name &rest parameters)
-;;   `(make-node (list 'instantiate ',name ,@(loop for i in parameters collect `,i))))
+(defnodemacro instantiate (name &rest parameters)
+  `(make-node (list 'instantiate ,name
+	      (make-node (list (list ,@(loop for i in parameters collect
+				     (if (listp i) i
+					 `(list ,i)))) 'cgen::declaration-item-handler)
+			 'cgen::set-nodelist-handler))))
 
 ;;; Make sure the decl-blocker-traverser handles classes correctly.
 (cgen::decl-blocker-extra-nodes cxx-class)
