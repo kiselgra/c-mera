@@ -144,6 +144,18 @@
 	(pre-parse (read stream nil nil nil))
 	(values))))
 
+(defun pre-process2 (stream char)
+  "pre-parse continued"
+  (let ((peek (peek-char nil stream nil nil nil))
+	(list (line-number-reader (stream char))))
+    (if (not (or (eql peek #\()
+		 (eql peek #\))
+		 (eql peek #\Space)
+		 (eql peek #\Newline)
+		 (eql peek #\Tab)))
+	(append (list (pre-parse (first list))) (rest list))
+	list)))
+
 ;;;Line numbering for debug-mode
 (defun line-number-reader (stream char)
   "stores the line and file information of the current list in global hashes"

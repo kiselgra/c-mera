@@ -2,7 +2,6 @@
 ;;;; Contains function for reading and printing the cgen ast.
 
 (in-package :cgen)
-(require :sb-sprof)
 
 (defun read-in (file &optional &key (debug nil))
   "reads cgen file and returns the cgen-ast"
@@ -13,6 +12,7 @@
     ;; Starts pre-processing for every symbol with leading space-character
     (set-macro-character #\Space #'pre-process)
     (set-macro-character #\Tab #'pre-process)
+    (set-macro-character #\( #'pre-process2)
     ;; Stores line and file inforation in global hash
     (if debug
 	(set-macro-character #\( #'line-number-reader))

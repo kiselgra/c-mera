@@ -96,7 +96,7 @@
 
 (add-qualifier '__device__ '__global__ '__host__ '__shared__ '__constant__)
 
-;;; CHLS inspired
+;;; CLHS inspired
 (defmacro macrop (form &environment env)
   (multiple-value-bind (expansion expanded-p)
       (macroexpand-1 form env)
@@ -121,7 +121,10 @@
 		      (set-gbs))
 		  (set-gbs)))))
     `(if (macrop ,gbs)
-	 (make-node (list 'cgen::funcall ',function ,gbs ,@parameter))
+	 (locally
+	     (declare (sb-ext:muffle-conditions sb-kernel::style-warning))
+	   (handler-bind ((sb-kernel::style-warning #'muffle-warning))
+	   (make-node (list 'cgen::funcall ',function ,gbs ,@parameter))))
 	 (make-node (list 'cgen::funcall (make-node (list ,(if cgen-node function `',function)
 							  ,(first gbs) ,(second gbs) ,(third gbs))
 						    'cuda-funcall-handler) ,@parameter)))))
