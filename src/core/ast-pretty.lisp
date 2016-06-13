@@ -260,6 +260,7 @@
     (defprettymethod :before infix-expression
       (if (or (eql (top-info) 'infix)
 	      (eql (top-info) 'oref)
+	      (eql (top-info) 'not)
 	      (eql (top-info) 'cast))
 	  (format stream "("))
       (push-info 'infix)
@@ -488,9 +489,11 @@
 (with-pp
 
   (defprettymethod :before not-expression
+    (push-info 'not)
     (format stream "(not "))
 
   (defprettymethod :after not-expression
+    (pop-info)
     (format stream ")")))
 
 ;;; Function-call
