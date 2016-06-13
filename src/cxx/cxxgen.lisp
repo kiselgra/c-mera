@@ -253,6 +253,19 @@
 		 :values '()
 		 :subnodes '(template arguments)))
 
+(defexpression new-item (new) (object) (tag object)
+   (make-instance 'new-item
+		  :object object
+		  :values '()
+		  :subnodes '(object)))
+
+(defstatement delete-item (delete delete[]) (tag object) (tag object)
+	      (make-instance 'delete-item
+			     :tag tag
+			     :object (make-node object)
+			     :values '()
+			     :subnodes '(object)))
+
 ;;pretty
 (with-pp
   (defprettymethod :before cxx-class
@@ -343,6 +356,16 @@
      	   (pop-info)
      	   (format stream ",")))))
 
+(with-pp
+    (defprettymethod :before new-item
+      (format stream "new ")))
+
+(with-pp
+    (defprettymethod :before delete-item
+      (format stream "~&~a~a " indent (slot-value item 'tag)))
+  (defprettymethod :after delete-item
+    (format stream ";")))
+
 
 
 ;;syntax
@@ -382,6 +405,15 @@
 				     (if (listp i) i
 					 `(list ,i)))) 'cgen::declaration-item-handler)
 			 'cgen::set-nodelist-handler))))
+
+(defnodemacro new (&rest object)
+  `(make-node (list 'new (make-node ,@object))))
+
+;; (defnodemacro delete (object)
+;;   `(make-node (list 'delete nil (make-node ,@object))))
+
+;; (defnodemacro delete[] (object)
+;;   `(make-node (list 'delete t (make-node ,@object))))
 
 ;;; Make sure the decl-blocker-traverser handles classes correctly.
 (cgen::decl-blocker-extra-nodes cxx-class)
