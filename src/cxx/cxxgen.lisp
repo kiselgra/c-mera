@@ -409,12 +409,6 @@
 (defnodemacro new (&rest object)
   `(make-node (list 'new (make-node ,@object))))
 
-;; (defnodemacro delete (object)
-;;   `(make-node (list 'delete nil (make-node ,@object))))
-
-;; (defnodemacro delete[] (object)
-;;   `(make-node (list 'delete t (make-node ,@object))))
-
 ;;; Make sure the decl-blocker-traverser handles classes correctly.
 (cgen::decl-blocker-extra-nodes cxx-class)
 
