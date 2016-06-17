@@ -7,7 +7,7 @@
 			    unary break return set while if pcast aref targ-of
 			    addr-of parameter arith progn macro include cast 
 			    oref pref funcall for struct function decl
-			    defun defmacro cond when 1+ continue block delete))
+			    defun defmacro cond when 1+ continue block delete union))
 
 ;;; These symbols are needed but locked by lisp.
 (cl:defvar *cgen-symbols2* '(array null length min max abs sin cos tan 

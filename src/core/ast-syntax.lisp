@@ -64,6 +64,9 @@
 (defnodemacro struct (name &body body)
   `(make-node (list 'struct ',name ,@body) 'struct-definition-handler))
 
+(defnodemacro union (name &body body)
+  `(make-node (list 'union ',name ,@body) 'union-definition-handler))
+
 (defnodemacro funcall (function &optional &rest parameter)
   (if (and
 	(listp function)

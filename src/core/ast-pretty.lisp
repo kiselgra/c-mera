@@ -129,6 +129,14 @@
   (defprettymethod :after struct-definition
     (format stream ";")))
 
+;;; Union
+(with-pp
+    (defprettymethod :before union-definition
+      (format stream "~&~%~aunion " indent))
+
+    (defprettymethod :after union-definition
+      (format stream ";")))
+
 ;;; Declaration list
 ;;; Open and close brackets and increase indent
 ;;; if necessary.
