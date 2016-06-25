@@ -21,7 +21,10 @@
     ;; Store symbol-name and lambda-list in *imported-symbols* hash (definition happens later)".
     ((cl:eval `(cl:find-if #'(cl:lambda (x) (cl:equal (cl:symbol-name x) (cl:symbol-name ',cl:symbol))) *cgen-symbols*))
      (cl:eval `(cl:setf (cl:gethash ',(cl:intern (cl:format cl:nil "~a" cl:symbol) :common-lisp) cgen::*imported-symbols*) 
-			  ',(sb-introspect:function-lambda-list cl:symbol))))
+
+			;; &rest should do the trick for every possible function, no need for function-lambda-list
+			;;',(sb-introspect:function-lambda-list cl:symbol))))
+			'(cl::&rest cl::rest))))
     ;; Symbols with package-lock but without function-definition
     ((cl:eval `(cl:find-if #'(cl:lambda (x) (cl:equal (cl:symbol-name x) (cl:symbol-name ',cl:symbol))) *cgen-symbols2*))
      ;; Do nothing, skip import..
