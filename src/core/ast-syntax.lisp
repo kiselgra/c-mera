@@ -64,6 +64,9 @@
 (defnodemacro struct (name &body body)
   `(make-node (list 'struct ',name ,@body) 'struct-definition-handler))
 
+(defnodemacro union (name &body body)
+  `(make-node (list 'union ',name ,@body) 'union-definition-handler))
+
 (defnodemacro funcall (function &optional &rest parameter)
   (if (and
 	(listp function)
@@ -111,7 +114,13 @@
 ;; 				 collect i) ,@(last rest))))
 
 (defnodemacro cast (&rest rest)
-  `(make-node (list 'cast ',(reverse (rest (reverse rest))) ,@(last rest))))
+  `(make-node (list 'cast
+		    (list ,@(loop for i in (butlast rest) collect
+			   (if (and (listp i)
+				    (not (gethash (car i) *qualifier*)))
+			       i
+			       `',i)))
+		    ,@(last rest))))
 
 (defnodemacro include (file)
   `(make-node (list 'include ',file)))
