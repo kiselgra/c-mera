@@ -63,7 +63,7 @@
 	       (:file "src/core/pre-processing")
 	       (:file "src/core/cgen"))
   
-  :depends-on ("sb-posix" "sb-introspect"))
+  :depends-on ("sb-posix" "sb-introspect" "sb-sprof"))
 
 (asdf:defsystem glslgen
   :name "glslgen"

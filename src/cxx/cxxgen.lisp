@@ -245,12 +245,26 @@
 		 :values '()
 		 :subnodes '(parameters body)))
 
-(defelement instantiate (instantiate) (template arguments) (tag template &optional &rest parameter)
+(defelement instantiate (instantiate) (template arguments) (tag template parameter)
   (make-instance 'instantiate
 		 :template (make-node template)
-		 :arguments (make-node parameter 'cgen::nodelist-handler)
+		 ;;:arguments (make-node parameter 'cgen::nodelist-handler)
+		 :arguments parameter
 		 :values '()
 		 :subnodes '(template arguments)))
+
+(defexpression new-item (new) (object) (tag object)
+   (make-instance 'new-item
+		  :object object
+		  :values '()
+		  :subnodes '(object)))
+
+(defstatement delete-item (delete delete[]) (tag object) (tag object)
+	      (make-instance 'delete-item
+			     :tag tag
+			     :object (make-node object)
+			     :values '()
+			     :subnodes '(object)))
 
 ;;pretty
 (with-pp
@@ -331,15 +345,26 @@
        (del-proxy template)
        (del-proxy arguments)
        (pop-info)
-       (if (eql (top-info) 'template-instantiation)
-	   (format stream ">")
-	   (format stream ">")))
+       (format stream ">"))
+       ;; (if (eql (top-info) 'template-instantiation)
+       ;; 	   (format stream ">")
+       ;; 	   (format stream ">")))
      (defproxyprint :after template
        (format stream "<"))
      (defproxyprint :before arguments
        (if (eql (top-info) 'skip-first)
-	   (pop-info)
-	   (format stream " ,")))))
+     	   (pop-info)
+     	   (format stream ",")))))
+
+(with-pp
+    (defprettymethod :before new-item
+      (format stream "new ")))
+
+(with-pp
+    (defprettymethod :before delete-item
+      (format stream "~&~a~a " indent (slot-value item 'tag)))
+  (defprettymethod :after delete-item
+    (format stream ";")))
 
 
 
@@ -374,8 +399,15 @@
     `(let ,lets
        (make-node (list 'template ,(cgen::prepare-bindings template-parameters) ,@body)))))
 
-;; (defnodemacro instantiate (name &rest parameters)
-;;   `(make-node (list 'instantiate ',name ,@(loop for i in parameters collect `,i))))
+(defnodemacro instantiate (name &rest parameters)
+  `(make-node (list 'instantiate ,name
+	      (make-node (list (list ,@(loop for i in parameters collect
+				     (if (listp i) i
+					 `(list ,i)))) 'cgen::declaration-item-handler)
+			 'cgen::set-nodelist-handler))))
+
+(defnodemacro new (&rest object)
+  `(make-node (list 'new (make-node ,@object))))
 
 ;;; Make sure the decl-blocker-traverser handles classes correctly.
 (cgen::decl-blocker-extra-nodes cxx-class)

@@ -33,10 +33,10 @@ AC_ARG_WITH([dynamic-space-size],
 			[AS_HELP_STRING([--with-dynamic-space-size=MB],
 							[Set other than default dynamic heap size. Only implemented for sbcl at the moment.])],
 			 dynamic_space_size_request=$withval, dynamic_space_size_request="no")
-DYNAMIC_SPACE_SPEC=
-if test "x$LISP_PROG" == "xsbcl" -a ! "x$dynamic_space_size_request" == "xno"; then
-	DYNAMIC_SPACE_SPEC="--dynamic-space-size $dynamic_space_size_request"
-fi
+#DYNAMIC_SPACE_SPEC=
+#if test "x$LISP_PROG" == "xsbcl" -a ! "x$dynamic_space_size_request" == "xno"; then
+DYNAMIC_SPACE_SPEC="--dynamic-space-size 16384"
+#fi
 AC_SUBST([DYNAMIC_SPACE_SPEC])
 
 

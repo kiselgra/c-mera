@@ -86,6 +86,13 @@
 		 :items (make-node items 'nodelist-handler)
 		 :values '()
 		 :subnodes '(items)))
+
+(defelement union-definition (union) (identifier members) (tag name &body members)
+  (make-instance 'union-definition
+		 :identifier (make-node name)
+		 :members (make-node members 'compound-statement-handler)
+		 :values '()
+		 :subnodes '(identifier members)))
   
 (defelement declaration-list (decl) (bindings body brackets) (tag declaration-list &body statement-list)
   (make-instance 'declaration-list
@@ -204,6 +211,14 @@
 		   :decorator deco
 		   :values '(decorator)
 		   :subnodes '())))
+
+
+(defelement float-type (float-type) (number) (tag number)
+  (make-instance 'float-type
+		  :number (make-node number 'constant-handler)
+		  :values '()
+		  :subnodes '(number)))
+  
 
 
 ;;;

@@ -7,7 +7,7 @@
 			    unary break return set while if pcast aref targ-of
 			    addr-of parameter arith progn macro include cast 
 			    oref pref funcall for struct function decl
-			    defun defmacro cond when 1+ continue block))
+			    defun defmacro cond when 1+ continue block delete union))
 
 ;;; These symbols are needed but locked by lisp.
 (cl:defvar *cgen-symbols2* '(array null length min max abs sin cos tan 
@@ -21,7 +21,10 @@
     ;; Store symbol-name and lambda-list in *imported-symbols* hash (definition happens later)".
     ((cl:eval `(cl:find-if #'(cl:lambda (x) (cl:equal (cl:symbol-name x) (cl:symbol-name ',cl:symbol))) *cgen-symbols*))
      (cl:eval `(cl:setf (cl:gethash ',(cl:intern (cl:format cl:nil "~a" cl:symbol) :common-lisp) cgen::*imported-symbols*) 
-			  ',(sb-introspect:function-lambda-list cl:symbol))))
+
+			;; &rest should do the trick for every possible function, no need for function-lambda-list
+			;;',(sb-introspect:function-lambda-list cl:symbol))))
+			'(cl::&rest cl::rest))))
     ;; Symbols with package-lock but without function-definition
     ((cl:eval `(cl:find-if #'(cl:lambda (x) (cl:equal (cl:symbol-name x) (cl:symbol-name ',cl:symbol))) *cgen-symbols2*))
      ;; Do nothing, skip import..
@@ -42,3 +45,6 @@
 (cl:remhash 'common-lisp:cond cgen::*imported-symbols*)
 (cl:remhash 'common-lisp:when cgen::*imported-symbols*)
 (cl:remhash 'common-lisp:1+ cgen::*imported-symbols*)
+
+;; Remove symbols that will be defined in additional packages
+(cl:remhash 'common-lisp:delete cgen::*imported-symbols*)
