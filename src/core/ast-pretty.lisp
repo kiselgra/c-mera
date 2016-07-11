@@ -23,6 +23,8 @@
 			     (format stream "'\\r'"))
 			    ((eql val #\newline)
 			     (format stream "'\\n'"))
+			    ((eql val #\')
+			     (format stream "'\\''"))
 			    (t (format stream "'~a'" val))))
 
 			 ;;((floatp val) (format stream "~,5f" val))
