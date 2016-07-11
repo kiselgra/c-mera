@@ -58,8 +58,8 @@
 		  (eql (top-info) 'else))
 	      (format stream "{~%")
 	      (format stream "~&~a{~%" indent))
-	  (if (eql (top-info) 'else)
-	      (push-info 'block))))
+	  ;(if (eql (top-info) 'else)
+	      (push-info 'block)))
     ++indent)
 
   (defprettymethod :after compound-statement
