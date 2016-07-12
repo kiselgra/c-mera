@@ -241,7 +241,8 @@
      (if cgen::*be-verbose*
 	 (format t "using variables: ~{~a, ~}~%" ',variables))
      ,@(loop for i in variables collect
-	    `(defparameter ,i ',i))))
+	    `(defparameter ,i ',i))
+	 (values)))
 
 (deflmacro use-functions (&rest functions)
   `(progn
