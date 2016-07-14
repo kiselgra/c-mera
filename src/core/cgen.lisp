@@ -12,7 +12,6 @@
     ;; Starts pre-processing for every symbol with leading space-character
     (set-macro-character #\Space #'pre-process)
     (set-macro-character #\Tab #'pre-process)
-    (set-macro-character #\( #'pre-process2)
     ;; Stores line and file inforation in global hash
     (if debug
 	(set-macro-character #\( #'line-number-reader))
