@@ -57,7 +57,9 @@
   "perace correct float print"
   (let* ((name (symbol-name item))
 		 (len (length name)))
-  	`(cg-user::float-type ',(intern (subseq name 0 (- len 1))))))
+	;; Thanks to:  Bozhidar Batsov, batsov.com/articles/2011/04/30/parsing-numbers-from-string-in-lisp
+	(with-input-from-string (in (subseq name 0 (- len 1)))
+	  `(cg-user::float-type ,(read in)))))
 
 (defun split-unary (item quote-it)
   "prepare ++i or the like to unary node cration: ++i => (prefix i ++)"
@@ -144,6 +146,18 @@
 		 (eql peek #\Tab)))
 	(pre-parse (read stream nil nil nil))
 	(values))))
+
+(defun pre-process2 (stream char)
+  "pre-parse continued"
+  (let ((peek (peek-char nil stream nil nil nil))
+	(list (line-number-reader (stream char))))
+    (if (not (or (eql peek #\()
+		 (eql peek #\))
+		 (eql peek #\Space)
+		 (eql peek #\Newline)
+		 (eql peek #\Tab)))
+	(append (list (pre-parse (first list))) (rest list))
+	list)))
 
 ;;;Line numbering for debug-mode
 (defun line-number-reader (stream char)

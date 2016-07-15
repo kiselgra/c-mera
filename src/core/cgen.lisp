@@ -2,7 +2,6 @@
 ;;;; Contains function for reading and printing the cgen ast.
 
 (in-package :cgen)
-(require :sb-sprof)
 
 (defun read-in (file &optional &key (debug nil))
   "reads cgen file and returns the cgen-ast"

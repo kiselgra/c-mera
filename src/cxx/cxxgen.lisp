@@ -354,8 +354,18 @@
      (defproxyprint :before arguments
        (if (eql (top-info) 'skip-first)
      	   (pop-info)
-     	   (format stream ",")))))
+     	   (format stream ", ")))))
 
+;;; replace pretty printer for types
+(with-pp
+    (defprettymethod :after cgen::c-type
+      (if (and (not (eql (top-info) 'cgen::cast))
+	       (not (eql (top-info) 'cgen::funcall))
+	       (not (eql (top-info) 'cgen::function-pointer))
+	       ;; extra:
+	       (not (eql (top-info) 'template-instantiation)))
+	  (format stream " "))))
+    
 (with-pp
     (defprettymethod :before new-item
       (format stream "new ")))
@@ -365,8 +375,6 @@
       (format stream "~&~a~a " indent (slot-value item 'tag)))
   (defprettymethod :after delete-item
     (format stream ";")))
-
-
 
 ;;syntax
 (prepare-handler)
