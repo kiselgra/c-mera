@@ -115,3 +115,9 @@
 
 ;;; be verbose and print info text for 'using functions..' and so on
 (defparameter *be-verbose* nil)
+
+;;; CLHS inspired
+(defmacro macrop (form &environment env)
+  (multiple-value-bind (expansion expanded-p)
+      (macroexpand-1 form env)
+    `,expanded-p))

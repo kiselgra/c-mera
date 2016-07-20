@@ -21,6 +21,7 @@
 	   :pop-sign :top-sign :push-sign
 	   :pop-info :top-info :push-info
 	   :make-proxy :del-proxy
+	   :macrop
 
 	   ;;tests
 	   :simple-print
