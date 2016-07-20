@@ -45,7 +45,8 @@
 (cl:defpackage :cg-user
   (:import-from :common-lisp :nil)
   (:import-from :cgen :simple-print :switch-reader :flatten)
-  (:export :deflmacro :defun :defmacro :cgen :lisp :cintern :use-functions :use-variables))
+  (:export :deflmacro :defun :defmacro :cgen :lisp :cintern :use-functions :use-variables
+           :extract-parameter-names-from-lambda-list :symbol-append))
 
 (cl:defpackage :cg-swap)
 
@@ -63,7 +64,7 @@
 	       (:file "src/core/pre-processing")
 	       (:file "src/core/cgen"))
   
-  :depends-on ("sb-posix" "sb-introspect" "sb-sprof"))
+  :depends-on ("sb-introspect" "sb-sprof"))
 
 (asdf:defsystem glslgen
   :name "glslgen"
