@@ -96,13 +96,6 @@
 
 (add-qualifier '__device__ '__global__ '__host__ '__shared__ '__constant__)
 
-;;; CLHS inspired
-(defmacro macrop (form &environment env)
-  (multiple-value-bind (expansion expanded-p)
-      (macroexpand-1 form env)
-    `,expanded-p))
-
-
 (defnodemacro funcall (function &rest parameter)
   (let* ((gbs nil)
 	 (tmp (first parameter))

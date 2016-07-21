@@ -55,11 +55,17 @@
 	       (handler-bind ((sb-kernel:redefinition-warning #'muffle-warning))
 		 (defmacro ,name (&rest body) `(cg-user::funcall ,',name ,@body)))))
       (eval `(defparameter ,name ',name))
+	  ;; dirty hack to muffle 'undefined variable' warning
+	  ;; TODO find better solution
+	  (if (listp type)
+		(eval `(defun ,(car type) ()))
+	    (eval `(defvar ,type)))
       `(let ,lets
 	 (declare (ignore ,@fp-names))
 	 (macrolet ,mlets
-	   (make-node (list 'function ',name ,(prepare-bindings parameters) ',arrow ',type ,@body)
-		      'function-definition-handler))))))
+	     (make-node (list 'function ',name ,(prepare-bindings parameters) ',arrow 
+						  (if (macrop ,type) ,type ',type) ,@body)
+						  'function-definition-handler))))))
 
 (defnodemacro struct (name &body body)
   `(make-node (list 'struct ',name ,@body) 'struct-definition-handler))
