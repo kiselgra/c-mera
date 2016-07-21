@@ -86,11 +86,15 @@
     ;; Begin new line and add proxy-nodes.
     (defprettymethod :before function-definition
       (make-proxy parameter parameters)
+	  (if (not (slot-value item 'body))
+		(push-info 'function-declaration))
       (format stream "~&~%~a" indent))
 
     ;; Remove temporary proxy-nodes
     (defprettymethod :after function-definition
-      (del-proxy parameter))
+      (del-proxy parameter)
+	  (if (eql (top-info) 'function-declaration)
+		(format stream ";")))
 
     ;; Begin parameter-list.
     ;; Differs from standard core implementation
