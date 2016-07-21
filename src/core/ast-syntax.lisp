@@ -57,7 +57,10 @@
       (eval `(defparameter ,name ',name))
 	  ;; dirty hack to muffle 'undefined variable' warning
 	  ;; TODO find better solution
-	  (if (not (listp type))
+	  (if (listp type)
+	    (loop for i in (rest type) do
+			  (when (not (listp i))
+				(eval `(defvar ,i))))
 		(eval `(defvar ,type)))
       `(let ,lets
 	 (declare (ignore ,@fp-names))
