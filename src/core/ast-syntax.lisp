@@ -57,14 +57,16 @@
       (eval `(defparameter ,name ',name))
 	  ;; dirty hack to muffle 'undefined variable' warning
 	  ;; TODO find better solution
-	  (if (listp type)
-		(eval `(defun ,(car type) ()))
-	    (eval `(defvar ,type)))
+	  (if (not (listp type))
+		(eval `(defvar ,type)))
       `(let ,lets
 	 (declare (ignore ,@fp-names))
 	 (macrolet ,mlets
 	     (make-node (list 'function ',name ,(prepare-bindings parameters) ',arrow 
-						  (if (macrop ,type) ,type ',type) ,@body)
+						  (locally
+							(declare (sb-ext:muffle-conditions sb-kernel::style-warning))
+						  (handler-bind ((sb-kernel::style-warning #'muffle-warning))	
+							(if (macrop ,type) ,type ',type))) ,@body)
 						  'function-definition-handler))))))
 
 (defnodemacro struct (name &body body)
