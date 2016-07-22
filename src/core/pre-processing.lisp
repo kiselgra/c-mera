@@ -20,6 +20,7 @@
 	    (eql item 'cg-user::&key)
 		(eql item 'cg-user::&environment)
 	    (eql item 'cg-user::&body)
+	    (eql item 'cg-user::&environment)
 	    (eql item 'cg-user::&rest))
 	item)
        ((and (> (length (symbol-name item)) 1)

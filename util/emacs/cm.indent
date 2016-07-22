@@ -2,6 +2,12 @@
 (function 4)
 (implement 2)
 (for 1)
+
+(class 2)
+(struct 1)
+(constructor 1)
+(destructor 0)
+
 :keywords (for decl function class continue return sizeof private protected public template instantiate typedef virtual
 	   void int float double long char unsigned signed short auto bool
        inline const volatile
