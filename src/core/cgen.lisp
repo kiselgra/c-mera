@@ -90,7 +90,7 @@
   (stropt :short-name "i" :long-name "in"      :description "Input file name (can also be given as non-option argument).")
   (stropt :short-name "o" :long-name "out"     :description "Output file name (if not specified we print to stdout).")
   (stropt :short-name "D" :long-name "defparameter"
-	  :description "Define given value as parameter. -Dfoo=9 will have the effect of (defparameter *foo* 9).")
+	  :description "Define given value as parameter as string. -Dfoo=9 will have the effect of (defparameter *foo* \"9\").")
   (stropt :short-name "E" :long-name "eval" ; I would really like to *not* have a short option for this, but it seems that clon does not work without a short-option name.
 	  :description "Evaluate the given form before reading the input file.")
   (flag :short-name "g" :long-name "debug"   :description "Add debugging information such as line numbers in the output.")
