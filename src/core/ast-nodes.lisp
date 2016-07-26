@@ -380,7 +380,7 @@
   (make-instance 'typedef
 		 :item (make-node declaration-item 'declaration-item-handler)
 		 :values '()
-		 :subnodes '(typename)))
+		 :subnodes '(item)))
 
 ;;;
 ;;; Special nodes
