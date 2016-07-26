@@ -376,12 +376,11 @@
 		 :subnodes '()))
 
 ;;; typedef
-(defstatement typedef (typedef) (typename aliasname) (tag typename aliasname)
+(defstatement typedef (typedef) (item) (tag declaration-item)
   (make-instance 'typedef
-		 :typename (make-node typename 'declaration-item-handler)
-		 :aliasname (make-node aliasname 'identifier-handler)
+		 :item (make-node declaration-item 'declaration-item-handler)
 		 :values '()
-		 :subnodes '(typename aliasname)))
+		 :subnodes '(typename)))
 
 ;;;
 ;;; Special nodes

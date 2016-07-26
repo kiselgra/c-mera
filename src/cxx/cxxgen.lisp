@@ -163,7 +163,7 @@
 	  (format stream ", ")))))
 
 ;; Override c-type
-;; enables more coples types. e.g. templates
+;; enables more coplex types. e.g. templates
 (defelement c-type () (type) (type)
   (let ((type (cond ((symbolp type) (clear type '(#\& #\*)))
 		    ((listp type) (first (reverse (flatten type))))
@@ -313,18 +313,18 @@
     (format stream ";~%")))
 
 (with-pp
-    (defprettymethod :before from-namespace
-      (push-info 'from-namespace))
+    ;; (defprettymethod :before from-namespace
+    ;;   (push-info 'from-namespace))
     (defprettymethod :self from-namespace
       (if (slot-value item 'namespace)
 	  (format stream "~a::" (slot-value item 'namespace))
-	  (format stream "::")))
-    (defprettymethod :after from-namespace
-      (pop-info)
-      (if (and (not (eql (top-info) 'from-namespace))
-	       (not (eql (top-info) 'using))
-	       (not (eql (top-info) 'cgen::funcall-function)))
-	  (format stream " "))))
+	  (format stream "::"))))
+    ;; (defprettymethod :after from-namespace
+    ;;   (pop-info)
+;; (if (and (not (eql (top-info) 'from-namespace))
+;;       (not (eql (top-info) 'using))
+;;       (not (eql (top-info) 'cgen::funcall-function)))
+;;     (format stream " "))))
     
 (with-pp
   (with-proxynodes (template-parameters)

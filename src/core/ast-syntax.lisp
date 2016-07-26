@@ -152,13 +152,11 @@
 	  `(make-node (list 'comment `,(cg-user::cintern ,comment) ',(cg-user::cintern "//"))))))
 
 (defnodemacro typedef (&rest rest)
-  (let ((typename (if (listp (first (butlast rest)))
-		      (first (butlast rest))
-		      (butlast rest)))
+  (let ((declaration `(,rest))
 	(aliasname (first (last rest))))
     `(progn
        (cg-user::use-variables ,aliasname)
-       (make-node (list 'typedef ',typename ,aliasname))))) 
+       (make-node (list 'typedef ,(second (prepare-bindings declaration)))))))
 
 (defnodemacro - (&rest numbers)
   (if (eql (length numbers) 1)
