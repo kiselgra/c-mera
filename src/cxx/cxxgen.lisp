@@ -226,8 +226,8 @@
 (defstatement using-namespace (using-namespace) (namespace) (tag namespace)
   (make-instance 'using-namespace
 		 :namespace namespace
-		 :values '(namespace)
-		 :subnodes '()))
+		 :values '()
+		 :subnodes '(namespace)))
 
 (defstatement using (using item) (item) (tag item)
   (make-instance 'using
@@ -400,10 +400,10 @@
 
 
 (defnodemacro using (item)
-  `(make-node (list 'using ',item)))
+  `(make-node (list 'using ,(if (listp item) item `',item))))
 
 (defnodemacro using-namespace (item)
-  `(make-node (list 'using-namespace ',item)))
+  `(make-node (list 'using-namespace ,(if (listp item) item `',item))))
 
 (defnodemacro template (template-parameters &body body)
   (let* ((parameter-names (loop for i in template-parameters collect (cgen::get-declaration-name i)))
