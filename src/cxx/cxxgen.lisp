@@ -421,6 +421,16 @@
 (defnodemacro new (&rest object)
   `(make-node (list 'new (make-node ,@object))))
 
+(defnodemacro from-namespace (namespace &rest rest)
+  (let ((namespace-cascade (first (last rest))))
+    (loop for i in (rest (reverse rest)) do
+      (setf namespace-cascade `(make-node (list 'from-namespace ,i ,namespace-cascade))))
+    (setf namespace-cascade `(make-node (list 'from-namespace ,(if namespace
+								   namespace
+								   nil)
+					      ,namespace-cascade)))
+    namespace-cascade))
+
 ;;; Make sure the decl-blocker-traverser handles classes correctly.
 (cgen::decl-blocker-extra-nodes cxx-class)
 
