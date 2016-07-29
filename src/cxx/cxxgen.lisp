@@ -225,13 +225,13 @@
 
 (defstatement using-namespace (using-namespace) (namespace) (tag namespace)
   (make-instance 'using-namespace
-		 :namespace namespace
+		 :namespace (make-node namespace)
 		 :values '()
 		 :subnodes '(namespace)))
 
 (defstatement using (using item) (item) (tag item)
   (make-instance 'using
-		 :item item
+		 :item (make-node item)
 		 :values '()
 		 :subnodes '(item)))
 
