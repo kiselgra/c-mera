@@ -137,12 +137,14 @@
       (if (slot-value item 'proxy-subnode)
 	  (if (eql (top-info) 'for)
 	      (format stream " = ")
-	      (format stream " { "))))
+	      (format stream " { ")))
+      (push-info 'set-value))
 
     (defproxyprint :after value
       (if (slot-value item 'proxy-subnode)
 	  (if (not (eql (top-info) 'for))
-	      (format stream " }"))))))
+	      (format stream " }")))
+      (pop-info))))
 
 ;; Override C-list / vector brackets.
 ;; Does not emmit brackets.
@@ -151,15 +153,21 @@
   (with-proxynodes (list-item)
 
     (defprettymethod :before c-list
+      (if (not (eql (top-info) 'set-value))
+	  (format stream "{"))
       (make-proxy items list-item)
-      (push-info 'skip-first))
+      (push-info 'clist)
+      (push-sign 'skip-first))
 
     (defprettymethod :after c-list
-      (del-proxy items))
+      (del-proxy items)
+      (pop-info) ; remove 'clist
+      (if (not (eql (top-info) 'set-value))
+	  (format stream "}")))
 
     (defproxyprint :before list-item
-      (if (eql (top-info) 'skip-first)
-	  (pop-info)
+      (if (eql (top-sign) 'skip-first)
+	  (pop-sign)
 	  (format stream ", ")))))
 
 ;; Override c-type
