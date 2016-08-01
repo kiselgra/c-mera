@@ -141,10 +141,10 @@
       (push-info 'set-value))
 
     (defproxyprint :after value
+      (pop-info)
       (if (slot-value item 'proxy-subnode)
 	  (if (not (eql (top-info) 'for))
-	      (format stream " }")))
-      (pop-info))))
+	      (format stream " }"))))))
 
 ;; Override C-list / vector brackets.
 ;; Does not emmit brackets.
