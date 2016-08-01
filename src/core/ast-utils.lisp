@@ -44,7 +44,7 @@
 	   (setf (gethash (intern (symbol-name i) :cgen) *qualifier*) t))))
 
 ;;; Standard qualifiers
-(add-qualifier 'struct 'static 'const 'long 'unsigned)
+(add-qualifier 'struct 'static 'const 'long 'unsigned 'extern 'enum 'volatile)
 
 ;;; Defines node class and add to known nodes (*node*).
 (defmacro defnode (name superclass-list slot-list &optional &rest options)
