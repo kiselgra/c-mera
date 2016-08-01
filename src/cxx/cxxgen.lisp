@@ -135,7 +135,8 @@
 
     (defproxyprint :before value
       (if (slot-value item 'proxy-subnode)
-	  (if (eql (top-info) 'for)
+	  (if (or (eql (top-info) 'for)
+		  (eql (top-info) 'cgen::function-declaration))
 	      (format stream " = ")
 	      (format stream " { ")))
       (push-info 'set-value))
@@ -143,7 +144,8 @@
     (defproxyprint :after value
       (pop-info)
       (if (slot-value item 'proxy-subnode)
-	  (if (not (eql (top-info) 'for))
+	  (if (and (not (eql (top-info) 'for))
+		   (not (eql (top-info) 'cgen::function-declaration)))
 	      (format stream " }"))))))
 
 ;; Override C-list / vector brackets.
