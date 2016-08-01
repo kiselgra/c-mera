@@ -392,6 +392,7 @@
 (prepare-handler)
 
 (add-qualifier 'inline)
+(add-qualifier 'virtual)
 
 ;; Declare a C++ class and provide c'tor and d'tor definitions.
 (defnodemacro class (name superclasses &body body)
