@@ -46,31 +46,26 @@
 ;;; thus they can be used directly in the whole cgen-file.
 (defnodemacro function (name parameters -> type &body body)
   (let ((arrow ->)
+	(type (if (listp type) type `(,type)))
 	(parameter-names (loop for i in parameters collect (get-declaration-name i)))
 	(fp-names (remove nil (loop for i in parameters collect (get-declaration-name i :fp t)))))
+    (declare (ignore arrow))
     (let ((lets (loop for i in parameter-names collect `(,i ',i)))
-	  (mlets (loop for i in fp-names collect `(,i (&rest rest) `(funcall ,',i ,@rest)))))
+	  (mlets (loop for i in fp-names collect `(,i (&rest rest) `(funcall ,',i ,@rest))))
+	  (item `((,@type ,name))))
       (eval `(locally
 		 (declare (sb-ext:muffle-conditions sb-kernel:redefinition-warning))
 	       (handler-bind ((sb-kernel:redefinition-warning #'muffle-warning))
 		 (defmacro ,name (&rest body) `(cg-user::funcall ,',name ,@body)))))
       (eval `(defparameter ,name ',name))
-	  ;; dirty hack to muffle 'undefined variable' warning
-	  ;; TODO find better solution
-	  (if (listp type)
-	    (loop for i in (rest type) do
-			  (when (not (listp i))
-				(eval `(defvar ,i))))
-		(eval `(defvar ,type)))
       `(let ,lets
 	 (declare (ignore ,@fp-names))
 	 (macrolet ,mlets
-	     (make-node (list 'function ',name ,(prepare-bindings parameters) ',arrow 
-						  (locally
-							(declare (sb-ext:muffle-conditions sb-kernel::style-warning))
-						  (handler-bind ((sb-kernel::style-warning #'muffle-warning))	
-							(if (macrop ,type) ,type ',type))) ,@body)
-						  'function-definition-handler))))))
+	   (make-node (list 'function
+			    ,(second (prepare-bindings item))
+			    ,(prepare-bindings parameters)
+			    ,@body)
+		      'function-definition-handler))))))
 
 (defnodemacro struct (name &body body)
   `(make-node (list 'struct ',name ,@body) 'struct-definition-handler))

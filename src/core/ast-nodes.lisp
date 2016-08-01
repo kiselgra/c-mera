@@ -53,18 +53,13 @@
 		 :values '(string)
 		 :subnodes '()))
 
-(defelement function-definition (function) (item parameter body) (tag name parameter arrow type &body body)
-  (if (not (equal "->" (symbol-name arrow)))
-      (error "false format for 'function': (function <identifier> <parameter-list> -> <type> <body> expected"))
-  (let ((item (if (listp type)
-		  `(,@type ,name)
-		  `(,type ,name))))
-    (make-instance 'function-definition 
-		   :item (make-node item 'declaration-item-handler)
-		   :parameter (make-node parameter 'parameter-list-handler)
-		   :body (make-node body 'compound-statement-handler)
-		   :values '()
-		   :subnodes '(item parameter body))))
+(defelement function-definition (function) (item parameter body) (tag item parameter &body body)
+  (make-instance 'function-definition 
+		 :item (make-node item 'declaration-item-handler)
+		 :parameter (make-node parameter 'parameter-list-handler)
+		 :body (make-node body 'compound-statement-handler)
+		 :values '()
+		 :subnodes '(item parameter body)))
 
 (defelement parameter-list () (parameters) (&rest parameter-list)
   (make-instance 'parameter-list
