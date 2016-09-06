@@ -179,7 +179,7 @@ Here is a cmdline session:
     $ gcc wc-l.c -o wc-l
 
 	
-## Programming Guilde<a name="ProgGuide">
+## Programming Guide<a name="ProgGuide">
 
 This section describes how some aspects of the system work.
 We only describe what we believe may be noteworthy for either the seasoned Lisp or the seasoned C programmer.
