@@ -1,63 +1,64 @@
-bin_PROGRAMS = cgen glslgen shgen cugen cxxgen oclgen multigen cm
+bin_PROGRAMS = cm cm-c cm-cxx cm-glsl cm-cuda cm-opencl
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-cgen_SOURCES = 	cgen.asd \
-				src/core/cl-loader.lisp \
-				src/core/utils.lisp \
-				src/core/ast-utils.lisp \
-				src/core/ast-nodes.lisp \
-				src/core/ast-syntax.lisp \
-				src/core/ast-traverser.lisp \
-				src/core/ast-pretty.lisp \
-				src/core/pre-processing.lisp \
-				src/core/cgen.lisp \
-				src/usr/cgu-base.lisp
+cm_c_SOURCES = c-mera.asd \
+			   src/c-mera/cmd.lisp \
+			   src/c-mera/utils.lisp \
+			   src/c-mera/nodes.lisp \
+			   src/c-mera/traverser.lisp \
+			   src/c-mera/pretty.lisp \
+			   src/c-mera/c-mera.lisp \
+			   src/c/utils.lisp \
+			   src/c/nodes.lisp \
+			   src/c/traverser.lisp \
+			   src/c/pretty.lisp \
+			   src/c/syntax.lisp \
+			   src/c/reader.lisp \
+			   src/c/cm-c.lisp \
+			   src/c/cmu-c.lisp
 
-glslgen_SOURCES = src/glsl/glslgen.lisp src/glsl/gl-symbols.lisp
+cm_cxx_SOURCES = src/cxx/nodes.lisp \
+				 src/cxx/traverser.lisp \
+				 src/cxx/syntax.lisp \
+				 src/cxx/pretty.lisp \
+				 src/cxx/reader.lisp \
+				 src/cxx/cm-cxx.lisp
 
-shgen_SOURCES = src/shader/shgen.lisp
+cm_glsl_SOURCES = src/glsl/nodes.lisp \
+				  src/glsl/syntax.lisp \
+				  src/glsl/pretty.lisp \
+				  src/glsl/cm-glsl.lisp
 
-cugen_SOURCES = src/cuda/cugen.lisp
+cm_cuda_SOURCES = src/cuda/nodes.lisp \
+				  src/cuda/syntax.lisp \
+				  src/cuda/pretty.lisp \
+				  src/cuda/cm-cuda.lisp
 
-cxxgen_SOURCES = src/cxx/cxxgen.lisp
-
-oclgen_SOURCES = src/ocl/oclgen.lisp
-
-multigen_SOURCES = src/cxx/cxxgen.lisp
+cm_opencl_SOURCES = src/opencl/nodes.lisp \
+					src/opencl/syntax.lisp \
+					src/opencl/pretty.lisp \
+					src/opencl/cm-opencl.lisp
 
 cm_SOURCES = src/front/cm.c
 cm_CFLAGS = -DBINDIR=\"$(bindir)\"
 
-cgen$(EXEEXT): $(cgen_SOURCES)
-	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-cgen.lisp
+cm-c$(EXEEXT): $(cm_c_SOURCES)
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ @LISP_LOAD_ARG@ util/build/dump-c.lisp
 
-glslgen$(EXEEXT) : $(cgen_SOURCES) $(glslgen_SOURCES)
-	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-glslgen.lisp
+cm-glsl$(EXEEXT) : $(cm_c_SOURCES) $(cm_glsl_SOURCES)
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ @LISP_LOAD_ARG@ util/build/dump-glsl.lisp
 
-shgen$(EXEEXT): $(cgen_SOURCES) $(glslgen_SOURCES) $(shgen_SOURCES)
-	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-shgen.lisp
+cm-cxx$(EXEEXT): $(cm_c_SOURCES) $(cm_cxx_SOURCES)
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ @LISP_LOAD_ARG@ util/build/dump-cxx.lisp
 
-cxxgen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES)
-	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-cxxgen.lisp
+cm-cuda$(EXEEXT): $(cm_c_SOURCES) $(cm_cxx_SOURCES) $(cm_cuda_SOURCES)
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ @LISP_LOAD_ARG@ util/build/dump-cuda.lisp
 
-cugen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES) $(cugen_SOURCES)
-	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-cugen.lisp
+cm-opencl$(EXEEXT): $(cm_c_SOURCES) $(cm_cxx_SOURCES) $(cm_opencl_SOURCES)
+	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ @LISP_LOAD_ARG@ util/build/dump-opencl.lisp
 
-oclgen$(EXEEXT): $(cgen_SOURCES) $(cxxgen_SOURCES) $(oclgen_SOURCES)
-	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-oclgen.lisp
-
-multigen$(EXEEXT): $(cgen_SOURCES) $(glslgen_SOURCES) $(cugen_SOURCES) $(cxxgen_SOURCES)
-	@LISP_PROG@ @DYNAMIC_SPACE_SPEC@ --script util/build/dump-multi.lisp
-
-src/glsl/gl-types.lisp: src/glsl/gl.xml
-	@xmlstarlet sel -t  -m '//type/name' -v . -n $< > src/glsl/gl.types
-
-src/glsl/gl-symbols.lisp: src/glsl/gl.xml
-	@bash util/build/generate-gl-enum-list.sh "$<" > $@
-
-EXTRA_DIST = util/build/dump-cgen.lisp   util/build/dump-glslgen.lisp util/build/dump-shgen.lisp \
-			 util/build/dump-cxxgen.lisp util/build/dump-cugen.lisp   util/build/dump-oclgen.lisp \
-			 util/build/dump-multi.lisp \
-			 src/glsl/gl.xml src/glsl/gl-symbols.lisp util/build/generate-gl-enum-list.sh
+EXTRA_DIST = util/build/dump-c.lisp   util/build/dump-glsl.lisp \
+			 util/build/dump-cxx.lisp util/build/dump-cuda.lisp \
+			 util/build/dump-opencl.lisp
 

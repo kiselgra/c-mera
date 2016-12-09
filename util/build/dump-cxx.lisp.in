@@ -1,0 +1,11 @@
+;; @configure_input@
+(require :asdf)
+(let ((asdf:*central-registry* (cons #P"@abs_top_srcdir@/" asdf:*central-registry*)))
+  (require :c-mera)
+  (require :cm-c)
+  (require :cmu-c)
+  (require :cm-c++)
+  (require :cmu-c++)
+  (require :cms-c++))
+(cm-c++::save "cm-cxx")
+(quit)

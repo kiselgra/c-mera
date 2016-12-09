@@ -21,13 +21,14 @@ int main(int argc, char **argv)
 	}
 	
 	len = strlen(argv[1]);
-	if      (strncmp(argv[1], "c",    len) == 0)   gen = "cgen";
-	else if (strncmp(argv[1], "c++",  len) == 0)   gen = "cxxgen";
-	else if (strncmp(argv[1], "cxx",  len) == 0)   gen = "cxxgen";
-	else if (strncmp(argv[1], "glsl", len) == 0)   gen = "glslgen";
-	else if (strncmp(argv[1], "ocl",  len) == 0)   gen = "oclgen";
-	else if (strncmp(argv[1], "cuda", len) == 0)   gen = "cugen";
-	else { gen = "cgen"; help = true; }
+	if      (strncmp(argv[1], "c",      len) == 0) gen = "cm-c";
+	else if (strncmp(argv[1], "c++",    len) == 0) gen = "cm-cxx";
+	else if (strncmp(argv[1], "cxx",    len) == 0) gen = "cm-cxx";
+	else if (strncmp(argv[1], "glsl",   len) == 0) gen = "cm-glsl";
+	else if (strncmp(argv[1], "ocl",    len) == 0) gen = "cm-opgencl";
+	else if (strncmp(argv[1], "opencl", len) == 0) gen = "cm-opencl";
+	else if (strncmp(argv[1], "cuda",   len) == 0) gen = "cm-cuda";
+	else { gen = "cm-c"; help = true; }
 	
 	int n = asprintf(&prog, "%s/%s", BINDIR, gen);
 	if (n <= 0) {
