@@ -4,17 +4,20 @@ all: message clean c-tests cxx-tests count clean-post
 
 
 message:
-	@echo "\nRunning C-Mera tests"
+	@echo
+	@echo "Running C-Mera tests"
 
 ### c tests
 ### all tests start with c. and end with .lisp
 
 .PHONY: c-tests-pre
 c-tests-pre:
-	@echo "\nFor C"
-c-tests: c-tests-pre
+	@echo
+	@echo "For C"
+c-test-files = $(shell ls c.for.*.lisp)
+c-test-results = $(c-test-files:%.lisp=%.ok)
+c-tests: c-tests-pre $(c-test-results)
 # ...
-c-test-files = 
 
 
 
@@ -23,14 +26,15 @@ c-test-files =
 
 .PHONY: cxx-tests-pre ns-tests-pre
 
-ns-test-files = $(wildcard cxx.namespace.*.lisp)
+ns-test-files = $(shell ls cxx.namespace.*.lisp)
 ns-results = $(ns-test-files:%.lisp=%.ok)
 ns-tests-pre:
 	@echo "- Namespaces:"
 ns-tests: ns-tests-pre $(ns-results)
 
 cxx-tests-pre:
-	@echo "\nFor C++"
+	@echo
+	@echo "For C++"
 cxx-tests: cxx-tests-pre ns-tests
 
 cxx-test-files = $(ns-test-files)
@@ -43,10 +47,19 @@ cxx-test-files = $(ns-test-files)
 all-test-files = $(c-test-files) $(cxx-test-files)
 
 
+### c
+
+c.%.c: c.%.lisp
+	@cm c $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
+
+c.%.run: c.%.c
+	@gcc -std=c99 $< -o $@
+
+
 ### c++
 
 cxx.%.cpp: cxx.%.lisp
-	@cm c++ $< -o $@ 2>/dev/null || ( echo '#include <stdio.h>\nint main() { printf("cm compile error"); return 0; }' > $@; chmod +x $@ )
+	@cm c++ $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
 
 cxx.%.run: cxx.%.cpp
 	@g++ -std=c++11 $< -o $@
