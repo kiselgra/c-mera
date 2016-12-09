@@ -44,8 +44,9 @@
  (:postfix "inputfile")
  (text :contents "A source-to-source compiler.")
  (flag :short-name "h" :long-name "help"    :description "Print this help and exit.")
- (stropt :short-name "i" :long-name "in"      :description "Input file name (can also be given as non-option argument).")
- (stropt :short-name "o" :long-name "out"     :description "Output file name (if not specified we print to stdout).")
+ (flag :short-name "V" :long-name "version" :description "Print c-mera version and exit.")
+ (stropt :short-name "i" :long-name "in"    :description "Input file name (can also be given as non-option argument).")
+ (stropt :short-name "o" :long-name "out"   :description "Output file name (if not specified we print to stdout).")
  (stropt :short-name "D" :long-name "defparameter"
 	 :description "Define given value as parameter as string. -Dfoo=9 will have the effect of (defparameter *foo* \"9\").")
  (stropt :short-name "E" :long-name "eval" ; I would really like to *not* have a short option for this, but it seems that clon does not work without a short-option name.
@@ -104,6 +105,9 @@
 	   (net.didierverna.clon:do-cmdline-options (option name value source)
 	     (cond ((s= name "h" "help")
 		    (net.didierverna.clon:help)
+		    (return-from break-parse (values nil nil nil)))
+		   ((s= name "V" "version")
+		    (print-version)
 		    (return-from break-parse (values nil nil nil)))
 		   ((s= name "D" "defparameter")
 		    (add-cmdline-definition value))

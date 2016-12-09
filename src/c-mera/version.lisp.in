@@ -1,0 +1,4 @@
+(defparameter *version* (list @VER_MAJ@ @VER_MIN@ @VER_PAT@))
+
+(defun print-version ()
+  (format t "~a.~a.~a~%" (first *version*) (second *version*) (third *version*)))

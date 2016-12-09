@@ -433,7 +433,8 @@
   :name "c-mera"
   :version "0.0.2"
   :serial t
-  :components ((:file "src/c-mera/cmd")
+  :components ((:file "src/c-mera/version")
+	       (:file "src/c-mera/cmd")
 	       (:file "src/c-mera/nodes")
 	       (:file "src/c-mera/utils")
 	       (:file "src/c-mera/traverser")

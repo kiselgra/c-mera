@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.61)
-AC_INIT([c-mera], [0.0.1])
+AC_INIT([c-mera], [1.0.0])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -8,6 +8,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([c-mera.asd])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES(Makefile
+				src/c-mera/version.lisp
 				util/build/dump-c.lisp    util/build/dump-cuda.lisp util/build/dump-cxx.lisp
 				util/build/dump-glsl.lisp util/build/dump-opencl.lisp)
 
@@ -41,6 +42,12 @@ fi
 AC_SUBST([LISP_PROG])
 AC_SUBST([LISP_LOAD_ARG])
 
+VER_MAJ=`echo $VERSION|sed -e 's/\(.\+\)\.\(.\+\)\.\(.\+\)/\1/'`
+VER_MIN=`echo $VERSION|sed -e 's/\(.\+\)\.\(.\+\)\.\(.\+\)/\2/'`
+VER_PAT=`echo $VERSION|sed -e 's/\(.\+\)\.\(.\+\)\.\(.\+\)/\3/'`
+AC_SUBST([VER_MAJ])
+AC_SUBST([VER_MIN])
+AC_SUBST([VER_PAT])
 
 ##
 ## provide a means to compile programs with larger memory areas.

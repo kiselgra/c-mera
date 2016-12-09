@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 	char *prog = NULL;
 	char *gen = NULL;
 	int len = 0;
-	bool help = false;
+	bool help = false, version=false;
 	
 	if (argc == 1) {
 		printf("C-Mera generator selection frontend.\n"
@@ -28,6 +28,8 @@ int main(int argc, char **argv)
 	else if (strncmp(argv[1], "ocl",    len) == 0) gen = "cm-opgencl";
 	else if (strncmp(argv[1], "opencl", len) == 0) gen = "cm-opencl";
 	else if (strncmp(argv[1], "cuda",   len) == 0) gen = "cm-cuda";
+	else if (strncmp(argv[1], "--version", len) == 0) { gen = "cm-c"; version = true; }
+	else if (strncmp(argv[1], "-V", len) == 0) { gen = "cm-c"; version = true; }
 	else { gen = "cm-c"; help = true; }
 	
 	int n = asprintf(&prog, "%s/%s", BINDIR, gen);
@@ -38,6 +40,8 @@ int main(int argc, char **argv)
 	
 	if (help)
 		execl(prog, "cm <generator>", "--help", NULL);
+	else if (version)
+		execl(prog, "cm <generator>", "--version", NULL);
 	else {
 		argv[1] = gen;
 		execv(prog, argv+1);
