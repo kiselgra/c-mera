@@ -15,8 +15,8 @@ and the different versions based on C-Mera's core illustrate that this is a simp
 	1. [Programming Guide](#ProgGuide)
 
 ## C-Mera<a name="Overview">
-The C-Mera system is a very simple compiler that
-transforms a notation based on S-Expressions (sexp)
+The C-Mera system is a set of very simple compilers that
+transform a notation based on S-Expressions (sexp)
 for C-like languages to the native syntax of that language,
 e.g. from sexp-C to C, and from sexp-CUDA to CUDA. The
 semantics of the sexp-based notation is identical to that of
@@ -25,14 +25,19 @@ is introduced.
 
 There are a number of different code generators available, all based on C-Mera with a few syntactic extensions.
 
-- **cgen** is the default C code generator
-- **cxxgen** is an extension supporting a subset of C++
-- **cugen** is an extension of cxxgen featuring kernel definition and call syntax
-- **glslgen** is an extension of cgen that can generate opengl shader code
-- **shadergen** extends glslgen such that it produces output suitable for the cgl rendering framework
-- **multigen** is the combination of all of the above, the blunt axe of the generator family, so to say.
+- **cm-c** is the default C code generator
+- **cm-cxx** is an extension supporting a subset of C++
+- **cm-cuda** is an extension featuring cuda kernel definition and call syntax
+- **cm-glsl** is an extension of cgen that can generate opengl shader code
+- **cm-ocl** (or **cm-opencl**) is an extension that can generate opencl code (currently not actively maintained and tested, though)
 
-The code for cgen is found in src/{core,usr} and is rather comprehensive while the
+The recommended way to select a generator is by using the front-end program **cm**:
+
+	$ cm c ...
+	$ cm c++ ...
+	$ ...
+
+The code for C-Mera and the C-backend is found in src/{c-mera,c,usr} and is rather comprehensive while the
 other generators (each in their own subdirectory) are quite concise. Browse the
 files of the derived generators to see how far the respective language support
 has grown.
@@ -46,23 +51,31 @@ is provided under the conditions of the GNU GPL version 3 or later, see the file
 To generate a C source file choose the appropriate generator and simply add the input 
 and output file:
 
-    $ cgen input.lisp -o test.c
-    $ cxxgen input.lisp -o test.cpp
+    $ cm c input.lisp -o test.c
+    $ cm c++ input.lisp -o test.cpp
 
 For more details see [Compilation Process](#compilation)
+
+Please note that as, implied above, the system primarily implements a simple transformation and thus does not rewrite lisp code to, for example, either C or C++, but compiles C code written in Sexps to plain C, and C++ code written in Sexps to plain C++.
+
+However, the system can be leveraged to provide very high level programming paradigms by the use of Common Lisp macros, see [our papers](#papers).
 
 ### Build Instructions<a name="BuildInstructions">
 
 We require SBCL at the moment, sorry.
 
-- Install SBCL
+- Install SBCL or CCL
 - Install Quicklisp (See the example [there](https://www.quicklisp.org/))
 - Build C-Mera
-	- autoreconf -if  (when building from a fresh repo)
-	- ./configure
-	- make
-	- make install
+	- `autoreconf -if`  (when building from a fresh repo)
+	- `./configure --with-sbcl` (or `--with-ccl`)
+	- `make`
+	- `make install`
 
+#### CCL Support
+
+Using CCL C-Mera is much, much faster, but in certain situations the CCL condition handling hangs our system.
+We expect this to be fixed in the near future.
 
 ### Emacs Integration<a name="EmacsIntegration">
 The easiest way to configure your Lisp to load C-Mera is by adding it to quicklisp, as follows
@@ -73,6 +86,7 @@ The easiest way to configure your Lisp to load C-Mera is by adding it to quickli
 With this setup  it is possible to use Slime for the development process. 
 The relevant C-Mera modules can be loaded by
 
+	FIXME
 	(asdf:load-system :cgen)     ; or :cxxgen, etc.
 	(in-package :cg-user)        ; cl-user equivalent with c-mera environment
 	(switch-reader)              ; optional for prototyping
@@ -96,8 +110,14 @@ To load it automatically you can add a mode specification to the top of your fil
 
 You can extend the indentation and keyword information by having an additional file called `cm.indent` along your source files, see the provided `cm.indent` for the layout.
 
+### Publications<a name="papers">
+- C-Mera was introduced as "cgen" at ELS'14: [*Defmacro for C: Lightweight, Ad Hoc Code Generation*](http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/)
+- We showed how advanced programming paradigms can be implemented on top of it (in this case, Feature Oriented Programming) at GPCE'15: [*Lightweight, Generative Variant Exploration for High-Performance Graphics Applications*](http://dl.acm.org/citation.cfm?id=2814220)
+- At ELS'16 we showcased its proformance for implementing comptetitive DSLs: [*A High-Performance Image Processing DSL for Heterogeneous Architectures*](http://dl.acm.org/citation.cfm?id=3005734)
+- as well as for exploring implementation variants: [*A Case Study in Implementation-Space Exploration*](http://dl.acm.org/citation.cfm?id=3005739)
+
 ### Examples<a name="Examples">
-In the following we show a few examples of how to use cgen.
+In the following we show a few examples of how to use C-Mera.
 Note that we give also give it thorough treatment in [our ELS paper](http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/).
 
 #### Implementation of `strcmp(3)`
@@ -105,7 +125,7 @@ This example illustrates the basic function definition syntax.  It's a
 straightforward transcription of the example in the K&R book.
     
 	(function strcmp ((char *p) (char *q)) -> int
-      (decl ((int i 0))
+      (decl ((int i = 0))
         (for (() (== p[i] q[i]) i++)
           (if (== p[i] #\null)
               (return 0)))
@@ -115,8 +135,9 @@ straightforward transcription of the example in the K&R book.
 Here we add arrays to the mix.
 It, too, is a straightforward transcription of the example in the K&R book.
 
+	FIXME
     (function strcat ((char p[]) (char q[])) -> void
-      (decl ((int i 0) (int j 0))
+      (decl ((int i = 0) (int j = 0))
         (while (!= p[i] #\null)
           i++)
         (while (!= (set p[i++] q[j++]) #\null))))
@@ -127,17 +148,16 @@ This example shows a main function
 There is also `use-functions` to declare externally defined functions.
 These forms are required as the underlying lisp implementation checks if the symbols used are actually defined.
 
-    (use-variables EOF)
-    
+	FIXME
     (include <stdio.h>)
     
     (function main () -> int
       (decl ((int c)
-             (int nl 0))
+             (int nl = 0))
         (while (!= (set c (funcall getchar)) EOF)
           (if (== c #\newline)
               ++nl))
-        (printf "%d\n" nl)
+        (printf "%d\\n" nl)
         (return 0)))
 
 #### Implementation of Shellsort
@@ -145,9 +165,9 @@ Lots of loops:
 
     (function shellsort ((int *v) (int n)) -> void
       (decl ((int temp))
-        (for ((int gap (/ n 2)) (> gap 0) (/= gap 2))
-          (for ((int i gap) (< i n) i++)
-            (for ((int j (- i gap)) (&& (>= j 0) (> v[j] (aref v (+ j gap)))) (-= j gap))
+        (for ((int gap = (/ n 2)) (> gap 0) (/= gap 2))
+          (for ((int i = gap) (< i n) i++)
+            (for ((int j = (- i gap)) (&& (>= j 0) (> v[j] (aref v (+ j gap)))) (-= j gap))
               (set temp v[j]
                    v[j] (aref v (+ j gap))
                    (aref v (+ j gap)) temp))))))
@@ -158,25 +178,23 @@ Here is a cmdline session:
 
     $ ls
     wc-l.lisp
-    $ cgen wc-l.lisp
-    using variables: EOF, 
+    $ cm c wc-l.lisp
     #include <stdio.h>
+
     int main(void)
     {
             int c;
             int nl = 0;
-            while (
-            c = getchar(); != EOF) {
+            while ((c = getchar()) != EOF) {
                     if (c == '\n') 
                             ++nl;
             }
             printf("%d\n", nl);
     }
-    $ cgen wc-l.lisp -o wc-l.c
-    using variables: EOF, 
+    $ cm c wc-l.lisp -o wc-l.c
     $ ls
     wc-l.c wc-l.lisp
-    $ gcc wc-l.c -o wc-l
+    $ gcc -std=c99 wc-l.c -o wc-l
 
 	
 ## Programming Guide<a name="ProgGuide">
@@ -185,30 +203,45 @@ This section describes how some aspects of the system work.
 We only describe what we believe may be noteworthy for either the seasoned Lisp or the seasoned C programmer.
 This part will be in motion as we add information that some of our users would have liked to have :)
 
+### Changes from c-mera-2015
+For the old version see its branch. Here we only shortly list the major differences.
+
+- `decl` and `for` forms now require the use of `=` to distinguish the declarator from the initializer. Earlier we had elaborate guesses in place that worked most of the time, but not every time.
+- For C++ you can also use `(decl ((int v[] { 1 2 3 })) ...)` instead of `(decl ((int v[] = (clist 1 2 3))) ...)`.
+	This change is required to be able to distinguish between regular initialization and initializer lists. The differences is easily illustrated by printing the values of the follwing vectors:
+
+	```
+	(typedef (instantiate #:std:vector (int)) T)
+	(decl ((T vec1 = (T 10 20))
+	       (T vec2 { 10 20 })))
+	```
+
+- You almost never have to use `use-variables` and `use-functions` anymore.
+
 ### Simple Syntax
 
 #### Conditionals
 
-```if``` statements have exactly one or two subforms. The second one is optional, and if present, represents the ```else``` part. The following examples is thus not correct:
+`if` statements have exactly two or three subforms. The thrid one is optional, and if present, represents the `else` part. The following examples is thus not correct:
 
 	(if (!= a 0)
 	    (printf "all is safe")
 	    (return (/ b a)))
 
-You can use ```progn``` to group multiple sub-forms
+You can use `progn` to group multiple sub-forms
 
 	(if (!= a 0)
 	    (progn
 	      (printf "all is safe")
 	      (return (/ b a))))
 
-or, equivalently, ```when```
+or, equivalently, `when`
 
 	(when (!= a 0)
 	   (printf "all is safe")
 	   (return (/ b a)))
 
-which expands to the previous form using ```progn```, which, in turn, expands to:
+which expands to the previous form using `progn`, which, in turn, expands to:
 
 	if (a != 0) {
 	    ...
@@ -221,24 +254,24 @@ In contrast, the first example expands to
 	else
 	    return ...;
 
-We also support ```cond```.
+We also support `cond`.
 
 ##### Open Issues
-We currently don't have ```unless```.
+We currently don't have `unless`.
 
 
 #### Loops
 A for loop is written with the loop-head grouped:
 
-	(for ((int i 0) (< i n) (+= i 1))
+	(for ((int i = 0) (< i n) (+= i 1))
 	  ...)
 
 Note that C-Mera supports C-like increments and decrements for simple expressions:
 
-	(for ((int i 0) (< i n) ++i)
+	(for ((int i = 0) (< i n) ++i)
 	  ...)
 
-```while''' is straighforward
+`while` is straighforward
 
 	(while (< a b)
 	   ...
@@ -251,14 +284,20 @@ Note that C-Mera supports C-like increments and decrements for simple expression
 #### Declarations
 A set of declarations is introduced with
 
-	(decl ((T name [init])
+	(decl ((T name [= init])
+	       ...)
+	  ...)
+
+	or 
+
+	(decl ((T name [{ init }])
 	       ...)
 	  ...)
 
 the initializer is optional and C-Mera collects as many symbols to be part of the type as possible,
 e.g.
 
-	(decl ((const unsigned long int x 0)) ...)
+	(decl ((const unsigned long int x = 0)) ...)
 
 is correctly identified. This is enabled by having a list of valid 'qualifiers' that can add to a type.
 Type names do not have to be introduced and thus the syntax for one decl-item is
@@ -273,20 +312,11 @@ e.g.
 
 	(add-qualifier __kernel __global)
 
-to introduce a number of them.
+to introduce a number of them. FIXME: is this still the case?
 
-As mentioned above, typenames are not checked. However, variables have to be declared before they are used, as in
+As mentioned above, typenames are not checked.
 
-	(decl ((int a 0)
-	       (int b 0))
-	  (return (+ a b)))
-
-If you want to use global variables or functions you can make them know by
-
-	(use-variables ...)
-	(use-functions ...)
-
-In declarations (such as ```decl```, in function parameters and ```(sizeof ...)```) the type does not have to
+In declarations (such as `decl`, in function parameters and `(sizeof ...)`) the type does not have to
 	be enclosed in parens (and must not be). There are places, however, 
 	where for the sake of simplicity type names must be grouped, as e.g. in function return values:
 
@@ -303,12 +333,12 @@ are both recognized.
 
 ### Namespace (Lisp vs C-Mera)
 Some C-Mera symbols are also defined in Common Lisp.
-Initially C-Mera starts out in the ```cg-user``` (code generator user package) which imports
-	all ```cl``` symbols that do not conflicts to provide metaprogramming as seamlessly as possible.
+Initially C-Mera starts out in the `cg-user` (code generator user package) which imports
+	all `cl` symbols that do not conflicts to provide metaprogramming as seamlessly as possible.
 
-Especially with symbols like ```if``` etc care has to be taken to use the right one.
-This can be done by explicitly naming the symbol ```cl:if```, but to define lisp functions
-or lisp-heavy parts of the meta code it is often more convenient to use the ```lisp``` form, such as
+Especially with symbols like `if` etc care has to be taken to use the right one.
+This can be done by explicitly naming the symbol `cl:if`, but to define lisp functions
+or lisp-heavy parts of the meta code it is often more convenient to use the `lisp` form, such as
 in the example from our ELS presentation:
 
 	(defmacro match (expression &rest clauses)
@@ -327,9 +357,9 @@ in the example from our ELS presentation:
 	            (int reg_err))
 	       (match-int ,expression ,@clauses))))
 
-Here we define a recursively expanding macrolet, ```match-int```, that inserts conditional clauses (as in ```(if (regexec ....))``` and also checks to terminate the iteration (with ```,(lisp (if ...))```).
+Here we define a recursively expanding macrolet, `match-int`, that inserts conditional clauses (as in `(if (regexec ....))` and also checks to terminate the iteration (with `,(lisp (if ...))`).
 
-For convenience we provide a sibling to ```defmacro```, ```deflmacro```, which starts out in the Lisp namespace.
+For convenience we provide a sibling to `defmacro`, `deflmacro`, which starts out in the Lisp namespace.
 
 
 ### Codestrings
