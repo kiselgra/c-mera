@@ -14,7 +14,7 @@ message:
 c-tests-pre:
 	@echo
 	@echo "For C"
-c-test-files = $(shell ls c.for.*.lisp)
+c-test-files = $(shell ls c.decl.*.lisp c.for.*.lisp c.while.*.lisp c.when.*.lisp c.misc.*.lisp)
 c-test-results = $(c-test-files:%.lisp=%.ok)
 c-tests: c-tests-pre $(c-test-results)
 # ...
@@ -24,20 +24,32 @@ c-tests: c-tests-pre $(c-test-results)
 ### c++ tests
 ### all tests start with cxx. and end with .lisp
 
-.PHONY: cxx-tests-pre ns-tests-pre
+.PHONY: cxx-tests-pre cxx-ns-tests-pre cxx-misc-tests-pre cxx-decl-tests-pre
 
-ns-test-files = $(shell ls cxx.namespace.*.lisp)
-ns-results = $(ns-test-files:%.lisp=%.ok)
-ns-tests-pre:
+cxx-ns-test-files = $(shell ls cxx.namespace.*.lisp)
+cxx-ns-results = $(cxx-ns-test-files:%.lisp=%.ok)
+cxx-ns-tests-pre:
 	@echo "- Namespaces:"
-ns-tests: ns-tests-pre $(ns-results)
+cxx-ns-tests: cxx-ns-tests-pre $(cxx-ns-results)
+
+cxx-decl-test-files = $(shell ls cxx.decl.*.lisp)
+cxx-decl-results = $(cxx-decl-test-files:%.lisp=%.ok)
+cxx-decl-tests-pre:
+	@echo "- Declarations:"
+cxx-decl-tests: cxx-decl-tests-pre $(cxx-decl-results)
+
+cxx-misc-test-files = $(shell ls cxx.stmt-expr.*.lisp)
+cxx-misc-results = $(cxx-misc-test-files:%.lisp=%.ok)
+cxx-misc-tests-pre:
+	@echo "- Misc:"
+cxx-misc-tests: cxx-misc-tests-pre $(cxx-misc-results)
 
 cxx-tests-pre:
 	@echo
 	@echo "For C++"
-cxx-tests: cxx-tests-pre ns-tests
+cxx-tests: cxx-tests-pre cxx-decl-tests cxx-ns-tests cxx-misc-tests
 
-cxx-test-files = $(ns-test-files)
+cxx-test-files = $(cxx-ns-test-files) $(cxx-decl-test-files) $(cxx-misc-test-files)
 
 
 
@@ -53,7 +65,7 @@ c.%.c: c.%.lisp
 	@cm c $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
 
 c.%.run: c.%.c
-	@gcc -std=c99 $< -o $@
+	@gcc -std=c99 $< -o $@ 2> $(basename $<).clog || (echo 'echo "<compile failure>"' > $@; chmod +x $@)
 
 
 ### c++
@@ -62,7 +74,7 @@ cxx.%.cpp: cxx.%.lisp
 	@cm c++ $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
 
 cxx.%.run: cxx.%.cpp
-	@g++ -std=c++11 $< -o $@
+	@g++ -std=c++11 $< -o $@ 2> $(basename $<).clog || (echo 'echo "<compile failure>"' > $@; chmod +x $@)
 
 ### run & compare
 
@@ -89,6 +101,7 @@ clean_files = $(all-test-files:%.lisp=%.exp) \
               $(all-test-files:%.lisp=%.ok) \
               $(all-test-files:%.lisp=%.c) \
               $(all-test-files:%.lisp=%.cpp) \
+              $(all-test-files:%.lisp=%.clog) \
               $(all-test-files:%.lisp=.%.fail)
 
 clean:
