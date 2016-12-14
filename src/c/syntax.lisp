@@ -165,13 +165,11 @@
     ;(make-node ,(if prefix `,prefix '\/\/))
     ;(make-node ,comment)))
 
-(defmacro decompose-declaration (item)
-  "Decompose declaration item"
-  ;; check if initialization is present
+(defun decompose-declaration (item)
+  "Decompose declaration item into its SPECIFIERS, TYPE, NAME and INITIALIZER"
   (if (let ((symbol (first (last (butlast item)))))
 	(and (symbolp symbol)
 	     (equal (symbol-name symbol) "=")))
-
 
       ;; decompose arg list with init
       (let ((specifier (butlast item 4))
@@ -179,42 +177,36 @@
 	(let ((type (first type+id+val))
 	      (id   (second type+id+val))
 	      (init (fourth type+id+val)))
-	  ;; make declaration node
-	  `(declaration-item
-	    ;; set specifiers
-	    ,(when specifier
-	       `(specifier
-		 (make-nodelist ,specifier)))
-	    ;; set type
-	    (type (make-node ,type))
-	    ;; set identifier
-	    (make-node ,id)
-	    ;; set value
-	    (declaration-value
-	      (make-node ,init)))))
-      
+	  (values specifier type id init)))
+
       ;; decompose arg list without init
       (let ((specifier (butlast item 2))
 	    (type+id (last item 2)))
 	(let ((type (first type+id))
 	      (id   (second type+id)))
-	  ;; make declaration node
-	  `(declaration-item
-	    ;; set specifiers
-	    ,(when specifier
-	       `(specifier
-		 (make-nodelist ,specifier)))
-	    ;; set type
-	    (type (make-node ,type))
-	    ;; set identifier
-	    ,(when id
-	       `(make-node ,id))
-	    ;; no initialization present
-	    nil)))))
+	  (values specifier type id nil)))))
 
+(defmacro make-declaration-node (item)
+  "Decompose declaration item and instantiate nodes"
+  (multiple-value-bind (specifier type id init) (decompose-declaration item)
+    `(declaration-item
+      ;; set specifiers
+      ,(when specifier
+	     `(specifier
+	       (make-nodelist ,specifier)))
+      ;; set type
+      (type (make-node ,type))
+      ;; set identifier
+      (make-node ,id)
+      ;; set value
+      ,(if init 
+	   `(declaration-value
+	     (make-node ,init))
+	   nil))))
+ 
 (defmacro decompose-type (item)
   "Decompose type like declaration but without name"
-  `(decompose-declaration (,@item nil)))
+  `(make-declaration-node (,@item nil)))
 
 (defmacro decompose-enum (item)
   "Decompose enum like declaration but without type"
@@ -237,7 +229,7 @@
     t
     ;; make single declarations/bindings
     (make-nodelist
-     ,bindings :prepend decompose-declaration)
+     ,bindings :prepend make-declaration-node)
     ;; make listnode with body
     ,(when body
 	 ;; make single expression statements
@@ -253,14 +245,14 @@
 	 (let ((first (first type)))
 	   (if (and (not (listp first)) (fboundp! first env))
 	       ;; type is macro or function
-	       `(decompose-declaration (,type ,name))
+	       `(make-declaration-node (,type ,name))
 	       ;; type is list with type information
-	       `(decompose-declaration (,@type ,name))))
+	       `(make-declaration-node (,@type ,name))))
 	 ;; type is single symbol
-	 `(decompose-declaration (,type ,name)))
+	 `(make-declaration-node (,type ,name)))
     ;; parameter list
     (parameter-list
-     (make-nodelist ,parameters :prepend decompose-declaration))
+     (make-nodelist ,parameters :prepend make-declaration-node))
     ;; body
     ,(when body
        `(make-block ,body))))
@@ -272,7 +264,7 @@
     (make-node ,name)
     ;; function pointer parameters
     (parameter-list
-     (make-nodelist ,parameters :prepend decompose-declaration))))
+     (make-nodelist ,parameters :prepend make-declaration-node))))
 
 (c-syntax for (init &body body)
   "The c for loop"
@@ -280,7 +272,7 @@
     ;; check if initialization present
     ,(when (first init)
 	 ;; set init
-	 `(decompose-declaration ,(first init)))
+	 `(make-declaration-node ,(first init)))
     ;; test 
     (make-node ,(second init))
     ;; step
@@ -319,7 +311,7 @@
   "Typedef for c types"
   `(typedef
     ;; decompose type + alias
-    (decompose-declaration ,rest)))
+    (make-declaration-node ,rest)))
 
 (c-syntax cast (&rest rest)
   "Cast type"

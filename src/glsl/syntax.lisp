@@ -8,7 +8,7 @@
 	(and (symbolp symbol)
 	     (equal (symbol-name symbol) "=")))
       ;; specifier with value, without type nor identifier
-      `(decompose-declaration
+      `(make-declaration-node
 	;; specifiers
 	(,@(butlast item 2)
 	 ;; type: none
@@ -18,7 +18,7 @@
 	 ;; value and "="
 	 ,@(last item 2)))
       ;; only specifier
-      `(decompose-declaration
+      `(make-declaration-node
 	;; specifier
 	(,@item
 	 ;; type: none

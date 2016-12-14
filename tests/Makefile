@@ -14,7 +14,7 @@ message:
 c-tests-pre:
 	@echo
 	@echo "For C"
-c-test-files = $(shell ls c.decl.*.lisp c.for.*.lisp c.while.*.lisp c.when.*.lisp c.misc.*.lisp)
+c-test-files = $(shell ls c.decl.*.lisp c.for.*.lisp c.while.*.lisp c.when.*.lisp c.misc.*.lisp c.meta.*.lisp)
 c-test-results = $(c-test-files:%.lisp=%.ok)
 c-tests: c-tests-pre $(c-test-results)
 # ...
@@ -24,7 +24,7 @@ c-tests: c-tests-pre $(c-test-results)
 ### c++ tests
 ### all tests start with cxx. and end with .lisp
 
-.PHONY: cxx-tests-pre cxx-ns-tests-pre cxx-misc-tests-pre cxx-decl-tests-pre
+.PHONY: cxx-tests-pre cxx-ns-tests-pre cxx-misc-tests-pre cxx-decl-tests-pre cxx-meta-tests-pref
 
 cxx-ns-test-files = $(shell ls cxx.namespace.*.lisp)
 cxx-ns-results = $(cxx-ns-test-files:%.lisp=%.ok)
@@ -44,12 +44,18 @@ cxx-misc-tests-pre:
 	@echo "- Misc:"
 cxx-misc-tests: cxx-misc-tests-pre $(cxx-misc-results)
 
+cxx-meta-test-files = $(shell ls cxx.meta.*.lisp)
+cxx-meta-results = $(cxx-meta-test-files:%.lisp=%.ok)
+cxx-meta-tests-pre:
+	@echo "- Meta:"
+cxx-meta-tests: cxx-meta-tests-pre $(cxx-meta-results)
+
 cxx-tests-pre:
 	@echo
 	@echo "For C++"
-cxx-tests: cxx-tests-pre cxx-decl-tests cxx-ns-tests cxx-misc-tests
+cxx-tests: cxx-tests-pre cxx-decl-tests cxx-ns-tests cxx-misc-tests cxx-meta-tests
 
-cxx-test-files = $(cxx-ns-test-files) $(cxx-decl-test-files) $(cxx-misc-test-files)
+cxx-test-files = $(cxx-ns-test-files) $(cxx-decl-test-files) $(cxx-misc-test-files) $(cxx-meta-test-files)
 
 
 

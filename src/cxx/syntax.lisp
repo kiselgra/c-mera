@@ -23,8 +23,10 @@
     ;; initialize with
     (make-node ,(second item))))
 
-(defmacro decompose-list-initializer (item)
-  "Decompose initializer list / quite like  declaration item"
+(defun decompose-declaration (item)
+  "Decompose initializer list / quite like declaration item. The last
+   value returnd specifies if the declaration actually used an
+   initializer list or not."
   ;; check if initialization is present
   (let ((symbol (first (last item)))
 	(init-start (position "{" item :test #'(lambda (a b)
@@ -39,22 +41,31 @@
 	      (inits        (subseq item (1+ init-start) (- (length item) 1))))
 	  (let ((specifier (butlast spec+type+id 2))
 		(type+id   (last    spec+type+id 2)))
-	    ;; make declaration node
-	    `(declaration-item
-	      ;; set specifiers
-	      ,(when specifier
-		     `(specifier
-		       (make-nodelist ,specifier)))
-	      ;; set type
-	      (type (make-node ,(first type+id)))
-	      ;; set identifier
-	      (make-node ,(second type+id))
-	      ;; set value
-	      (declaration-list-initializer
-	       (make-nodelist ,inits)))))
+	    (values specifier (first type+id) (second type+id) inits t)))
 
 	;; pass to standard declaration decomposition
-	`(decompose-declaration ,item))))
+	(multiple-value-bind (spec type name init) (cm-c:decompose-declaration item)
+	  (values spec type name init nil)))))
+
+(defmacro make-declaration-node/with-list-initializer (item)
+  "Decompose initializer list and instantiate nodes / quite like declaration item"
+   (multiple-value-bind (specifier type id init initializer-list-p)
+       (decompose-declaration item)
+    `(declaration-item
+      ;; set specifiers
+      ,(when specifier
+	     `(specifier
+	       (make-nodelist ,specifier)))
+      ;; set type
+      (type (make-node ,type))
+      ;; set identifier
+      (make-node ,id)
+      ;; set value
+      ,(if init 
+	   (if initializer-list-p
+	       `(declaration-list-initializer (make-nodelist ,init))
+	       `(declaration-value (make-node ,init)))
+	   nil))))
 
 (c++syntax decl (bindings &body body)
   "Declare variables"
@@ -63,7 +74,7 @@
     t
     ;; make single declarations/bindings
     (make-nodelist
-     ,bindings :prepend decompose-list-initializer)
+     ,bindings :prepend make-declaration-node/with-list-initializer)
     ;; make listnode with body
     ,(when body
 	 ;; make single expression statements
@@ -83,7 +94,7 @@
 		    (make-node ,',name)
 		    ;; parameter
 		    (parameter-list
-		     (make-nodelist ,args :prepend decompose-declaration))
+		     (make-nodelist ,args :prepend make-declaration-node))
 		    ;; initializer
 		    ,(when initializer
 			   `(make-nodelist ,initializer))
@@ -158,7 +169,7 @@
   `(template
     ;; set parameters
     (parameter-list
-     (make-nodelist ,parameters :prepend decompose-declaration))
+     (make-nodelist ,parameters :prepend make-declaration-node))
     ;; body
     (make-node ,item)))
     
@@ -169,7 +180,7 @@
     (make-node ,name)
     ;;
     (make-nodelist
-     ,arguments :prepend decompose-type)))
+     ,arguments :prepend cm-c:decompose-type)))
 
 (c++syntax postfix& (item)
   "Postfix & operator (reference"
