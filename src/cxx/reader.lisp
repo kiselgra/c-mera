@@ -1,7 +1,7 @@
 (in-package :cm-c++)
 
 (defun dissect (item &key (quoty nil))
-  "exctend c pre processor"
+  "extended c pre processor"
   (cond
     ((symbolp item)
      (if (and (> (length (symbol-name item)) 1)
@@ -18,7 +18,7 @@
 			 
 ;; copy of c reader
 (defun pre-process (stream char)
-  "Pre process symbosl in stream an dprepare actual node"
+  "Pre process symbols in stream and prepare actual node"
   (declare (ignore char))
   (let ((peek (peek-char nil stream nil nil nil)))
     ;; skip multiple whitespace and comments

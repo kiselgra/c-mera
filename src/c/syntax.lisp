@@ -131,11 +131,28 @@
       ;; enums as parameter list
       (make-nodelist ,enum-list :prepend decompose-enum))))
 
-(c-syntax (aref array) (array &rest indizes)
+(c-syntax (aref array) (array &rest indizes &environment env)
   "Array reference"
   (if (not indizes) 
 	(setf indizes '(nil)))
-  `(array-reference (make-node ,array) (make-nodelist ,indizes)))
+  ;; make array referende
+  `(array-reference
+    ;; check if identifier / type / macro
+    ,(if (listp array)
+	 ;; check if macro/function or list
+	 (let ((first (first array)))
+	   (if (and (not (listp first)) (fboundp! first env))
+	       ;; type is macro or function
+	       `(make-node ,array)
+	       ;; type is list with type information
+	       `(make-declaration-node (,@array nil))))
+	 ;; type is single symbol
+	 `(make-node ,array))
+    ;; indizes
+    (make-nodelist ,indizes)))
+				       
+					
+    ;((make-node ,array) (make-nodelist ,indizes)))
 
 (c-syntax oref (object component)
   "Object reference"
