@@ -62,7 +62,7 @@ However, the system can be leveraged to provide very high level programming para
 
 ### Build Instructions<a name="BuildInstructions">
 
-We require SBCL at the moment, sorry.
+We recommend CCL due to long code-transformation times with SBCL.
 
 - Install SBCL or CCL
 - Install Quicklisp (See the example [there](https://www.quicklisp.org/))
@@ -71,11 +71,6 @@ We require SBCL at the moment, sorry.
 	- `./configure --with-sbcl` (or `--with-ccl`)
 	- `make`
 	- `make install`
-
-#### CCL Support
-
-Using CCL C-Mera is much, much faster, but in certain situations the CCL condition handling hangs our system.
-We expect this to be fixed in the near future.
 
 ### Emacs Integration<a name="EmacsIntegration">
 The easiest way to configure your Lisp to load C-Mera is by adding it to quicklisp, as follows
@@ -86,10 +81,11 @@ The easiest way to configure your Lisp to load C-Mera is by adding it to quickli
 With this setup  it is possible to use Slime for the development process. 
 The relevant C-Mera modules can be loaded by
 
-	FIXME
-	(asdf:load-system :cgen)     ; or :cxxgen, etc.
-	(in-package :cg-user)        ; cl-user equivalent with c-mera environment
-	(switch-reader)              ; optional for prototyping
+	(asdf:load-system :c-mera)
+	(asdf:load-system :cmu-c)    ; or :cmu-c++, cmu-cuda, etc. 
+	(in-package :cmu-c)          ; cl-user equivalent with c-mera environment for c
+	(cm-reader)                  ; switch to c-mera reader; optional for prototyping
+	                             ; switch back with (cl-reader)
 
 After that you can enter Lisp expressions that print valid C Code to the REPL.
 
@@ -135,7 +131,6 @@ straightforward transcription of the example in the K&R book.
 Here we add arrays to the mix.
 It, too, is a straightforward transcription of the example in the K&R book.
 
-	FIXME
     (function strcat ((char p[]) (char q[])) -> void
       (decl ((int i = 0) (int j = 0))
         (while (!= p[i] #\null)
@@ -145,16 +140,16 @@ It, too, is a straightforward transcription of the example in the K&R book.
 #### Implementation of `wc -l`
 This example shows a main function 
 	and how to forward-declare externally defined symbols originating from C libraries.
-There is also `use-functions` to declare externally defined functions.
-These forms are required as the underlying lisp implementation checks if the symbols used are actually defined.
+There is also `use-functions` to explicitly declare externally defined functions.
+In most cases, these forms are not required.
+C-mera checks if the symbols used are already defined and interprets them as function calls otherwise.
 
-	FIXME
     (include <stdio.h>)
     
     (function main () -> int
       (decl ((int c)
              (int nl = 0))
-        (while (!= (set c (funcall getchar)) EOF)
+        (while (!= (set c (getchar)) EOF)
           (if (== c #\newline)
               ++nl))
         (printf "%d\\n" nl)
@@ -299,20 +294,7 @@ e.g.
 
 	(decl ((const unsigned long int x = 0)) ...)
 
-is correctly identified. This is enabled by having a list of valid 'qualifiers' that can add to a type.
-Type names do not have to be introduced and thus the syntax for one decl-item is
-
-	[qualifier]* typename variablename [initializer]
-
-If you work in an environment that supports further qualifiers you can use
-
-	(add-qualifier ...)
-
-e.g.
-
-	(add-qualifier __kernel __global)
-
-to introduce a number of them. FIXME: is this still the case?
+is correctly identified.
 
 As mentioned above, typenames are not checked.
 
@@ -333,7 +315,7 @@ are both recognized.
 
 ### Namespace (Lisp vs C-Mera)
 Some C-Mera symbols are also defined in Common Lisp.
-Initially C-Mera starts out in the `cg-user` (code generator user package) which imports
+Initially C-Mera starts out in the `cmu-<generator>` (user package, depending on the code generator used) which imports
 	all `cl` symbols that do not conflicts to provide metaprogramming as seamlessly as possible.
 
 Especially with symbols like `if` etc care has to be taken to use the right one.
@@ -358,9 +340,6 @@ in the example from our ELS presentation:
 	       (match-int ,expression ,@clauses))))
 
 Here we define a recursively expanding macrolet, `match-int`, that inserts conditional clauses (as in `(if (regexec ....))` and also checks to terminate the iteration (with `,(lisp (if ...))`).
-
-For convenience we provide a sibling to `defmacro`, `deflmacro`, which starts out in the Lisp namespace.
-
 
 ### Codestrings
 tbd.
