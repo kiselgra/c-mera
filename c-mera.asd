@@ -309,6 +309,7 @@
   (:export :simple-print
            :make-expressions
 	   :make-block
+	   :make-declaration-node
 	   :decompose-declaration
 	   :decompose-type
 
@@ -327,9 +328,10 @@
 (defpackage* :cm-c++
   (:shadow-symbols () :export-symbols c++backend)
   (:use :c-mera :cm-c)
-  (:shadow :delete :class :switch-reader :cl-reader :cm-reader)
+  (:shadow :delete :class :switch-reader :cl-reader :cm-reader :decompose-declaration)
   (:import-from :cl-user :c++symbols :c++swap)
-  (:nicknames :cm-cxx))
+  (:nicknames :cm-cxx)
+  (:export :decompose-declaration))
 
 ;; c-mera cuda package
 (defpackage* :cm-cuda
