@@ -15,7 +15,7 @@
     
 ;; Define a start-up function
 (define-processor 
-  :name c-processor
+  :name cxx-processor
   :file-reader   read-in-file
   :string-reader read-in-string
   :extra-traverser
@@ -27,7 +27,7 @@
 ;; Define a save function
 (save-generator
  :name save 
- :start-function c-processor 
+ :start-function cxx-processor 
  :in-package :cmu-c++)
 
 ;;; Define a reader switch with c++ pre-processing

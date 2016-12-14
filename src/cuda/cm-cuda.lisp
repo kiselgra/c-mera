@@ -9,6 +9,8 @@
    (set-macro-character #\Tab #'cm-c++::pre-process)
    (set-macro-character #\Newline #'cm-c++::pre-process)
    (set-macro-character #\( #'cm-c++::pre-process-heads)
+   (set-macro-character #\{ #'cm-c++::left-brace-reader)
+   (set-macro-character #\} #'cm-c++::right-brace-reader)
    (set-dispatch-macro-character #\# #\: #'cm-c++::sharp-colon-reader)))
     
 ;; Define a start-up function
@@ -33,7 +35,11 @@
   :name switch-reader
   :macro-character
   ((set-macro-character #\Space #'cm-c++::pre-process)
+   (set-macro-character #\Tab #'cm-c++::pre-process)
+   (set-macro-character #\Newline #'cm-c++::pre-process)
    (set-macro-character #\( #'cm-c++::pre-process-heads)
+   (set-macro-character #\{ #'cm-c++::left-brace-reader)
+   (set-macro-character #\} #'cm-c++::right-brace-reader)
    (set-dispatch-macro-character #\# #\: #'cm-c++::sharp-colon-reader)))
 
 (define-switches
@@ -44,4 +50,6 @@
    (set-macro-character #\Tab #'cm-c++::pre-process)
    (set-macro-character #\Newline #'cm-c++::pre-process)
    (set-macro-character #\( #'cm-c++::pre-process-heads)
+   (set-macro-character #\{ #'cm-c++::left-brace-reader)
+   (set-macro-character #\} #'cm-c++::right-brace-reader)
    (set-dispatch-macro-character #\# #\: #'cm-c++::sharp-colon-reader)))

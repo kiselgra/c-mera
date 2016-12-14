@@ -3,6 +3,7 @@ bin_PROGRAMS = cm cm-c cm-cxx cm-glsl cm-cuda cm-opencl
 AUTOMAKE_OPTIONS = subdir-objects
 
 cm_c_SOURCES = c-mera.asd \
+			   src/c-mera/version.lisp \
 			   src/c-mera/cmd.lisp \
 			   src/c-mera/utils.lisp \
 			   src/c-mera/nodes.lisp \

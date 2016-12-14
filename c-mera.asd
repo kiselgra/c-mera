@@ -450,7 +450,8 @@
   :name "c-mera c"
   :version "0.0.2"
   :serial t
-  :components ((:file "src/c/utils")
+  :components ((:file "src/c-mera/c-mera")
+	       (:file "src/c/utils")
 	       (:file "src/c/nodes")
                (:file "src/c/traverser")
                (:file "src/c/pretty")
@@ -463,7 +464,8 @@
   :name "c-mera c++"
   :version "0.0.2"
   :serial t
-  :components ((:file "src/cxx/nodes")
+  :components ((:file "src/c/cm-c")
+	       (:file "src/cxx/nodes")
 	       (:file "src/cxx/traverser")
 	       (:file "src/cxx/syntax")
 	       (:file "src/cxx/pretty")
@@ -475,31 +477,34 @@
   :name "c-mera cuda"
   :version "0.0.2"
   :serial t
-  :components ((:file "src/cuda/nodes")
+  :components ((:file "src/cxx/cm-cxx")
+	       (:file "src/cuda/nodes")
 	       (:file "src/cuda/syntax")
 	       (:file "src/cuda/pretty")
 	       (:file "src/cuda/cm-cuda"))
-  :depends-on ("c-mera" "cm-c" "cmu-c++"))
+  :depends-on ("c-mera" "cm-c" "cm-c++"))
 
 (asdf:defsystem cm-opencl
   :name "c-mera opencl"
   :version "0.0.2"
   :serial t
-  :components ((:file "src/opencl/nodes")
+  :components ((:file "src/cxx/cm-cxx")
+	       (:file "src/opencl/nodes")
 	       (:file "src/opencl/syntax")
 	       (:file "src/opencl/pretty")
 	       (:file "src/opencl/cm-opencl"))
-  :depends-on ("c-mera" "cm-c" "cmu-c++"))
+  :depends-on ("c-mera" "cm-c" "cm-c++"))
 
 (asdf:defsystem cm-glsl
   :name "c-mera glsl"
   :version "0.0.2"
   :serial t
-  :components ((:file "src/glsl/nodes")
+  :components ((:file "src/c/cm-c")
+	       (:file "src/glsl/nodes")
 	       (:file "src/glsl/syntax")
 	       (:file "src/glsl/pretty")
 	       (:file "src/glsl/cm-glsl"))
-  :depends-on ("c-mera" "cmu-c"))
+  :depends-on ("c-mera" "cm-c"))
 
 
 ;; user systems

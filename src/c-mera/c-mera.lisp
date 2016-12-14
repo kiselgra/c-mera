@@ -9,7 +9,7 @@
 	 ;; Preserve case, and parse convenient stuff
 	 (setf (readtable-case *readtable*) :invert)
 	 ,@macro-character
-	 (handler-case
+	 ;(handler-case
 	     (with-open-file (in file)
 	       (loop for s-expr = (read in nil nil nil) while s-expr do ;; TODO CHECK call
 		    (let* ((s-expr (eval s-expr))
@@ -22,8 +22,8 @@
 	   ;; TODO
 	   ;; Standard clozure error handling breaks console.
 	   ;; This hanlder-case  is only a tentative fix 
-	   #+clozure (error (err) (let ((*print-pretty* t))
-				    (format *error-output* "~a" err))))
+	   ;#+clozure (error (err) (let ((*print-pretty* t))
+	   ;			    (format *error-output* "~a" err))))
 	 ;; Return single AST
 	 (nodelist asts)))
      (defun ,string-reader (str)
@@ -33,7 +33,7 @@
 	 ;; Preserve case, and parse convenient stuff
 	 (setf (readtable-case *readtable*) :invert)
 	 ,@macro-character
-	 (handler-case
+	 ;(handler-case
 	     (let* ((s-expr (eval (read-from-string str)))
 		    (evaluated (if (listp s-expr)
 				   s-expr
@@ -44,8 +44,8 @@
 	   ;; TODO
 	   ;; Standard clozure error handling breaks console.
 	   ;; This hanlder-case  is only a tentative fix 
-	   #+clozure (error (err) (let ((*print-pretty* t))
-				    (format *error-output* "~a" err))))
+	   ;#+clozure (error (err) (let ((*print-pretty* t))
+	   ;			    (format *error-output* "~a" err))))
 	 ;; Return single AST
 	 (nodelist asts)))))
 	     
@@ -82,7 +82,10 @@
 		(in-package ,in-package)
 		(setf (readtable-case *readtable*) :invert)
 		#+sbcl (,start-function sb-ext:*posix-argv*)
-		#+clozure (,start-function ccl::*command-line-argument-list*)
+		#+clozure (handler-case
+			      (,start-function ccl::*command-line-argument-list*)
+			    (error (err) (let ((*print-pretty* t))
+					   (format *error-output* "~a" err))))
 		#+ecl (,start-function (loop for i from 0 below (si:argc) collect (si:argv i)))
 		#-(or sbcl clozure ecl)
 		(error "Missing implementation of 'save-generator' for your lisp implementation") 
