@@ -7,13 +7,17 @@
   (defprettymethod :before expression-statement
     (push-info 'expression-statement)
     (when (or (typep (node-slot expression) 'function-call)
-	      (typep (node-slot expression) 'infix-expression))
+	      (typep (node-slot expression) 'infix-expression)
+	      (typep (node-slot expression) 'prefix-expression)
+	      (typep (node-slot expression) 'postfix-expression))
       (format stream "~&~a" indent)))
 
   (defprettymethod :after expression-statement
     (pop-info)
     (when (or (typep (node-slot expression) 'function-call)
-	      (typep (node-slot expression) 'infix-expression))
+	      (typep (node-slot expression) 'infix-expression)
+	      (typep (node-slot expression) 'prefix-expression)
+	      (typep (node-slot expression) 'postfix-expression))
       (format stream ";"))))
 
 ;;; Compound-Statement

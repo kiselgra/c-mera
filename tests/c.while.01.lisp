@@ -13,5 +13,7 @@
           (set str[0] #\c)
           (set str[0] #\null)
           (strcatx str "foo")
-     (printf "%s\n" str)
+     (printf "%s\\n" str)
      (return 0)))
+
+;;## foo
