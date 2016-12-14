@@ -113,7 +113,6 @@
 		    (add-cmdline-definition value))
 		   ((s= name "E" "eval")
 		    (,reader value))
-					;(eval-cmdline-expr value))
 		   (t (format t "Unnrecognized option ~a.~%" name))))
 	   (cond ((> (length args) 1)
 		  (setf in nil)
