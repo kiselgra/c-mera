@@ -7,5 +7,7 @@
   (require :cm-c++)
   (require :cmu-c++)
   (require :cms-c++))
+(push :cm-c++ *features*)
+(push :cm-cxx *features*)
 (cm-c++::save "cm-cxx")
 (quit)

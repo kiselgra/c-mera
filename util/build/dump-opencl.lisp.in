@@ -3,5 +3,7 @@
 (let ((asdf:*central-registry* (cons #P"@abs_top_srcdir@/" asdf:*central-registry*)))
   (require :c-mera)
   (require :cms-opencl))
+(push :cm-opencl *features*)
+(push :cm-ocl *features*)
 (cm-opencl::save "cm-opencl")
 (quit)

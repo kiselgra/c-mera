@@ -3,5 +3,6 @@
 (let ((asdf:*central-registry* (cons #P"@abs_top_srcdir@/" asdf:*central-registry*)))
   (require :c-mera)
   (require :cms-glsl))
+(push :cm-glsl *features*)
 (cm-glsl::save "cm-glsl")
 (quit)
