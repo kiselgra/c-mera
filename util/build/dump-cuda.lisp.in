@@ -4,5 +4,6 @@
   (require :c-mera)
   (require :cms-cuda))
 (push :cm-cuda *features*)
+(setf c-mera:*generator* :cuda)
 (cm-cuda::save "cm-cuda")
 (quit)

@@ -4,5 +4,6 @@
   (require :c-mera)
   (require :cms-c))
 (push :cm-c *features*)
+(setf c-mera:*generator* :c)
 (cm-c::save "cm-c")
 (quit)

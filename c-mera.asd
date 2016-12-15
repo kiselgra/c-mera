@@ -248,6 +248,10 @@
 	   :traverser
 	   :set-indent-char
 	   :defproxymethod
+	   
+	   ;; info
+	   :*version*
+	   :*generator*
 
 	   ;; utils
 	   :flatten

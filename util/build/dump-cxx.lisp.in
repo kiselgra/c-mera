@@ -9,5 +9,6 @@
   (require :cms-c++))
 (push :cm-c++ *features*)
 (push :cm-cxx *features*)
+(setf c-mera:*generator* :cxx)
 (cm-c++::save "cm-cxx")
 (quit)
