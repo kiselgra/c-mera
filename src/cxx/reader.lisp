@@ -24,6 +24,8 @@
     ;; skip multiple whitespace and comments
     (if (not (or (eql peek #\))
 		 (eql peek #\;)
+		 (eql peek #\})
+		 (eql peek #\{)
 		 (eql peek #\Space)
 		 (eql peek #\Newline)
 		 (eql peek #\Tab)))
@@ -44,6 +46,8 @@
       ;; stop at whitespace and comments
       (if (not (or (eql peek #\()
 		   (eql peek #\))
+		   (eql peek #\})
+		   (eql peek #\{)
 		   (eql peek #\;)
 		   (eql peek #\Space)
 		   (eql peek #\Newline)
@@ -59,6 +63,8 @@
   (flet ((valid-id-char (c)
 	   (not (or (char= #\( c)
 		    (char= #\) c)
+		    (char= #\} c)
+		    (char= #\{ c)
 		    (char= #\; c)
 		    (char= #\Space c)
 		    (char= #\Newline c)
@@ -84,11 +90,17 @@
 	x))))
 
 
-(defun left-brace-reader (stream char)
-  (declare (ignore stream char))
-  '{)
+;(defun left-brace-reader (stream char)
+;  (declare (ignore stream char))
+;  '{)
+;
+;(defun right-brace-reader (stream char)
+;  (declare (ignore stream char))
+;  '})
 
-(defun right-brace-reader (stream char)
-  (declare (ignore stream char))
-  '})
-	   
+(defun left-brace-reader (stream char)
+  (declare (ignore char))
+  (let ((init-list (read-delimited-list #\} stream nil)))
+    (let ((first (car init-list))
+	  (rest  (rest init-list)))
+      (list (append (list (dissect first)) rest)))))

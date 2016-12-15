@@ -28,17 +28,13 @@
    value returnd specifies if the declaration actually used an
    initializer list or not."
   ;; check if initialization is present
-  (let ((symbol (first (last item)))
-	(init-start (position "{" item :test #'(lambda (a b)
-						 (and (symbolp b)
-						      (equal a (symbol-name b)))))))
-    (if (and init-start ; { found
-	     (symbolp symbol) 
-	     (equal (symbol-name symbol) "}")) ; } found
-
+  (let ((val (first (last item))))
+    (if (and (listp val)
+	     (eql (length val) 1)
+	     (listp (car val)))
 	;; decompose arg list with list initializer
-	(let ((spec+type+id (subseq item 0 init-start))
-	      (inits        (subseq item (1+ init-start) (- (length item) 1))))
+	(let ((spec+type+id (butlast item))
+	      (inits        (car val)))
 	  (let ((specifier (butlast spec+type+id 2))
 		(type+id   (last    spec+type+id 2)))
 	    (values specifier (first type+id) (second type+id) inits t)))
