@@ -310,6 +310,7 @@
            :make-expressions
 	   :make-block
 	   :make-declaration-node
+	   
 	   :decompose-declaration
 	   :decompose-type
 
@@ -364,7 +365,7 @@
   (:shadow-symbols c-symbols :export-symbols c-exports)
   (:use :common-lisp)
   (:import-from :c-mera :flatten :print! :quoty)
-  (:import-from :cm-c :simple-print
+  (:import-from :cm-c :simple-print :decompose-declaration
 		:switch-reader :cl-reader :cm-reader))
 
 ;; c-mera c++ user package
@@ -372,6 +373,7 @@
   (:shadow-symbols () :export-symbols c++exports)
   (:use :cmu-c)
   (:shadow :class :delete :vector :decl)
+  (:import-from :cm-c++ :decompose-declaration)
   (:shadowing-import-from :cm-c++ :switch-reader
 			  :cl-reader :cm-reader)
   (:nicknames :cmu-cxx))
@@ -382,6 +384,7 @@
   (:shadow-symbols () :export-symbols cuda-exports)
   (:shadow :struct)
   (:use :cmu-c++)
+  (:import-from :cm-c++ :decompose-declaration)
   (:shadowing-import-from :cm-cuda :switch-reader
 			  :cl-reader :cm-reader))
 
@@ -389,6 +392,7 @@
 (defpackage* :cmu-opencl
   (:shadow-symbols () :export-symbols opencl-exports)
   (:use :cmu-c++)
+  (:import-from :cm-c++ :decompose-declaration)
   (:shadowing-import-from :cm-opencl :switch-reader
 			  :cl-reader :cm-reader))
 
@@ -396,6 +400,7 @@
 (defpackage* :cmu-glsl
   (:shadow-symbols () :export-symbols glsl-exports)
   (:use :cmu-c)
+  (:import-from :cm-c :decompose-declaration)
   (:shadowing-import-from :cm-glsl :switch-reader
 			  :cl-reader :cm-reader))
 

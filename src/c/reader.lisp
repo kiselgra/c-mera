@@ -189,3 +189,13 @@
 			(fboundp! first))))
 	  (append (list (dissect first)) (rest list))
 	  list))))
+
+;;; Needs further analysis
+;;(defun comment-reader (stream char)
+;;  "Rread lisp comments and emmit c-mera comments"
+;;  (let ((peek (peek-char nil stream nil nil nil)))
+;;    (if (not (eql peek #\;))
+;;	`(cmu-c::comment #+clozure ,(ccl::read-string stream #\Newline)
+;;			 #+sbcl ,(sbcl::read-string stream #\Newline))
+;;	(values))))
+    
