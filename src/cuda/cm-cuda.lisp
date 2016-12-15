@@ -10,7 +10,7 @@
    (set-macro-character #\Newline #'cm-c++::pre-process)
    (set-macro-character #\( #'cm-c++::pre-process-heads)
    (set-macro-character #\{ #'cm-c++::left-brace-reader)
-   (set-macro-character #\} #'cm-c++::right-brace-reader)
+   (set-macro-character #\} (get-macro-character #\) nil))
    (set-dispatch-macro-character #\# #\: #'cm-c++::sharp-colon-reader)))
     
 ;; Define a start-up function
