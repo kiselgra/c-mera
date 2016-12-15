@@ -56,7 +56,7 @@ and output file:
 
 For more details see [Compilation Process](#compilation)
 
-Please note that as, implied above, the system primarily implements a simple transformation and thus does not rewrite lisp code to, for example, either C or C++, but compiles C code written in Sexps to plain C, and C++ code written in Sexps to plain C++.
+Please note that, as implied above, the system primarily implements a simple transformation and thus does not rewrite lisp code to, for example, either C or C++, but compiles C code written in Sexps to plain C, and C++ code written in Sexps to plain C++.
 
 However, the system can be leveraged to provide very high level programming paradigms by the use of Common Lisp macros, see [our papers](#papers).
 
@@ -105,6 +105,8 @@ To load it automatically you can add a mode specification to the top of your fil
 	; -*- mode: Lisp; eval: (cm-mode 1); -*-
 
 You can extend the indentation and keyword information by having an additional file called `cm.indent` along your source files, see the provided `cm.indent` for the layout.
+
+Our cm-mode ist still rather basic and we are open for extensions (e.g. better syntax matching). 
 
 ### Publications<a name="papers">
 - C-Mera was introduced as "cgen" at ELS'14: [*Defmacro for C: Lightweight, Ad Hoc Code Generation*](http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/)
@@ -196,7 +198,7 @@ Here is a cmdline session:
 
 This section describes how some aspects of the system work.
 We only describe what we believe may be noteworthy for either the seasoned Lisp or the seasoned C programmer.
-This part will be in motion as we add information that some of our users would have liked to have :)
+This part will be in motion as we add information that some of our users would have liked to have :) So please get back to us with your experience what might be helpful to mention.
 
 ### Changes from c-mera-2015
 For the old version see its branch. Here we only shortly list the major differences.
@@ -273,7 +275,7 @@ Note that C-Mera supports C-like increments and decrements for simple expression
 	   ...)
 
 ##### Open Issues
-```do-while``` is not implemented at the moment.
+`do-while` is not implemented at the moment.
 
 
 #### Declarations
@@ -283,7 +285,7 @@ A set of declarations is introduced with
 	       ...)
 	  ...)
 
-	or 
+or (for C++ based languages)
 
 	(decl ((T name [{ init }])
 	       ...)
@@ -315,13 +317,13 @@ are both recognized.
 
 ### Namespace (Lisp vs C-Mera)
 Some C-Mera symbols are also defined in Common Lisp.
-Initially C-Mera starts out in the `cmu-<generator>` (user package, depending on the code generator used) which imports
-	all `cl` symbols that do not conflicts to provide metaprogramming as seamlessly as possible.
+Initially, C-Mera starts out in the `cmu-<generator>` (user package, depending on the code generator used, e.g. `cmu-c`) which imports
+all `cl` symbols that do not conflict to provide metaprogramming as seamlessly as possible.
 
 Especially with symbols like `if` etc care has to be taken to use the right one.
 This can be done by explicitly naming the symbol `cl:if`, but to define lisp functions
 or lisp-heavy parts of the meta code it is often more convenient to use the `lisp` form, such as
-in the example from our ELS presentation:
+in the example from our ELS'14 presentation:
 
 	(defmacro match (expression &rest clauses)
 	  `(macrolet 

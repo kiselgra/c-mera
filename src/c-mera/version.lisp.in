@@ -1,3 +1,5 @@
+(in-package :c-mera)
+
 (defparameter *version* (list @VER_MAJ@ @VER_MIN@ @VER_PAT@))
 
 (defun print-version ()
