@@ -5,10 +5,11 @@
 
     (defprettymethod :before layout
       (push-info 'layout)
-      (format stream "layout"))
+      (format stream "layout("))
 
     (defprettymethod :after layout
-      (pop-info))
+      (pop-info)
+      (format stream ")"))
 
     ;; override specifier item for layout
     (defprettymethod :before specifier
