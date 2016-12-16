@@ -172,11 +172,7 @@
   "Pre process list heads and prepare nodes"
   (declare (ignore char))
   (let ((peek (peek-char nil stream nil nil nil))
-	(list
-	  #+sbcl (sb-impl::read-list stream char)
-	  #+clozure (ccl::read-list stream char)
-	  #-(or sbcl clozure)
-	  (error "Missing implementation of pre-process-heads for your lisp implementation")))
+	(list (read-delimited-list #\) stream t)))
     (let ((first (first list)))
       ;; stop at whitespace and comments
       (if (not (or (eql peek #\()
