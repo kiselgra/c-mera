@@ -95,4 +95,4 @@
   (let ((init-list (read-delimited-list #\} stream nil)))
     (let ((first (car init-list))
 	  (rest  (rest init-list)))
-      (list (append (list (dissect first)) rest)))))
+      (list (list (append (list (dissect first)) rest))))))
