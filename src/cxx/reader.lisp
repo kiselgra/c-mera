@@ -89,16 +89,8 @@
 		      collect (dissect (cmu-c::cintern s) :quoty t)))))
 	x))))
 
-
-;(defun left-brace-reader (stream char)
-;  (declare (ignore stream char))
-;  '{)
-;
-;(defun right-brace-reader (stream char)
-;  (declare (ignore stream char))
-;  '})
-
 (defun left-brace-reader (stream char)
+  "Read cxx initializer list '{...}' and emit double list '((...))'"
   (declare (ignore char))
   (let ((init-list (read-delimited-list #\} stream nil)))
     (let ((first (car init-list))
