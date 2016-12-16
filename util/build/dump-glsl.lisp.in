@@ -4,5 +4,6 @@
   (require :c-mera)
   (require :cms-glsl))
 (push :cm-glsl *features*)
+(setf c-mera:*generator* :glsl)
 (cm-glsl::save "cm-glsl")
 (quit)

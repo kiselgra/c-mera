@@ -5,5 +5,6 @@
   (require :cms-opencl))
 (push :cm-opencl *features*)
 (push :cm-ocl *features*)
+(setf c-mera:*generator* :ocl)
 (cm-opencl::save "cm-opencl")
 (quit)
