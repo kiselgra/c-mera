@@ -68,7 +68,7 @@ all-test-files = $(c-test-files) $(cxx-test-files)
 ### c
 
 c.%.c: c.%.lisp
-	@cm c $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
+	@../cm-c $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
 
 c.%.run: c.%.c
 	@gcc -std=c99 $< -o $@ 2> $(basename $<).clog || (echo 'echo "<compile failure>"' > $@; chmod +x $@)
@@ -77,7 +77,7 @@ c.%.run: c.%.c
 ### c++
 
 cxx.%.cpp: cxx.%.lisp
-	@cm c++ $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
+	@../cm-cxx $< -o $@ 2>/dev/null || ( ( echo "#include <stdio.h>"; echo "int main() { printf(\"cm compile error\"); return 0; }" ) > $@; chmod +x $@ )
 
 cxx.%.run: cxx.%.cpp
 	@g++ -std=c++11 $< -o $@ 2> $(basename $<).clog || (echo 'echo "<compile failure>"' > $@; chmod +x $@)
