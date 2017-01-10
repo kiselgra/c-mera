@@ -4,10 +4,6 @@
   (decl ((int x-y = 0)))
   (function bla-blub ((int x)) -> int (return 0)))
 
-(namespace foo_bar
-  (decl ((int x_y = 0)))
-  (function bla_blub ((int x)) -> int (return 0)))
-
 (decl ((int x = #:foo-bar:x-y)
        (int y = (#:foo-bar:bla-blub x))
        (int z = (funcall #:foo-bar:bla-blub #:foo-bar:x-y)))
@@ -21,8 +17,6 @@
   (function main () -> int
     (<< #:std:cout xx yy zz #:std:endl)
     (return (foo))))
-
-
 
 ;;## 000
 ;;## 000

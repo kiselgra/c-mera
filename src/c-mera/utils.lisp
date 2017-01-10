@@ -161,6 +161,9 @@
 (defvar *ignore-node* (make-hash-table))
 (defvar *proxy-node* (make-hash-table))
 
+(defvar *enabled-warnings* '())
+(defvar *suppressed-warnings* '())
+
 
 ;;; =================================
 ;;;    currently unused

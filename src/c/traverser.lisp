@@ -13,41 +13,46 @@
 ;;; Store in hash table and correct if necessary.
 (defmethod check-and-get-name ((item renamer) check-name)
   (with-slots (used-names name-map) item
-    (let ((alr-checked (gethash check-name name-map)))
-      (if alr-checked
-	  alr-checked
-	  (labels ((check-char (x) (alpha-char-p x))
-		   (check-underscore (x) (eql #\_ x))
-		   (check-asterisk (x) (eql #\* x))
-		   (check-tilde (x) (eql #\~ x))
-		   (check-num (x)
-		     (numberp
-		      (parse-integer
-		       (concatenate 'string
-				    (list x))
-		       :junk-allowed t)))
-		   (check-all (x)
-		     (or
-		      (check-char x)
-		      (check-underscore x)
-		      (check-asterisk x)
-		      (check-tilde x)
-		      (check-num x)))
-		   (check-nall (x)
-		     (not (check-all x))))
-	    (let* ((orig check-name)
-		   (changed (substitute-if #\_ #'check-nall (symbol-name check-name)))
-		   (changed-l (concatenate 'list changed)))
-	      (if (check-num (first changed-l))
-		  (progn 
-		    (setf (first changed-l) #\_)
-		    (setf changed (concatenate 'string changed-l))))
-	      (loop while (gethash (intern changed) used-names) do
-		(setf changed (format nil "_~a" changed)))
-	      (setf changed (intern changed))
-	      (setf (gethash orig name-map) changed)
-	      (setf (gethash changed used-names) t)
-	      changed))))))
+    ;; treat hyphen and underscore equally / map hyphen to underscore
+    (let* ((name-string (symbol-name check-name))
+	   (identifier (substitute #\_ #\- name-string)))
+      (when (and (not (equal identifier name-string))
+		 (find :hyphen *enabled-warnings*))
+	  (warn "Possible ambiguity through hyphen override of ~s" check-name))
+      (let ((alr-checked (gethash identifier name-map)))
+	(if alr-checked
+	    alr-checked
+	    (labels ((check-char (x) (alpha-char-p x))
+		     (check-underscore (x) (eql #\_ x))
+		     (check-asterisk (x) (eql #\* x))
+		     (check-tilde (x) (eql #\~ x))
+		     (check-num (x)
+		       (numberp
+			(parse-integer
+			 (concatenate 'string
+				      (list x))
+			 :junk-allowed t)))
+		     (check-all (x)
+		       (or
+			(check-char x)
+			(check-underscore x)
+			(check-asterisk x)
+			(check-tilde x)
+			(check-num x)))
+		     (check-nall (x)
+		       (not (check-all x))))
+	      (let* ((orig check-name)
+		     (changed (substitute-if #\_ #'check-nall identifier))
+		     (changed-l (concatenate 'list changed)))
+		(if (check-num (first changed-l))
+		    (progn 
+		      (setf (first changed-l) #\_)
+		      (setf changed (concatenate 'string changed-l))))
+		(loop while (gethash changed used-names) do
+		     (setf changed (format nil "_~a" changed)))
+		(setf (gethash orig name-map) changed)
+		(setf (gethash changed used-names) t)
+		(intern changed))))))))
 
 ;;; Traverses the tree but checks only the identifier nodes.
 (defmethod traverser ((rn renamer) (item identifier) level)

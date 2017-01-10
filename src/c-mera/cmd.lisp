@@ -52,7 +52,8 @@
  (stropt :short-name "E" :long-name "eval" ; I would really like to *not* have a short option for this, but it seems that clon does not work without a short-option name.
 	 :description "Evaluate the given form before reading the input file.")
  (flag :short-name "g" :long-name "debug"   :description "Add debugging information such as line numbers in the output.")
- (flag :short-name "v" :long-name "verbose" :description "Be verbose."))
+ (flag :short-name "v" :long-name "verbose" :description "Be verbose.")
+ (stropt :short-name "W" :long-name "warn" :description "Enable warnings: currently only 'hyphen'"))
 
 (defun clon-shuffle (input)
   "Make C-Mera's cmdline handling more conform to GNU standards by allowing non-option arguments to be interspersed with options.
@@ -113,6 +114,10 @@
 		    (add-cmdline-definition value))
 		   ((s= name "E" "eval")
 		    (,reader value))
+		   ((s= name "W" "warn")
+		    (if (string-equal value "no" :end1 2)
+			(push (intern (string-upcase value) :keyword) *suppressed-warnings*)
+			(push (intern (string-upcase value) :keyword) *enabled-warnings*)))
 		   (t (format t "Unnrecognized option ~a.~%" name))))
 	   (cond ((> (length args) 1)
 		  (setf in nil)

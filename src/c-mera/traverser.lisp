@@ -2,7 +2,7 @@
 
 (in-package :c-mera)
 
-;;; This is the common core of all traversal functions for the cgen-ast.
+;;; This is the common core of all traversal functions for the c-mera-ast.
 (defgeneric traverser (traverser node level))
 
 (defparameter *indent* #\tab)
@@ -18,7 +18,7 @@
 	       (traverser travers subnode (+ 1 level)))))))
 
 ;;; For nodelists this method ist used to start the traversal
-;;; for the subnodes in the lsit.
+;;; for subnodes in lists.
 (defmethod traverser ((travers t) (item nodelist) level)
   (with-slots (nodes) item
     (mapcar #'(lambda (x) (traverser travers x level)) nodes)))
@@ -51,7 +51,7 @@
   	       			    :values '()
   	       			    :subnodes '(proxy-subnode))))))))
 
-;;; Deletes a single proxy-node in the AST.
+;;; Deletes a single proxy-node from the AST.
 (defmacro del-proxy (slot)
   "Remove proxy-node in slot"
   (let ((val (gensym)) (node-list (gensym)))
@@ -76,7 +76,7 @@
       (let ((tmp (gensym (format nil "~:@(proxy-~a-~)" (first proxy-nodes)))))
 	;(format t "Symbol:: ~s" tmp)
 	(setf (gethash (first proxy-nodes) *proxy-node*) tmp)
-	;;for debug/swank, sonst auskommentieren
+	;;for debug/swank, else comment out
 	;;(eval `(defnode ,tmp (proxy) ()))
 	;;
 	`(let ((,(first proxy-nodes) ',tmp))

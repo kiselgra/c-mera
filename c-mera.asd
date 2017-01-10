@@ -54,7 +54,8 @@
 	    function-call nodes nodelist
 	    proxy-subnode info proxy subnode
 	    file line source-position item tag
-	    character number string function))
+	    character number string function
+	    *enabled-warnings* *suppressed-warnings*))
 
 (defparameter c-backend
   (append c-mera-backend cl-symbols
