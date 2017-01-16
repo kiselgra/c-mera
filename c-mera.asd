@@ -56,7 +56,7 @@
 	    file line source-position item tag
 	    character number string function
 	    check-and-get-name decl-blocker-extra-nodes
-	    renamer name-map 
+	    renamer name-map
 	    *enabled-warnings* *suppressed-warnings*))
 
 (defparameter c-backend
@@ -292,8 +292,8 @@
 	   ;;pretty printing
 	   :defprettymethod :defproxyprint :with-proxynodes
 	   :with-pp :++indent :--indent :stream :item :indent
-	   :pop-sign :top-sign :push-sign
-	   :pop-info :top-info :push-info
+	   :pop-sign :top-sign :push-sign :find-sign
+	   :pop-info :top-info :push-info :find-info
 	   :make-proxy :del-proxy :info-size
 	   :node-slot
 	   :delprettymethod

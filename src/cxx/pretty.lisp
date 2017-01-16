@@ -122,9 +122,20 @@
       (format stream " "))
 
     (defprettymethod :self access-specifier
+      (push-info 'access-specifier)
+      (push-sign (node-slot specifier))
       --indent
       (format stream "~&~a~a:" indent (node-slot specifier))
-      ++indent)))
+      ++indent)
+
+    ;; repeat 'parent' access-specifier if present
+    (defprettymethod :after access-specifier
+      (pop-info)
+      (pop-sign)
+      (when (find-info 'access-specifier)
+	--indent
+	(format stream "~&~a~a:" indent (top-sign))
+	++indent))))
 
 ;; constructor
 (with-pp

@@ -130,6 +130,8 @@
 (defgeneric push-info-generic (pretty-printer info))
 (defgeneric top-info-generic (pretty-printer))
 (defgeneric pop-info-generic (pretty-printer))
+(defgeneric find-info-generic (pretty-printer info))
+(defgeneric find-sign-generic (pretty-printer sign))
 
 (defmacro defpretty-helper (name class args slots &body body)
   (if args
@@ -189,6 +191,15 @@
   "get number of items in stack"
   (length info-stack))
 
+(defpretty-helper find-info-generic pretty-printer (info) (info-stack)
+  "find element in info stack"
+  (find info info-stack))
+
+(defpretty-helper find-sign-generic pretty-printer (sign) (info-stack)
+  "find sign in sign stack"
+  (find sign sign-stack))
+		  
+
 ;;; A definition macro used for the pretty printer.
 ;;; Adds the ":self" qualifier (besides :before :after) to override
 ;;; the standard node printing method (which simply prints all values).
@@ -231,9 +242,11 @@
      (macrolet ((push-sign (x) `(push-sign-generic pp ,x))
 		(pop-sign () `(pop-sign-generic pp))
 		(top-sign () `(top-sign-generic pp))
+		(find-sign (x) `(find-sign-generic pp ,x))
 		(push-info (x) `(push-info-generic pp ,x))
 		(pop-info () `(pop-info-generic pp))
 		(top-info () `(top-info-generic pp))
+		(find-info (x) `(find-info-generic pp ,x))
 		(info-size () `(info-size-generic pp))
 		(node-slot (x) `(slot-value item ',x)))
        ,@body)))
