@@ -55,6 +55,8 @@
 	    proxy-subnode info proxy subnode
 	    file line source-position item tag
 	    character number string function
+	    check-and-get-name decl-blocker-extra-nodes
+	    renamer name-map 
 	    *enabled-warnings* *suppressed-warnings*))
 
 (defparameter c-backend
@@ -322,9 +324,7 @@
            :else-if-traverser
 	   :if-blocker
            :decl-blocker
-	   :renamer
 
-	   :decl-blocker-extra-nodes
 	   :switch-reader
 	   :cl-reader
 	   :cm-reader

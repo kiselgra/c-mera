@@ -5,8 +5,8 @@
 ;;; A traverser which checks the identifier for c-conformity
 ;;; and automatically solves naming problems.
 (defclass renamer ()
-  ((used-names :initform (make-hash-table))
-   (name-map :initform (make-hash-table))))
+  ((used-names :initform (make-hash-table :test 'equal))
+   (name-map :initform (make-hash-table :test 'equal))))
 (defgeneric check-and-get-name (renamer check-name))
 
 ;;; Check if identifier is OK.
@@ -41,8 +41,7 @@
 			(check-num x)))
 		     (check-nall (x)
 		       (not (check-all x))))
-	      (let* ((orig check-name)
-		     (changed (substitute-if #\_ #'check-nall identifier))
+	      (let* ((changed (substitute-if #\_ #'check-nall identifier))
 		     (changed-l (concatenate 'list changed)))
 		(if (check-num (first changed-l))
 		    (progn 
@@ -50,9 +49,10 @@
 		      (setf changed (concatenate 'string changed-l))))
 		(loop while (gethash changed used-names) do
 		     (setf changed (format nil "_~a" changed)))
-		(setf (gethash orig name-map) changed)
 		(setf (gethash changed used-names) t)
-		(intern changed))))))))
+		(setf changed (intern changed))
+		(setf (gethash identifier name-map) changed)
+		changed)))))))
 
 ;;; Traverses the tree but checks only the identifier nodes.
 (defmethod traverser ((rn renamer) (item identifier) level)
