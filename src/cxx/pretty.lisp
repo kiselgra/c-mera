@@ -16,12 +16,14 @@
       (if (eql (top-info) 'template)
 	  (format stream "~&")
 	  (format stream "~&~%"))
+      (push-info 'function-definition)
       (format stream "~a" indent))
 
     
     ;; Remove temporary proxy-nodes
     (defprettymethod :after function-definition
       (del-proxy parameter)
+      (pop-info)
       (when (not (node-slot body))
 	(format stream ";")))
     

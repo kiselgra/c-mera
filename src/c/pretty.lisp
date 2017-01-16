@@ -74,11 +74,13 @@
     ;; Begin new line and add proxy-nodes.
     (defprettymethod :before function-definition
       (make-proxy parameter parameters)
+      (push-info 'function-definition)
       (format stream "~&~%~a" indent))
 
     ;; Remove temporary proxy-nodes
     (defprettymethod :after function-definition
       (del-proxy parameter)
+      (pop-info)
       (when (not (node-slot body))
 	(format stream ";")))
 
