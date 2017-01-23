@@ -157,7 +157,7 @@
   (append c-syntax
 	  '(class vector new constructor
 	    private public protected
-	    namespace using
+	    namespace using reference-type
 	    using-namespace from-namespace
 	    template instantiate)))
 

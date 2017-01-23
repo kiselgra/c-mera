@@ -3,9 +3,7 @@
 (include <vector>)
 (using-namespace std)
 
-(function foo () -> (const (instantiate vector (string)) (comment "&" :prefix "")))
-(function foo () -> (const (instantiate vector (string)) &))
-(function foo () -> (const (instantiate vector (string)) (addr-of nil)))
+(function foo () -> (const (reference-type (instantiate vector (string)))))
 
 (function main () -> int
   (<< cout 0 endl)
