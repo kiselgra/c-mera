@@ -39,7 +39,7 @@
    (set-macro-character #\Newline #'pre-process)
    (set-macro-character #\( #'pre-process-heads)
    (set-macro-character #\{ #'left-brace-reader)
-   (set-macro-character #\} #'right-brace-reader)
+   (set-macro-character #\} (get-macro-character #\) nil))
    (set-dispatch-macro-character #\# #\: #'sharp-colon-reader)))
 
 (define-switches
@@ -51,5 +51,5 @@
    (set-macro-character #\Newline #'pre-process)
    (set-macro-character #\( #'pre-process-heads)
    (set-macro-character #\{ #'left-brace-reader)
-   (set-macro-character #\} #'right-brace-reader)
+   (set-macro-character #\} (get-macro-character #\) nil))
    (set-dispatch-macro-character #\# #\: #'sharp-colon-reader)))
