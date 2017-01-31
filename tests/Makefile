@@ -50,12 +50,18 @@ cxx-meta-tests-pre:
 	@echo "- Meta:"
 cxx-meta-tests: cxx-meta-tests-pre $(cxx-meta-results)
 
+cxx-templ-test-files = $(shell ls cxx.templates.*.lisp)
+cxx-templ-results = $(cxx-templ-test-files:%.lisp=%.ok)
+cxx-templ-tests-pre:
+	@echo "- Templates:"
+cxx-templ-tests: cxx-templ-tests-pre $(cxx-templ-results)
+
 cxx-tests-pre:
 	@echo
 	@echo "For C++"
-cxx-tests: cxx-tests-pre cxx-decl-tests cxx-ns-tests cxx-misc-tests cxx-meta-tests
+cxx-tests: cxx-tests-pre cxx-decl-tests cxx-ns-tests cxx-misc-tests cxx-meta-tests cxx-templ-tests
 
-cxx-test-files = $(cxx-ns-test-files) $(cxx-decl-test-files) $(cxx-misc-test-files) $(cxx-meta-test-files)
+cxx-test-files = $(cxx-ns-test-files) $(cxx-decl-test-files) $(cxx-misc-test-files) $(cxx-meta-test-files) $(cxx-templ-test-files)
 
 
 

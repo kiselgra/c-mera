@@ -5,6 +5,7 @@
 
 (class 2)
 (struct 1)
+(union 1)
 (constructor 1)
 (destructor 0)
 

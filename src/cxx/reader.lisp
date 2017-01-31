@@ -14,7 +14,7 @@
 (defun split-reference (item)
   (let* ((name (symbol-name item))
 	 (len (length name)))
-    `(cmu-c++::postfix& ,(dissect (intern (subseq name 0 (- len 1))) :quoty t))))
+    `(cmu-c++::reference-type ,(dissect (intern (subseq name 0 (- len 1))) :quoty t))))
 			 
 ;; copy of c reader
 (defun pre-process (stream char)

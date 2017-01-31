@@ -180,7 +180,7 @@
     (make-nodelist
      ,arguments :prepend cm-c:decompose-type)))
 
-(c++syntax postfix& (item)
+(c++syntax reference-type (item)
   "Postfix & operator (reference"
   `(postfix-expression '& (make-node ,item)))
 
