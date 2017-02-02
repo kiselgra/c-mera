@@ -194,7 +194,9 @@
    (first-statement :initform '(nil))
    (self-else :initform '(nil))
    (child-else :initform '(nil))
-   (force-braces :initform '(nil))))
+   (force-braces :initform '(nil))
+   (curr-level :initform '())))
+		 
 
 (with-proxynodes (if-proxy else-proxy)
   "use proxy nodes for if and else body in if-statements"
@@ -249,9 +251,9 @@
 
 (defmethod traverser :before ((ib if-blocker) (item compound-statement) level)
   "prepare stacks, count statements"
-  (declare (ignore level))
-  (with-slots (parent-node statement-count first-statement force-braces) ib
+  (with-slots (parent-node statement-count first-statement force-braces curr-level) ib
     (with-slots (statements) item
+      (push level curr-level)
       (push t first-statement)
       (push 'compound-statement parent-node)
       (push nil force-braces)
@@ -259,10 +261,11 @@
 
 (defmethod traverser :after ((ib if-blocker) (item compound-statement) level)
   "decide wheter to print braces or not"
-  (declare (ignore level))
-  (with-slots (parent-node statement-count first-statement self-else child-else force-braces) ib
+  (with-slots (parent-node statement-count first-statement
+	       self-else child-else force-braces curr-level) ib
     (with-slots (statement braces) item
       (pop parent-node)
+      (pop curr-level)
 	  
       (cond ((eql (first parent-node) 'if-body)
 			 
@@ -293,15 +296,17 @@
 
 (defmethod traverser :before ((ib if-blocker) (item nodelist) level)
   "check nodelists that belongs to a compound-statement"
-  (declare (ignore level))
-  (with-slots (statement-count first-statement) ib
+  (with-slots (statement-count first-statement parent-node curr-level) ib
     (with-slots (nodes) item
-      (when (first first-statement)
+      (when (and (first first-statement)
+      		 (eql (first parent-node) 'compound-statement) 
+		 (eql (- level (first curr-level)) 2))
 		
 	(let ((count (length nodes)))
 	  (setf (first first-statement) nil)
 	  (setf (first statement-count)
 		(max count (first statement-count))))))))
+
 
 ;;; This traveser removes ambiguous nested compound-statements"
 ;;; to reduce indentation.
@@ -326,6 +331,6 @@
   (defproxymethod :before (eit else-if-traverser) else-if-proxy
     "check if only one single if-statement is present in else-body and remove compound-statement node"
     (with-slots (proxy-subnode) item
-      (let ((subnode (slot-value proxy-subnode 'statements)))
+      (let ((subnode (slot-value (slot-value proxy-subnode 'statements) 'expression)))
 	(when (typep subnode 'if-statement)
 	  (setf proxy-subnode subnode))))))
