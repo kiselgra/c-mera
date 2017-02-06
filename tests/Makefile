@@ -38,7 +38,7 @@ cxx-decl-tests-pre:
 	@echo "- Declarations:"
 cxx-decl-tests: cxx-decl-tests-pre $(cxx-decl-results)
 
-cxx-misc-test-files = $(shell ls cxx.stmt-expr.*.lisp)
+cxx-misc-test-files = $(shell ls cxx.misc.*.lisp)
 cxx-misc-results = $(cxx-misc-test-files:%.lisp=%.ok)
 cxx-misc-tests-pre:
 	@echo "- Misc:"

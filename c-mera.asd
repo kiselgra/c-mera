@@ -152,14 +152,16 @@
   (append c-symbols
 	  '(delete decl)))
 
-;; symbols not shadowed but expoted
+;; symbols not shadowed but exported
 (defparameter c++syntax
   (append c-syntax
 	  '(class vector new constructor
 	    private public protected
 	    namespace using reference-type
 	    using-namespace from-namespace
-	    template instantiate)))
+	    template instantiate
+	    dynamic-cast static-cast
+	    reinterpret-cast const-cast)))
 
 (defparameter c++exports
   (append default-exports
@@ -529,6 +531,7 @@
 (asdf:defsystem cmu-c++
   :name "c-mera user c++"
   :version "0.0.2"
+  :components ((:file "src/cxx/cmu-cxx"))
   :depends-on ("c-mera"
 	       "cm-c"
 	       "cmu-c"

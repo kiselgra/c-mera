@@ -24,7 +24,8 @@ cm_cxx_SOURCES = src/cxx/nodes.lisp \
 				 src/cxx/syntax.lisp \
 				 src/cxx/pretty.lisp \
 				 src/cxx/reader.lisp \
-				 src/cxx/cm-cxx.lisp
+				 src/cxx/cm-cxx.lisp \
+				 src/cxx/cmu-cxx.lisp
 
 cm_glsl_SOURCES = src/glsl/nodes.lisp \
 				  src/glsl/syntax.lisp \
