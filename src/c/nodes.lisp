@@ -75,7 +75,7 @@
 
 
 ;;; Comment. Leading chars ('//' or other) can also be defined explicitly.
-(defstatement comment (chars comment) ())
+(defstatement comment (chars comment linebreak) ())
 
 ;;;
 ;;; gcc extensions

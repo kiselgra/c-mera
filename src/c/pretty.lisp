@@ -611,7 +611,8 @@
 ;;; Comment
 (with-pp
   (defprettymethod :self comment
-    (format stream "~&~a" indent)
+    (when (node-slot linebreak)
+      (format stream "~&~a" indent))
     (format stream "~a" (node-slot chars))
     (format stream "~a"  (node-slot comment))))
     

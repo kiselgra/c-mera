@@ -180,13 +180,12 @@
   "Include for c files"
    `(include (quoty ,file)))
 
-(c-syntax comment (comment &key (prefix nil) (noprefix nil))
+(c-syntax comment (comment &key (prefix nil) (linebreak t))
   "Comment with default ('//') or user defined delimiter."
   `(comment
     (quoty ,(if prefix prefix "//"))
-    (quoty ,comment)))
-    ;(make-node ,(if prefix `,prefix '\/\/))
-    ;(make-node ,comment)))
+    (quoty ,comment)
+    ,linebreak))
 
 (defun decompose-declaration (item)
   "Decompose declaration item into its SPECIFIERS, TYPE, NAME and INITIALIZER"
