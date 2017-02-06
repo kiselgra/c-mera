@@ -118,7 +118,7 @@
     1- 1+
     type float-type
     funcall
-))
+    attribute))
 
 ;; smybols not shadowed but exported
 (defparameter c-syntax

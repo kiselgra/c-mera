@@ -77,6 +77,12 @@
 ;;; Comment. Leading chars ('//' or other) can also be defined explicitly.
 (defstatement comment (chars comment) ())
 
+;;;
+;;; gcc extensions
+;;;
+
+(defexpression attribute-expression () (arguments));
+
 
 ;;; typedef
 (defstatement typedef () (declaration))

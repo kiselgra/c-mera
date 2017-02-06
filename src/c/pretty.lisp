@@ -617,6 +617,26 @@
     
     ;(format stream "~&~a" indent)))
 
+;;; Attribute
+(with-pp
+  (with-proxynodes (arguments)
+      
+    (defprettymethod :before attribute-expression
+      (make-proxy arguments arguments)
+      (push-sign 'skip-first-attribute)
+      (format stream "__attribute__ (("))
+    
+    (defprettymethod :after attribute-expression
+      (del-proxy arguments)
+      (when (eql (top-sign) 'skip-first-attribute)
+	(pop-sign))
+      (format stream "))"))
+
+    (defproxyprint :before arguments
+      (if (eql (top-sign) 'skip-first-attribute)
+	  (pop-sign)
+	  (format stream ", ")))))
+
 ;;;; Line directive
 ;(with-pp
 ;  "line directive"

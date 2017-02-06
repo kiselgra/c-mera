@@ -370,6 +370,11 @@
     (make-node ,function)
     (make-nodelist ,args)))
 
+(c-syntax attribute (&rest args)
+  "GCC attribute extension"
+  `(attribute-expression
+    (make-nodelist ,args)))
+
 ;; build 'lisp' and 'cm' macros in :cmu-c package
 ;; lisp -> switch inside scope to lisp functions
 ;; cm   -> switch isnide scope to c-mera
