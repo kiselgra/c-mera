@@ -160,6 +160,7 @@
 	    namespace using reference-type
 	    using-namespace from-namespace
 	    template instantiate
+	    for-each
 	    dynamic-cast static-cast
 	    reinterpret-cast const-cast)))
 

@@ -195,7 +195,7 @@
   "find element in info stack"
   (find info info-stack))
 
-(defpretty-helper find-sign-generic pretty-printer (sign) (info-stack)
+(defpretty-helper find-sign-generic pretty-printer (sign) (sign-stack)
   "find sign in sign stack"
   (find sign sign-stack))
 		  
