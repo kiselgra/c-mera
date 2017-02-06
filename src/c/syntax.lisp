@@ -154,9 +154,15 @@
 					
     ;((make-node ,array) (make-nodelist ,indizes)))
 
-(c-syntax oref (object component)
+(c-syntax oref (&rest rest)
   "Object reference"
-  `(object-reference (make-node ,object) (make-node ,component)))
+  (let* ((items (reverse rest))
+	 (last-item (pop items))
+	 (butlast-item (pop items))
+	 (oref `(object-reference (make-node ,butlast-item) (make-node ,last-item))))
+    (loop for item in items do
+	 (setf oref `(object-reference (make-node ,item) ,oref)))
+    oref))
 
 (c-syntax pref (pointer component)
   "Pointer reference"
