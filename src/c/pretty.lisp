@@ -300,6 +300,42 @@
     (defproxyprint :after else
       (pop-info))))
 
+;;; switch case statement
+(with-pp
+  (with-proxynodes (switch case body)
+
+    (defprettymethod :before switch-case-statement
+      (push-info 'switch-case)
+      (make-proxy switch switch)
+      (format stream "~&~aswitch (" indent))
+
+    (defprettymethod :after switch-case-statement
+      (del-proxy switch)
+      (pop-info))
+
+    (defproxyprint :after switch
+      (format stream ")"))
+
+    (defprettymethod :before switch-case-item
+      (make-proxy constant case)
+      (make-proxy body body))
+
+    (defprettymethod :after switch-case-item
+      (del-proxy constant)
+      (del-proxy body))
+
+    (defproxyprint :before case
+      (if (eql (node-slot proxy-subnode) nil)
+	  (format stream "~&~adefault" indent)
+	  (format stream "~&~acase " indent)))
+    (defproxyprint :after case
+      (format stream ":"))
+
+    (defproxyprint :before body
+      ++indent)
+    (defproxyprint :after body
+      --indent)))
+
 ;;; Infix-expression
 (with-pp
   (with-proxynodes (member)

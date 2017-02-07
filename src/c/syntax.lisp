@@ -321,6 +321,34 @@
     (make-node ,then)
     (make-node ,else)))
 
+(defmacro make-switch-case-item (item)
+  "switch case item helper"
+  `(switch-case-item
+    ;; list of trigger values
+    ,(if (eql (first item) t)
+	 ;; identify default case
+	 nil 
+	 ;; normal cases
+	 `(make-nodelist ,(if (listp (first item))
+			      (first item)
+			      (list (first item)))
+			 :quoty t))
+    ;; case body
+    (make-expressions ,(rest item))))
+
+(c-syntax switch (expression &rest cases)
+  "Switch-Case"
+  `(switch-case-statement
+    ;; set expression
+    (make-node ,expression)
+    (compound-statement
+     ;; curly braces: t
+     t
+     ;; cases
+     (make-nodelist ,cases :prepend make-switch-case-item))))
+    
+    
+
 (c-syntax while (test &body body)
   "The c while loop"
   `(while-statement

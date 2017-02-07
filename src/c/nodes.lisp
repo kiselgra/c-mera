@@ -77,6 +77,10 @@
 ;;; Comment. Leading chars ('//' or other) can also be defined explicitly.
 (defstatement comment (chars comment linebreak) ())
 
+;;; switch-case
+(defstatement switch-case-statement () (switch cases))
+(defnode switch-case-item () (constant body))
+
 ;;;
 ;;; gcc extensions
 ;;;
