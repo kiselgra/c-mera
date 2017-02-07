@@ -19,7 +19,8 @@
   :file-reader   read-in-file
   :string-reader read-in-string
   :extra-traverser
-  (else-if-traverser
+  (nested-nodelist-remover
+   else-if-traverser
    if-blocker
    decl-blocker
    renamer))

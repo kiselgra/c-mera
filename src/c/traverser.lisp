@@ -308,7 +308,7 @@
 		(max count (first statement-count))))))))
 
 
-;;; This traveser removes ambiguous nested compound-statements"
+;;; This traveser removes ambiguous nested compound-statements in else-if
 ;;; to reduce indentation.
 (defclass else-if-traverser ()())
 (with-proxynodes (else-if-proxy)
@@ -334,3 +334,13 @@
       (let ((subnode (slot-value (slot-value proxy-subnode 'statements) 'expression)))
 	(when (typep subnode 'if-statement)
 	  (setf proxy-subnode subnode))))))
+
+;;; Remove nested nodelists (progn (progn (progn ...)))
+;;; Required for proper placement of curly braces (esp. for if-else)
+(defclass nested-nodelist-remover ()())
+(defmethod traverser :after ((nnr nested-nodelist-remover) (item nodelist) level)
+  (with-slots (nodes) item
+    (when (and (eql (length nodes) 1)
+	       (typep (first nodes) 'expression-statement)
+	       (typep (slot-value (first nodes) 'expression) 'nodelist))
+      (setf nodes (slot-value (slot-value (first nodes) 'expression) 'nodes)))))

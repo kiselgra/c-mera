@@ -324,6 +324,7 @@
 	   :decompose-declaration
 	   :decompose-type
 
+	   :nested-nodelist-remover
            :else-if-traverser
 	   :if-blocker
            :decl-blocker
