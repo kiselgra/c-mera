@@ -14,7 +14,7 @@ message:
 c-tests-pre:
 	@echo
 	@echo "For C"
-c-test-files = $(shell ls c.decl.*.lisp c.for.*.lisp c.while.*.lisp c.when.*.lisp c.misc.*.lisp c.meta.*.lisp)
+c-test-files = $(shell ls c.decl.*.lisp c.for.*.lisp c.while.*.lisp c.when.*.lisp c.misc.*.lisp c.meta.*.lisp c.cond.*.lisp)
 c-test-results = $(c-test-files:%.lisp=%.ok)
 c-tests: c-tests-pre $(c-test-results)
 # ...
