@@ -516,9 +516,11 @@
 (with-pp
   (with-proxynodes (aref)
     (defprettymethod :before array-reference
+      (push-info 'aref)
       (make-proxy indizes aref))
 
     (defprettymethod :after array-reference
+      (pop-info)
       (del-proxy indizes))
 
     (defproxyprint :before aref
@@ -549,11 +551,15 @@
 (with-pp
 
   (defprettymethod :before prefix-expression
+    (when (eql (top-info) 'aref)
+      (format stream "("))
     (push-info 'prefix)
     (format stream "~a" (node-slot operator)))
   
   (defprettymethod :after prefix-expression
-    (pop-info)))
+    (pop-info)
+    (when (eql (top-info) 'aref)
+      (format stream ")"))))
 
 ;;;; Postfix expressions
 (with-pp
