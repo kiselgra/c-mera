@@ -74,14 +74,18 @@
 	    clist value type specifier declaration-item
 	    bindings braces declaration-list union-definition
 	    members struct-definition parameters parameter-list
-	    body parameter function-definition enum-definition)))
+	    body parameter function-definition enum-definition
+	    declaration-value float-type linebreak
+	    constant attribute-expression switch cases
+	    switch-case-statement switch-case-item switch-case-item)))
 
 (defparameter c++backend
   (append c-backend
 	  '(delete new instantiate from-namespace
 	    template using using-namespace namespace
 	    access-specifier initializer constructor
-	    superclasses class attribute superclass)))
+	    superclasses class attribute superclass
+	    declaration-list-initializer list-items)))
 
 (defparameter cuda-backend
   (append c++backend
@@ -381,7 +385,7 @@
 (defpackage* :cmu-c++
   (:shadow-symbols () :export-symbols c++exports)
   (:use :cmu-c)
-  (:shadow :class :delete :vector :decl)
+  (:shadow :class :delete :vector)
   (:import-from :cm-c++ :decompose-declaration)
   (:shadowing-import-from :cm-c++ :switch-reader
 			  :cl-reader :cm-reader)
