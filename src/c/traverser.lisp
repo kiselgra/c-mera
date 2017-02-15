@@ -24,29 +24,28 @@
 	    alr-checked
 	    (labels ((check-char (x) (alpha-char-p x))
 		     (check-underscore (x) (eql #\_ x))
-		     (check-asterisk (x) (eql #\* x))
 		     (check-tilde (x) (eql #\~ x))
-		     (check-num (x)
-		       (numberp
-			(parse-integer
-			 (concatenate 'string
-				      (list x))
-			 :junk-allowed t)))
+		     (check-num (x) (digit-char-p x))
 		     (check-all (x)
 		       (or
 			(check-char x)
 			(check-underscore x)
-			(check-asterisk x)
-			(check-tilde x)
 			(check-num x)))
 		     (check-nall (x)
 		       (not (check-all x))))
-	      (let* ((changed (substitute-if #\_ #'check-nall identifier))
-		     (changed-l (concatenate 'list changed)))
+	      (let* ((identifier-l (concatenate 'list identifier))
+		     (changed-l (if (check-tilde (car identifier-l))
+				    (concatenate 'list
+				     '(#\~)
+				     (substitute-if #\_ #'check-nall (rest identifier-l)))
+				  (substitute-if #\_ #'check-nall identifier-l)))
+		     (changed (concatenate 'string changed-l)))
+		
 		(if (check-num (first changed-l))
 		    (progn 
 		      (setf (first changed-l) #\_)
 		      (setf changed (concatenate 'string changed-l))))
+
 		(loop while (gethash changed used-names) do
 		     (setf changed (format nil "_~a" changed)))
 		(setf (gethash changed used-names) t)

@@ -51,12 +51,10 @@
 		   (search "-" name-string)
 		   (search "!" name-string)
 		   (search "*" name-string)
-		   ;(search "&" name-string) ;; move to cpp reader
 		   (search "~" name-string))
-	      
 	       (split-unary item))
-	      (t (if (parse-integer (format nil "~a" item) :junk-allowed t)
-		     (parse-integer (format nil "~a" item) :junk-allowed t)
+	      (t (if (not (find-if-not #'digit-char-p (symbol-name item)))
+		     (parse-integer (symbol-name item))
 		     (if quoty
 			 `(quoty ,item)
 			 item)))))))))
