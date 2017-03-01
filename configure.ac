@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.61)
-AC_INIT([c-mera], [1.0.0])
+AC_INIT([c-mera], [1.0.1])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_MACRO_DIR([m4])
