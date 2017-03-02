@@ -1,4 +1,5 @@
 (in-package :c-mera)
+(defpackage :cm-cmdline)
 
 (defun add-cmdline-definition (str)
   (let* ((=pos (position #\= str))
@@ -9,7 +10,9 @@
       (setf key (subseq str 0 =pos))
       (setf val (string-trim white (subseq str (1+ =pos)))))
     (setf key (string-trim white key))
-    (eval `(defparameter ,(read-from-string (format nil "*~a*" key)) ,val))))
+    (let ((symbol (cmu-c::cintern (format nil "~a" key) :cm-cmdline)))
+      (eval `(defparameter ,symbol ,val))
+      (export symbol :cm-cmdline))))
 
 (defmacro synopsis (&body syn)
   "Forwards all arguments to CLON:DEFSYNOPSIS.
