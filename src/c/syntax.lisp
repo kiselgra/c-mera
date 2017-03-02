@@ -309,7 +309,7 @@
     ;; case test
     (make-node ,test)
     ;; if true:
-    (make-simple-block ,if-body)
+    (make-simple-block ,(if if-body if-body (empty)))
     ;; if else and present
     ,(when else-body
        `(make-simple-block ,else-body))))

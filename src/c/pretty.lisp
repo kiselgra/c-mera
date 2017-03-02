@@ -17,7 +17,8 @@
     (when (or (typep (node-slot expression) 'function-call)
 	      (typep (node-slot expression) 'infix-expression)
 	      (typep (node-slot expression) 'prefix-expression)
-	      (typep (node-slot expression) 'postfix-expression))
+	      (typep (node-slot expression) 'postfix-expression)
+	      (typep (node-slot expression) 'empty))
       (format stream ";"))))
 
 ;;; Compound-Statement
@@ -35,7 +36,7 @@
 		  (eql (top-info) 'if)
 		  (eql (top-info) 'else))
 	      ;; simply append brace
-	      (format stream "{~%")
+	      (format stream " {~%")
 	      ;; start new line+indent+brace
 	      (format stream "~&~a{~%" indent))
 	  ;; add info for following subnodes
@@ -277,7 +278,7 @@
       (make-proxy test test)
       (make-proxy else-body else)
       (if (eql (top-info) 'else)
-	    (format stream "if")
+	    (format stream " if")
 	    (format stream "~&~aif" indent))
       (push-info 'if))
 
@@ -290,12 +291,12 @@
       (format stream " ("))
 
     (defproxyprint :after test
-      (format stream ") "))
+      (format stream ")"))
 
     (defproxyprint :before else
       (push-info 'else)
       (if (node-slot proxy-subnode)
-	  (format stream "~&~aelse " indent)))
+	  (format stream "~&~aelse" indent)))
 
     (defproxyprint :after else
       (pop-info))))

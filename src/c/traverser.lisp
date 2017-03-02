@@ -286,6 +286,12 @@
       (pop first-statement)
       (pop force-braces))))
 
+(defmethod traverser :after ((ib if-blocker) (item comment) level)
+  "force braces if comments are present / important for solitary comments"
+  (declare (ignore level))
+  (with-slots (force-braces) ib
+    (setf (first force-braces) t)))
+
 (defmethod traverser :before ((ib if-blocker) (item declaration-list) level)
   "set force-braces (to t) if declartion-list found"
   (declare (ignore level))

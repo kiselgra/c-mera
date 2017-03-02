@@ -31,9 +31,10 @@
        (if (eql (first head) t)
 	   (cons 'progn (cdr head))
 	   `(if ,(first head)
-		,(cons 'progn (cdr head))
-		,(if (cdr clauses)
-		     `(cond ,@(cdr clauses)))))))))
+		,(when (cdr head)
+		       (cons 'progn (cdr head)))
+		,(when (cdr clauses)
+		       `(cond ,@(cdr clauses)))))))))
 
 (defmacro 1+ (number)
   `(+ ,number 1))

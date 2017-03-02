@@ -25,8 +25,10 @@
 		((== i 9)
 		 (if (== i 9)
 		   (return 9)))
+		((== i 0))
 		(t
-		  (return (* i k)))))
+		  (return (* i k))))
+  (return 0))
 
 
 
@@ -34,6 +36,7 @@
 
 
 (function main () -> int
+  (printf "%i\\n" (test 0 0))
   (printf "%i\\n" (test 1 -1))
   (printf "%i\\n" (test 2 -1))
   (printf "%i\\n" (test 3 -1))
@@ -46,6 +49,7 @@
   (printf "%i\\n" (test 10 -1))
   (return 0))
 
+;;## 0
 ;;## 1
 ;;## 2
 ;;## 2

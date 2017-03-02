@@ -75,4 +75,5 @@
 (defleaf number-literal (number))
 (defleaf string-literal (string))
 (defleaf character-literal (character))
+(defleaf empty ())
 
