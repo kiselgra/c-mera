@@ -72,7 +72,7 @@
     t
     ;; make single declarations/bindings
     (make-nodelist
-     ,bindings :prepend make-declaration-node/with-list-initializer)
+     ,(remove nil bindings) :prepend make-declaration-node/with-list-initializer)
     ;; make listnode with body
     ,(when body
 	 ;; make single expression statements

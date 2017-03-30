@@ -251,7 +251,7 @@
     t
     ;; make single declarations/bindings
     (make-nodelist
-     ,bindings :prepend make-declaration-node)
+     ,(remove nil bindings) :prepend make-declaration-node)
     ;; make listnode with body
     ,(when body
 	 ;; make single expression statements
