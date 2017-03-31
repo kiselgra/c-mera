@@ -135,6 +135,35 @@
       (del-proxy indizes)))
 )
 
+(with-proxynodes (funcall-args)
+  "identify parameters in function call (similar to arrey/indizes)"
+
+  (defmethod traverser :before ((db decl-blocker) (item function-call) level)
+    "add proxy"
+    (declare (ignore level))
+    (with-slots (arguments)
+      (make-proxy arguments funcall-args)))
+
+  (defmethod traverser :after ((db decl-blocker) (item function-call) level)
+    "remove proxy"
+    (declare (ignore level))
+    (with-slots (arguments)
+      (del-proxy arguments)))
+
+  (defproxymethod :before (db decl-blocker) funcall-args
+    "(constructor arg1 arg2..) -> 'constructor', 'arg1', 'arg2' are identifier -> hide args"
+    (with-slots (in-decl in-decl-item) db
+      (when (first in-decl)
+	(push nil in-decl-item))))
+
+  (defproxymethod :after (db decl-blocker) funcall-args
+    "pop last item from in-decl stack of decl-blocker"
+    (with-slots (in-decl in-decl-item) db
+      (when (first in-decl)
+	(pop in-decl-item)))))
+	     
+	     
+
 (defmethod traverser :before ((db decl-blocker) (item declaration-list) level)
   "prepare empty lists and a nil-value for further traversing"
   (declare (ignore level))
