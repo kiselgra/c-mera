@@ -8,7 +8,6 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([c-mera.asd])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES(Makefile
-				src/c-mera/version.lisp
 				util/build/dump-c.lisp    util/build/dump-cuda.lisp util/build/dump-cxx.lisp
 				util/build/dump-glsl.lisp util/build/dump-opencl.lisp)
 
