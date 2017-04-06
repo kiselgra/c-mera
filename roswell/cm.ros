@@ -1,0 +1,52 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|C-Mera generator
+exec ros -Q -L sbcl-bin -m c-mera -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(:c-mera
+                             :cm-c
+                             :cmu-c
+                             :cm-c++
+                             :cmu-c++
+                             :cms-c++
+                             :cms-cuda
+                             :cms-glsl
+                             :cms-opencl)
+                           :silent t))
+
+(defpackage :ros.script.cm.3700387292
+  (:use :cl))
+(in-package :ros.script.cm.3700387292)
+
+(defvar *supported* '("c" "c++" "cxx" "glsl" "ocl" "opencl" "cuda"))
+(defvar *abbrev* '(("cxx" . "c++") ("ocl" . "opencl")))
+
+(defun main (&rest argv)
+  (let ((gen "c")
+        version help (cmd (pathname-name *load-pathname*)))
+    (when (and (> (length cmd) 3)
+               (string-equal "cm-" cmd :end2 3))
+      (push (subseq cmd 3) argv))
+    (cond ((zerop (length argv))
+           (format
+            t "~{~A~%~}"
+            `("C-Mera generator selection frontend."
+              ,(format nil "Please specify generator type as~{ ~A~^,~} or use --help." *supported*)
+              "Generator abbreviations are ok and checked in the order given above."))
+           (ros:quit 1))
+          ((find (first argv) *supported* :test 'equal)
+           (setf gen (or (cdr (assoc (first argv) *abbrev* :test 'equal))
+                         (first argv))))
+          ((find (first argv) '("--version" "-V") :test 'equal)
+           (setf version t))
+          (t (setf help t)))
+    (let ((*package* (find-package (read-from-string (format nil ":cmu-~A" gen)))))
+      (setf (readtable-case *readtable*) :invert)
+      (funcall (read-from-string(format nil "cm-~A::~A-processor" gen gen))
+               (cond
+                 (version '("--version"))
+                 (help '("--help"))
+                 (t (rest argv)))))))
+;;; vim: set ft=lisp lisp:
