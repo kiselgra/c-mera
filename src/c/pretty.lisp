@@ -440,6 +440,12 @@
       (if (node-slot proxy-subnode)
 	  (format stream " ")))))
 
+;; Label statement
+(with-pp
+  (defprettymethod :self label-statement
+    (format stream "~&~a:" (node-slot name))))
+  
+
 ;;; Qualifiers / specifier
 (with-pp
   (with-proxynodes (specifier-proxy)

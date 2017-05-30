@@ -389,6 +389,10 @@
     (make-node ,tag)
     ,(when item `(make-node ,item))))
 
+(c-syntax (label) (name)
+  "Label"
+  `(label-statement (quoty ,name)))
+
 (c-syntax not (item)
   "Not-expression"
   `(not-expression (make-node ,item)))

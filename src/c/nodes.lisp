@@ -62,6 +62,7 @@
 
 ;; goto, continue, break return
 (defstatement jump-statement () (kind members))
+(defstatement label-statement () (name))
 
 (defstatement expression-statement (semicolon) (expression))
 (defstatement compound-statement (braces) (statements))
