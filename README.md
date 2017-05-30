@@ -65,7 +65,11 @@ However, the system can be leveraged to provide very high level programming para
 We recommend CCL due to long code-transformation times with SBCL.
 
 - Install SBCL or CCL
-- Install Quicklisp (See the example [there](https://www.quicklisp.org/))
+- Install Clon (See reference [there](https://www.lrde.epita.fr/%7Edidier/software/lisp/clon.php))
+- (Alternatively, install Clon with Quicklisp)
+	- Install Quicklisp (See the example [there](https://www.quicklisp.org/))
+	- `sbcl --eval "(ql:quickload :net.didierverna.clon)"` or
+	- `ccl  --eval "(ql:quickload :net.didierverna.clon)"`
 - Build C-Mera
 	- `autoreconf -if`  (when building from a fresh repo)
 	- `./configure --with-sbcl` (or `--with-ccl`)

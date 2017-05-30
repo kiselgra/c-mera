@@ -449,7 +449,7 @@
 ;; core system
 (asdf:defsystem c-mera
   :name "c-mera"
-  :version "0.0.2"
+  :version "1.1.0"
   :serial t
   :components ((:file "src/c-mera/version")
 	       (:file "src/c-mera/cmd")
@@ -465,7 +465,7 @@
 
 (asdf:defsystem cm-c
   :name "c-mera c"
-  :version "0.0.2"
+  :version "1.1.0"
   :serial t
   :components ((:file "src/c-mera/c-mera")
 	       (:file "src/c/utils")
@@ -479,7 +479,7 @@
 
 (asdf:defsystem cm-c++
   :name "c-mera c++"
-  :version "0.0.2"
+  :version "1.1.0"
   :serial t
   :components ((:file "src/c/cm-c")
 	       (:file "src/cxx/nodes")
@@ -492,7 +492,7 @@
 
 (asdf:defsystem cm-cuda
   :name "c-mera cuda"
-  :version "0.0.2"
+  :version "1.1.0"
   :serial t
   :components ((:file "src/cxx/cm-cxx")
 	       (:file "src/cuda/nodes")
@@ -503,7 +503,7 @@
 
 (asdf:defsystem cm-opencl
   :name "c-mera opencl"
-  :version "0.0.2"
+  :version "1.1.0"
   :serial t
   :components ((:file "src/cxx/cm-cxx")
 	       (:file "src/opencl/nodes")
@@ -514,7 +514,7 @@
 
 (asdf:defsystem cm-glsl
   :name "c-mera glsl"
-  :version "0.0.2"
+  :version "1.1.0"
   :serial t
   :components ((:file "src/c/cm-c")
 	       (:file "src/glsl/nodes")
@@ -528,14 +528,14 @@
 
 (asdf:defsystem cmu-c
   :name "c-mera user c"
-  :version "0.0.2"
+  :version "1.1.0"
   :components ((:file "src/c/cmu-c"))
   :depends-on ("c-mera"
 	       "cm-c"))
 
 (asdf:defsystem cmu-c++
   :name "c-mera user c++"
-  :version "0.0.2"
+  :version "1.1.0"
   :components ((:file "src/cxx/cmu-cxx"))
   :depends-on ("c-mera"
 	       "cm-c"
@@ -544,7 +544,7 @@
 
 (asdf:defsystem cmu-cuda
   :name "c-mera user cuda"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("c-mera"
 	       "cm-c"
 	       "cmu-c"
@@ -554,7 +554,7 @@
 
 (asdf:defsystem cmu-opencl
   :name "c-mera user opencl"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("c-mera"
 	       "cm-c"
 	       "cmu-c"
@@ -564,7 +564,7 @@
 
 (asdf:defsystem cmu-glsl
   :name "c-mera user glsl"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("c-mera"
 	       "cm-c"
 	       "cmu-c"
@@ -574,25 +574,25 @@
 
 (asdf:defsystem cms-c
   :name "c-mera swap c"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("cmu-c"))
 
 (asdf:defsystem cms-c++
   :name "c-mera swap c++"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("cmu-c++"))
 
 (asdf:defsystem cms-cuda
   :name "c-mera swap cuda"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("cmu-cuda"))
 
 (asdf:defsystem cms-opencl
   :name "c-mera swap opencl"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("cmu-opencl"))
 
 (asdf:defsystem cms-glsl
   :name "c-mera swap glsl"
-  :version "0.0.2"
+  :version "1.1.0"
   :depends-on ("cmu-glsl"))
