@@ -1,6 +1,21 @@
 ;;;; Utilities
 (in-package :c-mera)
 
+;;; Inverts the case when interning a string.
+;;; This is needed to keep the correct internal (inverted) case.
+;;; Use this function for all c depending code.
+(defun cintern (name &optional package)
+  (macrolet ((case-test (test string)
+	       `(reduce #'(lambda (a b) (and a b))
+			(mapcar (lambda(x) (or (not (both-case-p x)) (,test x)))
+				(coerce ,string 'list)))))
+    (let ((string (cond ((case-test upper-case-p name) (string-downcase name))
+			((case-test lower-case-p name) (string-upcase name))
+			(t name))))
+      (if package
+	  (intern string package)
+	  (intern string)))))
+
 (defmacro defsyntax (tags packages lambda-list &body body)
   "Define syntax for tags from specific packages"
   (let ((tags (if (listp tags) tags (list tags))))

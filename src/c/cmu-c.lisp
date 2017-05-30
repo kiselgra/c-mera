@@ -1,21 +1,5 @@
 (in-package :cmu-c)
 
-;;; Inverts the case when interning a string.
-;;; This is needed to keep the correct internal (inverted) case.
-;;; Use this function for all c depending code.
-(defun cintern (name &optional package)
-  (lisp
-   (macrolet ((case-test (test string)
-		`(reduce #'(lambda (a b) (and a b))
-			 (mapcar (lambda(x) (or (not (both-case-p x)) (,test x)))
-				 (coerce ,string 'list)))))
-     (let ((string (cond ((case-test upper-case-p name) (string-downcase name))
-			 ((case-test lower-case-p name) (string-upcase name))
-			 (t name))))
-       (if package
-	   (intern string package)
-	   (intern string))))))
-
 ;;standard functions/macros
 (defmacro when (test &body forms)
   `(if ,test

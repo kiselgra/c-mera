@@ -10,7 +10,7 @@
       (setf key (subseq str 0 =pos))
       (setf val (string-trim white (subseq str (1+ =pos)))))
     (setf key (string-trim white key))
-    (let ((symbol (cmu-c::cintern (format nil "~a" key) :cm-cmdline)))
+    (let ((symbol (cintern (format nil "~a" key) :cm-cmdline)))
       (eval `(defparameter ,symbol ,val))
       (export symbol :cm-cmdline))))
 

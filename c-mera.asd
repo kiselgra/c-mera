@@ -267,9 +267,10 @@
 	   :defsyntax :tag
 	   :ensure-list
 	   :print!
+	   :cintern
 	   :fix-case
 	   
-       :fboundp!
+	   :fboundp!
 	   :vboundp!
 	   :quoty
 	   
@@ -375,7 +376,7 @@
 (defpackage* :cmu-c
   (:shadow-symbols c-symbols :export-symbols c-exports)
   (:use :common-lisp)
-  (:import-from :c-mera :flatten :print! :quoty)
+  (:import-from :c-mera :flatten :print! :quoty :cintern)
   (:import-from :cm-c :simple-print :decompose-declaration
 		:switch-reader :cl-reader :cm-reader))
 

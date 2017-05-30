@@ -82,7 +82,7 @@
 				     collect (subseq str i j)
 				     while j)
 		      if (string/= s "")
-		      collect (dissect (cmu-c::cintern s) :quoty t)))))
+		      collect (dissect (cintern s) :quoty t)))))
 	x))))
 
 (defun left-brace-reader (stream char)
