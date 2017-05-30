@@ -1,7 +1,0 @@
-(in-package :c-mera)
-
-(defparameter *version* (list @VER_MAJ@ @VER_MIN@ @VER_PAT@))
-(defparameter *generator* :undefined)
-
-(defun print-version ()
-  (format t "~a.~a.~a~%" (first *version*) (second *version*) (third *version*)))

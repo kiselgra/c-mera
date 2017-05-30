@@ -4,8 +4,6 @@
     (when (probe-file quicklisp-init)
       (load quicklisp-init)))
 
-(ql:quickload :net.didierverna.clon)
-
 #+sbcl (require :sb-cltl2)
 
 (in-package :cl-user)
@@ -459,7 +457,8 @@
 	       (:file "src/c-mera/utils")
 	       (:file "src/c-mera/traverser")
 	       (:file "src/c-mera/pretty")
-	       (:file "src/c-mera/c-mera")))
+	       (:file "src/c-mera/c-mera"))
+  :depends-on ("net.didierverna.clon"))
 
 
 ;;; backends
