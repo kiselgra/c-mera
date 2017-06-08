@@ -442,8 +442,10 @@
 
 ;; Label statement
 (with-pp
-  (defprettymethod :self label-statement
-    (format stream "~&~a:" (node-slot name))))
+  (defprettymethod :before label-statement
+    (format stream "~&"))
+  (defprettymethod :after label-statement
+    (format stream ":~%")))
   
 
 ;;; Qualifiers / specifier

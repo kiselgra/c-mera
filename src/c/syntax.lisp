@@ -391,7 +391,7 @@
 
 (c-syntax (label) (name)
   "Label"
-  `(label-statement (quoty ,name)))
+  `(label-statement (make-node ,name)))
 
 (c-syntax not (item)
   "Not-expression"
