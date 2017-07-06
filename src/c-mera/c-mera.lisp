@@ -85,7 +85,8 @@
 		#+clozure (handler-case
 			      (,start-function ccl::*command-line-argument-list*)
 			    (error (err) (let ((*print-pretty* t))
-					   (format *error-output* "~a" err))))
+					   (format *error-output* "~a" err)
+					   (ccl::quit 1))))
 		#+ecl (,start-function (loop for i from 0 below (si:argc) collect (si:argv i)))
 		#-(or sbcl clozure ecl)
 		(error "Missing implementation of 'save-generator' for your lisp implementation") 
