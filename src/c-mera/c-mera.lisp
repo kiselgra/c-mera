@@ -91,6 +91,11 @@
 		#-(or sbcl clozure ecl)
 		(error "Missing implementation of 'save-generator' for your lisp implementation") 
 		))
+       ;; use local quicklisp
+       #-quicklisp
+       (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname))))
+	 (when (probe-file quicklisp-init)
+	   (load quicklisp-init)))
        (net.didierverna.clon:dump name dump-start))))
 
 
