@@ -160,6 +160,7 @@
     ;; stop at whitespace and comments
     (if (not (or (eql peek #\))
 		 (eql peek #\;)
+		 (eql peek #\#)
 		 (eql peek #\Space)
 		 (eql peek #\Newline)
 		 (eql peek #\Tab)))
@@ -176,6 +177,7 @@
       (if (not (or (eql peek #\()
 		   (eql peek #\))
 		   (eql peek #\;)
+		   (eql peek #\#)
 		   (eql peek #\Space)
 		   (eql peek #\Newline)
 		   (eql peek #\Tab)

@@ -24,6 +24,7 @@
     ;; skip multiple whitespace and comments
     (if (not (or (eql peek #\))
 		 (eql peek #\;)
+		 (eql peek #\#)
 		 (eql peek #\})
 		 (eql peek #\{)
 		 (eql peek #\Space)
@@ -45,6 +46,7 @@
 		   (eql peek #\})
 		   (eql peek #\{)
 		   (eql peek #\;)
+		   (eql peek #\#)
 		   (eql peek #\Space)
 		   (eql peek #\Newline)
 		   (eql peek #\Tab)
