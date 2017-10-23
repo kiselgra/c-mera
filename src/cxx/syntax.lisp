@@ -97,8 +97,9 @@
 		    ,(when initializer
 			   `(make-nodelist ,initializer))
 		    ;; body
-		    (make-block ,body))))
-		
+                    ,(when body
+		           `(make-block ,body)))))
+	      
 	      (cmu-c++::destructor (&body body)
 		`(function-definition
 		  ;; destructor name / two subnodes : 1. '~' 2. <name>
@@ -106,7 +107,8 @@
 		  ;; parameter: nil
 		  (parameter-list nil)
 		  ;; body
-		  (make-block ,body))))
+                  ,(when body
+			 `(make-block ,body)))))
      (class
       ;; class name
       (make-node ,name)
