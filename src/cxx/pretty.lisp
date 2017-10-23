@@ -153,7 +153,9 @@
 	(del-proxy initializer))
       (del-proxy parameter)
       (when (eql (top-sign) 'first-initializer)
-	(pop-sign)))
+	(pop-sign))
+      (when (not (node-slot body))
+        (format stream ";")))
     
     (defproxyprint :before parameters
       (format stream "("))

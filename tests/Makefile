@@ -15,7 +15,7 @@ c-tests-pre:
 	@echo
 	@echo "For C"
 c-test-files = $(shell ls c.decl.*.lisp c.for.*.lisp c.while.*.lisp c.when.*.lisp c.misc.*.lisp c.meta.*.lisp \
-	                      c.cond.*.lisp c.switch.*.lisp c.renaming.*.lisp c.comment.*.lisp c.goto.*.lisp)
+	                      c.cond.*.lisp c.switch.*.lisp c.renaming.*.lisp c.comment.*.lisp)
 c-test-results = $(c-test-files:%.lisp=%.ok)
 c-tests: c-tests-pre $(c-test-results)
 # ...
@@ -32,6 +32,12 @@ cxx-ns-results = $(cxx-ns-test-files:%.lisp=%.ok)
 cxx-ns-tests-pre:
 	@echo "- Namespaces:"
 cxx-ns-tests: cxx-ns-tests-pre $(cxx-ns-results)
+
+cxx-cls-test-files = $(shell ls cxx.class.*.lisp)
+cxx-cls-results = $(cxx-cls-test-files:%.lisp=%.ok)
+cxx-cls-tests-pre:
+	@echo "- Classes:"
+cxx-cls-tests: cxx-cls-tests-pre $(cxx-cls-results)
 
 cxx-decl-test-files = $(shell ls cxx.decl.*.lisp)
 cxx-decl-results = $(cxx-decl-test-files:%.lisp=%.ok)
@@ -60,11 +66,21 @@ cxx-templ-tests: cxx-templ-tests-pre $(cxx-templ-results)
 cxx-tests-pre:
 	@echo
 	@echo "For C++"
-cxx-tests: cxx-tests-pre cxx-decl-tests cxx-ns-tests cxx-misc-tests cxx-meta-tests cxx-templ-tests
 
-cxx-test-files = $(cxx-ns-test-files) $(cxx-decl-test-files) $(cxx-misc-test-files) $(cxx-meta-test-files) $(cxx-templ-test-files)
+cxx-tests: 	cxx-tests-pre \
+			cxx-decl-tests \
+			cxx-ns-tests \
+			cxx-cls-tests \
+			cxx-misc-tests \
+			cxx-meta-tests \
+			cxx-templ-tests
 
-
+cxx-test-files = 	$(cxx-ns-test-files) \
+					$(cxx-decl-test-files) \
+					$(cxx-cls-test-files) \
+					$(cxx-misc-test-files) \
+					$(cxx-meta-test-files) \
+					$(cxx-templ-test-files)
 
 
 ###
