@@ -26,6 +26,11 @@
 (defmacro 1- (number)
   `(- ,number 1))
 
+(defmacro cpp (&rest args)
+  `(comment ,(format nil "~{~a~^ ~}" args) :prefix "#"))
+
+(defmacro pragma (&rest args)
+  `(cpp "pragma" ,@args))
 
 ;; Code proposed by plops on issue #17
 ;; https://github.com/kiselgra/c-mera/issues/17
