@@ -7,6 +7,7 @@
 ;; override function declaration 
 ;; - empty parameter list from "(void)" to "()"
 ;; - move parameter parentheses to proxy-node
+;; - emit ';' if body is set-node -> pure-virtual
 (with-pp
   (with-proxynodes (parameters parameter)
 
@@ -24,7 +25,8 @@
     (defprettymethod :after function-definition
       (del-proxy parameter)
       (pop-info)
-      (when (not (node-slot body))
+      (when (or (not (node-slot body))
+		(typep (node-slot body) 'assignment-expression))
 	(format stream ";")))
     
     ;; Begin parameter-list.

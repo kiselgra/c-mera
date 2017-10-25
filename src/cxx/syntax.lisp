@@ -78,6 +78,37 @@
 	 ;; make single expression statements
 	 `(make-expressions ,body))))
 
+;; copy/extend  for pure virtual functions
+(c++syntax function (name parameters -> type &body body &environment env)
+  "Define c++ function"
+  (declare (ignore ->))
+  (let ((pure nil))
+    `(function-definition
+      ;; function name + type
+      ,(if (listp type)
+	   ;; check if macro/function or list
+	   (let ((first (first type)))
+	     (if (and (not (listp first)) (fboundp! first env))
+		 ;; type is macro or function
+		 `(make-declaration-node (,type ,name))
+		 ;; type is list with type information
+		 (if (and (equal (symbol-name first) "PURE")
+			  (equal (symbol-name (second type)) "VIRTUAL"))
+		     (progn
+		       (setf pure t)
+		       `(make-declaration-node (,@(rest type) ,name)))
+		     `(make-declaration-node (,@type ,name)))))
+	   ;; type is single symbol
+	   `(make-declaration-node (,type ,name)))
+      ;; parameter list
+      (parameter-list
+       (make-nodelist ,parameters :prepend make-declaration-node))
+      ;; body
+      ,(if pure
+	   `(cmu-c::set nil 0)
+	   (when body
+	     `(make-block ,body))))))
+
 (c++syntax constructor (name args &body body)
   "Constructor with initializer list"
   (let ((initializer nil))

@@ -385,7 +385,7 @@
 (defpackage* :cmu-c++
   (:shadow-symbols () :export-symbols c++exports)
   (:use :cmu-c)
-  (:shadow :class :delete :vector)
+  (:shadow :class :delete :vector :fuction)
   (:import-from :cm-c++ :decompose-declaration)
   (:shadowing-import-from :cm-c++ :switch-reader
 			  :cl-reader :cm-reader)
