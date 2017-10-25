@@ -9,6 +9,7 @@
 
 (defstatement class () (name superclasses body))
 (defstatement constructor () (name parameter initializer body))
+(defstatement destructor () (name body))
 (defstatement access-specifier (specifier) (body))
 (defstatement namespace () (namespace body))
 (defstatement using-namespace () (namespace))
@@ -17,5 +18,5 @@
 
 (defexpression from-namespace () (namespace name))
 (defexpression instantiate () (template arguments))
-(defexpression new () (specifier type))
-(defexpression delete (tag) (object))
+(defexpression new (operator) (specifier type))
+(defexpression delete (operator) (object))

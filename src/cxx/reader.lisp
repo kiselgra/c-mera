@@ -2,14 +2,16 @@
 
 (defun dissect (item &key (quoty nil))
   "extended c pre processor"
-  (cond
-    ((symbolp item)
-     (if (and (> (length (symbol-name item)) 1)
-	      (not (eql (first (coerce (symbol-name item) 'list)) #\&))
-	      (eql (first (reverse (coerce (symbol-name item) 'list))) #\&))
-	 (split-reference item)
-	 (cm-c::dissect item :quoty quoty)))
-    (t (cm-c::dissect item :quoty quoty))))
+  (if (symbolp item)
+      (cond ((or (eql item 'cmu-c++::new[])
+		 (eql item 'cmu-c++::delete[]))
+	     item)
+	    ((and (> (length (symbol-name item)) 1)
+		  (not (eql (first (coerce (symbol-name item) 'list)) #\&))
+		  (eql (first (reverse (coerce (symbol-name item) 'list))) #\&))
+	     (split-reference item))
+	    (t (cm-c::dissect item :quoty quoty)))
+      (cm-c::dissect item :quoty quoty)))
 
 (defun split-reference (item)
   (let* ((name (symbol-name item))

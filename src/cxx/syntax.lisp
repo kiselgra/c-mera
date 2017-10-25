@@ -78,37 +78,41 @@
 	 ;; make single expression statements
 	 `(make-expressions ,body))))
 
+(c++syntax constructor (name args &body body)
+  "Constructor with initializer list"
+  (let ((initializer nil))
+    (when (eql (first body) :init)
+      (setf initializer (second body))
+      (setf body (rest (rest body))))
+    `(constructor
+	 ;; constructor name
+	 (make-node ,name)
+       ;; parameter
+       (parameter-list
+	(make-nodelist ,args :prepend make-declaration-node))
+       ;; initializer
+       ,(when initializer
+	      `(make-nodelist ,initializer))
+       ;; body
+       ,(when (or body initializer)
+	      `(make-block ,body)))))
+
+(c++syntax destructor (name &body body)
+  "Destructor"
+  `(destructor
+    ;; destructor name
+    (make-node ,name)
+    ;; body
+    ,(when body
+	   `(make-block ,body))))
 
 (c++syntax class (name superclasses &body body)
   "Define a c++ class with c'tor and d'ctor mactoler"
   ;; macrolet for locally defined c'tor and d'tor
   `(macrolet ((cmu-c++::constructor (args &body body)
-		(let ((initializer nil))
-		  (when (eql (first body) :init)
-		    (setf initializer (second body))
-		    (setf body (rest (rest body))))
-		  `(constructor
-		    ;; constructor name
-		    (make-node ,',name)
-		    ;; parameter
-		    (parameter-list
-		     (make-nodelist ,args :prepend make-declaration-node))
-		    ;; initializer
-		    ,(when initializer
-			   `(make-nodelist ,initializer))
-		    ;; body
-                    ,(when body
-		           `(make-block ,body)))))
-	      
+		`(cms-c++::constructor ,',name ,args ,@body))
 	      (cmu-c++::destructor (&body body)
-		`(function-definition
-		  ;; destructor name / two subnodes : 1. '~' 2. <name>
-		  (make-nodelist ('~ ,',name))
-		  ;; parameter: nil
-		  (parameter-list nil)
-		  ;; body
-                  ,(when body
-			 `(make-block ,body)))))
+		`(cms-c++::destructor ,',name ,@body)))
      (class
       ;; class name
       (make-node ,name)
@@ -140,17 +144,26 @@
   "Using namespace"
   `(using-namespace (make-node ,item)))
 
-(c++syntax new (&rest object)
+(c++syntax (new new[]) (&rest object)
   "Make new object"
   (let ((specifier (butlast object))
 	(object (first (last object))))
     `(new
+      ;; new / new[]
+      ',tag
       ;;specifier
       ,(when specifier
          `(specifier
 	   (make-nodelist ,specifier)))
       ;; type/object
       (make-node ,object))))
+
+(c++syntax (delete delete[]) (item)
+  "Delete object"
+  `(delete
+    ;; delete / delete[]
+    ',tag
+    (make-node ,item)))
 
 (c++syntax from-namespace (&rest rest)
   "From namesapce ::foo // foo::bar"

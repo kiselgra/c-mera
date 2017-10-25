@@ -157,7 +157,8 @@
 ;; symbols not shadowed but exported
 (defparameter c++syntax
   (append c-syntax
-	  '(class vector new constructor
+	  '(class vector new
+	    constructor destructor
 	    private public protected
 	    namespace using reference-type
 	    using-namespace from-namespace

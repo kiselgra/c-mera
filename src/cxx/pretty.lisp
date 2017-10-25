@@ -115,8 +115,8 @@
       (make-proxy attribute attribute)
       (if (eql (top-sign) 'first-superclass)
 	  (progn (pop-sign)
-		 (format stream ": "))
-	  (format stream ", ")))
+		 (format stream "~&~a : " indent))
+	  (format stream "~&~a , " indent)))
 
     (defproxyprint :after attribute
       (format stream " "))
@@ -164,11 +164,36 @@
       (format stream ")"))
     
     (defproxyprint :before initializer
+      (push-info 'initializer)
       (if (eql (top-sign) 'first-initializer)
 	  (progn
 	    (pop-sign)
 	    (format stream "~&~a : " indent))
-	  (format stream ", ")))))
+	  (format stream "~&~a , " indent)))
+
+    (defproxyprint :after initializer
+      (pop-info))))
+
+;; destructor
+(with-pp
+  (with-proxynodes (name)
+
+    (defprettymethod :before destructor
+      (format stream "~&~%~a" indent)
+      (when (typep (node-slot name) 'identifier)
+	(format stream " ~~"))
+      (make-proxy name name)
+      (push-info 'destructor))
+
+    (defprettymethod :after destructor
+      (del-proxy name)
+      (when (not (node-slot body))
+        (format stream ";")))
+
+    (defproxyprint :after name
+      (pop-info)
+      (format stream "()"))))
+	
 
 (with-pp
 
@@ -189,7 +214,15 @@
 (with-pp
 
   (defprettymethod :before new
-    (format stream "new ")))
+    (format stream "~a " (node-slot operator))))
+
+(with-pp
+
+  (defprettymethod :before delete
+    (format stream "~&~a~a " indent (node-slot operator)))
+  (defprettymethod :after delete
+    (format stream ";~%")))
+      
 
 (with-pp
 
@@ -206,7 +239,11 @@
       (del-proxy name))
     
     (defproxyprint :before name
-      (format stream "::"))))
+      (format stream "::")
+      ;; tilde for destructors,
+      ;; info set in destructor prettymethod
+      (when (eql (top-info) 'destructor)
+	  (format stream "~~")))))
 
 (with-pp
   (with-proxynodes (parameters)
