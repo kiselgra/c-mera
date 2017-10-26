@@ -5,7 +5,7 @@
 
 (defmacro make-expressions (list)
   ;; make expression statements with semicolon and wrap in quoties
-  `(make-nodelist ,list :prepend (expression-statement t) :quoty t))
+  `(make-nodelist ,list :prepend (expression-statement nil) :quoty t))
 
 (defmacro make-block (list)
   "Code block with curly braces and intendation"
@@ -23,14 +23,14 @@
     ;; curly braces: t
     t
     ;; also handle expressions when 'progn' is absent
-    (expression-statement t (quoty ,list))))
+    (expression-statement nil (quoty ,list))))
 
 (c-syntax block (&body body)
   "Code block with curly braces and intendation"
   `(make-block ,body))
 
 (c-syntax progn (&body body)
-  "Code block without curly craces nor intendation"
+  "Code block without curly braces nor intendation"
   ;; make expressions with ';' delimiter
   `(make-expressions ,body))
 

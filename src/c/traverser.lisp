@@ -329,7 +329,7 @@
 	(setf (first force-braces) t))))
 
 (defmethod traverser :before ((ib if-blocker) (item nodelist) level)
-  "check nodelists that belongs to a compound-statement"
+  "check nodelists that belong to a compound-statement"
   (with-slots (statement-count first-statement parent-node curr-level) ib
     (with-slots (nodes) item
       (when (and (first first-statement)
@@ -340,6 +340,24 @@
 	  (setf (first first-statement) nil)
 	  (setf (first statement-count)
 		(max count (first statement-count))))))))
+
+
+(defmethod traverser :after ((ib if-blocker) (item expression-statement) level)
+  "place semicolon at empty branches"
+  (with-slots (statement-count curr-level force-braces) ib
+    (with-slots (force-semicolon expression) item
+      (if (and
+	   ;; subnode that can contain no further statements
+	   (typep expression 'nodelist)
+	   ;; do nothing if a comment is present, see above (if-blocker comment)
+	   (not (eql (first force-braces) t))
+	   ;; specific position in ast, 1st expr-statement in body.
+	   (and (first curr-level) ;; curr-level must be set
+		(eql (- level (first curr-level)) 1))
+	   ;; subtree has no expressions
+	   ;; this is a :after method, statement-cound already filled
+	   (eql (first statement-count) 0))
+	  (setf force-semicolon t)))))
 
 
 ;;; This traveser removes ambiguous nested compound-statements in else-if
@@ -378,3 +396,6 @@
 	       (typep (first nodes) 'expression-statement)
 	       (typep (slot-value (first nodes) 'expression) 'nodelist))
       (setf nodes (slot-value (slot-value (first nodes) 'expression) 'nodes)))))
+
+
+

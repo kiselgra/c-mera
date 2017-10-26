@@ -64,7 +64,7 @@
 (defstatement jump-statement () (kind members))
 (defstatement label-statement () (name))
 
-(defstatement expression-statement (semicolon) (expression))
+(defstatement expression-statement (force-semicolon) (expression))
 (defstatement compound-statement (braces) (statements))
 
 (defstatement if-statement () (test if-body else-body))

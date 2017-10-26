@@ -18,7 +18,8 @@
 	      (typep (node-slot expression) 'infix-expression)
 	      (typep (node-slot expression) 'prefix-expression)
 	      (typep (node-slot expression) 'postfix-expression)
-	      (typep (node-slot expression) 'empty))
+	      (typep (node-slot expression) 'empty)
+	      (node-slot force-semicolon))
       (format stream ";"))))
 
 ;;; Compound-Statement
