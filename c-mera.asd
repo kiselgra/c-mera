@@ -133,7 +133,8 @@
     include comment decl
     fpointer for while
     typedef cast sizeof
-    goto label clist))
+    goto label clist
+    cpp pragma))
 
 (defparameter c-exports
   (append default-exports
