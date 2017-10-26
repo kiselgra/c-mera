@@ -16,7 +16,7 @@
 (decl ((int x = 0)
        (int y = 0)
        (int a = (funcall (funcall bar-fn1 x)))
-       (int b = (funcall (funcall bar-fn2 x y)))))  ;; Bug #93: x y are pasted to become xy.
+       (int b = (funcall (funcall bar-fn2 x y)))))
   (printf "0\\n")
   (return 0))
 

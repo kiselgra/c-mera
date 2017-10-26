@@ -626,10 +626,13 @@
 	(format stream ";")))
 
     (defproxyprint :before function
-      (push-info 'funcall-function))
+      (push-info 'funcall-function)
+      ;; used for nested funcall-funcalls
+      (push-sign 'no-skip-sentinel))
 
     (defproxyprint :after function
       (pop-info)
+      (pop-sign)
       (format stream "("))
 
     (defproxyprint :before arguments
