@@ -55,7 +55,7 @@
 
 
 ;;; declaration item (specificer type identifier value)
-:;; print whitespace after type only if identifier is present
+;;; print whitespace after type only if identifier is present
 (with-pp
   (with-proxynodes (type)
 
