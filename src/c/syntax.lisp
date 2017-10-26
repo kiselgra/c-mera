@@ -99,11 +99,12 @@
     ;; struct name
     (make-node ,name)
     ;; struct body
-    (compound-statement
-     ;; curly braces: t
-     t
-     ;; build subnodes
-     (make-nodelist ,body))))
+    ,(when body
+      `(compound-statement
+       ;; curly braces: t
+       t
+       ;; build subnodes
+       (make-nodelist ,body)))))
 
 (c-syntax union (name &body body)
   "Syntax for union"
