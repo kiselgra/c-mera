@@ -53,6 +53,26 @@
 	(progn
 	  (format stream "~&~a}" indent)))))
 
+
+;;; declaration item (specificer type identifier value)
+:;; print whitespace after type only if identifier is present
+(with-pp
+  (with-proxynodes (type)
+
+    (defprettymethod :before declaration-item
+      (push-info 'declaration-item)
+      (when (node-slot identifier)
+	(make-proxy type type)))
+
+    (defprettymethod :after declaration-item
+      (pop-info)
+      (when (node-slot identifier)
+	(del-proxy type)))
+
+    (defproxyprint :after type
+      (format stream " "))))
+      
+
 ;;; Types
 ;;; Print whitespace after a type.
 (with-pp
@@ -63,7 +83,7 @@
       (when (and (node-slot type)
 		 (not (eql info 'cast-expression))
 		 (not (eql info 'funcall))
-		 (not (eql info 'function-pointer)))
+		 (not (eql info 'declaration-item)))
 	(format stream " ")))))
 
 ;;; Function definition

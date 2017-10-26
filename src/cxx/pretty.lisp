@@ -75,6 +75,8 @@
 		(pop-sign)
 		(format stream ", ")))))
 
+
+
 ;; Override c type
 
 ;; suppressses clozure warnings
@@ -88,7 +90,7 @@
       (when (and (node-slot type)
 		 (not (eql info 'cast-expression))
 		 (not (eql info 'funcall))
-		 (not (eql info 'function-pointer))
+		 (not (eql info 'declaration-item))
 		 ;; extra:
 		 (not (eql info 'template-instantiation)))
 	(format stream " ")))))
