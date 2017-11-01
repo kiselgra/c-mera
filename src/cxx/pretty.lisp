@@ -172,8 +172,8 @@
       (if (eql (top-sign) 'first-initializer)
 	  (progn
 	    (pop-sign)
-	    (format stream "~&~a : " indent))
-	  (format stream "~&~a , " indent)))
+	    (format stream "~&~a: " indent))
+	  (format stream ", ")))
 
     (defproxyprint :after initializer
       (pop-info))))
