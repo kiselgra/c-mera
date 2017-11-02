@@ -7,7 +7,7 @@
   (public
    (constructor () nil)
    (destructor nil)
-   (function test () -> (pure virtual void))))
+   (function test () pure -> (virtual void))))
 
 (class B ((public A))
   (public

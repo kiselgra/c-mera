@@ -79,35 +79,38 @@
 	 `(make-expressions ,body))))
 
 ;; copy/extend  for pure virtual functions
-(c++syntax function (name parameters -> type &body body &environment env)
+(c++syntax function (name parameters &rest rest &environment env)
   "Define c++ function"
-  (declare (ignore ->))
-  (let ((pure nil))
-    `(function-definition
-      ;; function name + type
-      ,(if (listp type)
-	   ;; check if macro/function or list
-	   (let ((first (first type)))
-	     (if (and (not (listp first)) (fboundp! first env))
-		 ;; type is macro or function
-		 `(make-declaration-node (,type ,name))
-		 ;; type is list with type information
-		 (if (and (equal (symbol-name first) "PURE")
-			  (equal (symbol-name (second type)) "VIRTUAL"))
-		     (progn
-		       (setf pure t)
-		       `(make-declaration-node (,@(rest type) ,name)))
-		     `(make-declaration-node (,@type ,name)))))
-	   ;; type is single symbol
-	   `(make-declaration-node (,type ,name)))
-      ;; parameter list
-      (parameter-list
-       (make-nodelist ,parameters :prepend make-declaration-node))
-      ;; body
-      ,(if pure
-	   `(cmu-c::set nil 0)
-	   (when body
-	     `(make-block ,body))))))
+  (flet ((symbol-name-in-list (S L)
+	   (member-if (lambda (x) (when (symbolp x) (equal (symbol-name x) (string-upcase S)))) L)))
+    (let ((qualifiers (reverse (rest (symbol-name-in-list "->" (reverse rest))))))
+      (destructuring-bind (type &body body) (rest (symbol-name-in-list "->" rest))
+	(flet ((qualifier-there (Q)
+		 (symbol-name-in-list Q qualifiers)))
+	  (let* ((pure    (if (qualifier-there "pure") t nil))
+		 (virtual (if (or (qualifier-there "virtual") pure) t nil)))
+	    `(function-definition
+	      ,pure
+	      ,virtual
+	      ;; function name + type
+	      ,(if (listp type)
+		   ;; check if macro/function or list
+		   (let ((first (first type)))
+		     (if (and (not (listp first)) (fboundp! first env))
+			 ;; type is macro or function
+			 `(make-declaration-node (,type ,name))
+			 ;; type is list with type information
+			 `(make-declaration-node (,@type ,name))))
+		   ;; type is single symbol
+		   `(make-declaration-node (,type ,name)))
+	      ;; parameter list
+	      (parameter-list
+	       (make-nodelist ,parameters :prepend make-declaration-node))
+	      ;; body
+	      ,(if pure
+		   `(cmu-c::set nil 0)
+		   (when body
+		     `(make-block ,body))))))))))
 
 (c++syntax constructor (name args &body body)
   "Constructor with initializer list"
