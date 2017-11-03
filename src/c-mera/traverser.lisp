@@ -27,41 +27,41 @@
   (declare (ignore level)))
 
 ;;; Inserts a single proxy-node in the AST.
-(defmacro make-proxy (slot node-type)
-  "Add proxy nodes to slot"
+(defmacro make-proxy (slot node-type &key (node-name 'item))
+  "Add proxy nodes to slot. Note: all uses in c-mera and cm-c implicitly assue that the node is called ITEM."
   (let ((val (gensym)))
-    `(if (or (eql (find-class 'nodelist) (class-of (slot-value item ',slot))))
-  	 (let ((,val (slot-value (slot-value item ',slot) 'nodes)))
-  	   (setf (slot-value (slot-value item ',slot) 'nodes)
+    `(if (or (eql (find-class 'nodelist) (class-of (slot-value ,node-name ',slot))))
+  	 (let ((,val (slot-value (slot-value ,node-name ',slot) 'nodes)))
+  	   (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
   		 (loop for i in ,val collect
   		      (make-instance ,node-type
   				     :proxy-subnode i
   				     :values '()
   				     :subnodes '(proxy-subnode)))))
-  	 (let ((,val (slot-value item ',slot)))
+  	 (let ((,val (slot-value ,node-name ',slot)))
   	   (if ,val
-  	       (setf (slot-value item ',slot)
+  	       (setf (slot-value ,node-name ',slot)
   		     (make-instance ,node-type
   				    :proxy-subnode ,val
   				    :values '()
   				    :subnodes '(proxy-subnode)))
-  	       (setf (slot-value item ',slot)
+  	       (setf (slot-value ,node-name ',slot)
   	       	     (make-instance ,node-type
   	       			    :proxy-subnode nil
   	       			    :values '()
   	       			    :subnodes '(proxy-subnode))))))))
 
 ;;; Deletes a single proxy-node from the AST.
-(defmacro del-proxy (slot)
+(defmacro del-proxy (slot &key (node-name 'item))
   "Remove proxy-node in slot"
   (let ((val (gensym)) (node-list (gensym)))
-    `(let ((,val (slot-value item ',slot)))
-       (if (eql (find-class 'nodelist) (class-of (slot-value item ',slot)))
-  	   (let ((,node-list (slot-value (slot-value item ',slot) 'nodes)))
- 	     (setf (slot-value (slot-value item ',slot) 'nodes)
+    `(let ((,val (slot-value ,node-name ',slot)))
+       (if (eql (find-class 'nodelist) (class-of (slot-value ,node-name ',slot)))
+  	   (let ((,node-list (slot-value (slot-value ,node-name ',slot) 'nodes)))
+ 	     (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
   		   (loop for i in ,node-list collect
   			(slot-value i 'proxy-subnode))))
-  	   (if ,val (setf (slot-value item ',slot)
+  	   (if ,val (setf (slot-value ,node-name ',slot)
   			  (slot-value ,val 'proxy-subnode)))))))
 
 ;;; Defines proxy nodes for local usage.

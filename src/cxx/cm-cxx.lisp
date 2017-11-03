@@ -24,7 +24,7 @@
    if-blocker
    decl-blocker
    renamer
-   ;;virtualizer TODO
+   virtualizer
    ))
 
 ;; Define a save function

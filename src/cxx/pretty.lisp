@@ -18,7 +18,9 @@
 	  (format stream "~&")
 	  (format stream "~&~%"))
       (push-info 'function-definition)
-      (format stream "~a" indent))
+      (format stream "~a" indent)
+      (if (node-slot virtual)
+	  (format stream "virtual ")))
 
     
     ;; Remove temporary proxy-nodes
