@@ -22,7 +22,6 @@
       (if (node-slot virtual)
 	  (format stream "virtual ")))
 
-    
     ;; Remove temporary proxy-nodes
     (defprettymethod :after function-definition
       (del-proxy parameter)
@@ -37,7 +36,9 @@
     
     ;; Close parameter-list.
     (defproxyprint :after parameters
-      (format stream ")"))
+      (format stream ")")
+      (when (slot-value parent 'tail-qualifiers)
+	(format stream " ")))
 
     ;; Handle parameters
     ;; Add proxy-node and info-token.

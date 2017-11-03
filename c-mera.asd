@@ -287,6 +287,7 @@
 	   :proxy-subnode
 	   :nodelist-traverser
 	   :skip-first
+	   :parent
 
 	   ;; startup
 	   :define-reader

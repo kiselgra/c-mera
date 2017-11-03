@@ -27,7 +27,7 @@
   (declare (ignore level)))
 
 ;;; Inserts a single proxy-node in the AST.
-(defmacro make-proxy (slot node-type &key (node-name 'item))
+(defmacro make-proxy (slot node-type &key (node-name 'item) (parent 'item))
   "Add proxy nodes to slot. Note: all uses in c-mera and cm-c implicitly assue that the node is called ITEM."
   (let ((val (gensym)))
     `(if (or (eql (find-class 'nodelist) (class-of (slot-value ,node-name ',slot))))
@@ -35,6 +35,7 @@
   	   (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
   		 (loop for i in ,val collect
   		      (make-instance ,node-type
+				     :parent ,parent
   				     :proxy-subnode i
   				     :values '()
   				     :subnodes '(proxy-subnode)))))
@@ -42,11 +43,13 @@
   	   (if ,val
   	       (setf (slot-value ,node-name ',slot)
   		     (make-instance ,node-type
+				    :parent ,parent
   				    :proxy-subnode ,val
   				    :values '()
   				    :subnodes '(proxy-subnode)))
   	       (setf (slot-value ,node-name ',slot)
   	       	     (make-instance ,node-type
+				    :parent ,parent
   	       			    :proxy-subnode nil
   	       			    :values '()
   	       			    :subnodes '(proxy-subnode))))))))
@@ -99,13 +102,13 @@
 	     (,class
 	      (item ,(gethash proxy-node *proxy-node*)) level)
 	   (declare (ignorable level))
-	   (with-slots (values subnodes) item ,@body)
+	   (with-slots (values subnodes parent) item ,@body)
 	   (call-next-method)))
       `(defmethod traverser ,qualifier
 	 (,class
 	  (item ,(gethash proxy-node *proxy-node*)) level)
 	 (declare (ignorable level))
-	 (with-slots (values subnodes) item ,@body))))
+	 (with-slots (values subnodes parent) item ,@body))))
 
 
 (defmacro defproxyprint (qualifier node &body body)

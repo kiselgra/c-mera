@@ -6,7 +6,7 @@
 
 (defnode superclass () (attribute superclass))
 (defnode declaration-list-initializer () (list-items))
-(defnode function-definition (pure virtual) (item parameter body))
+(defnode function-definition (pure virtual) (item parameter tail-qualifiers body))
 
 (defstatement class () (name superclasses body))
 (defstatement constructor () (name parameter initializer body))

@@ -28,7 +28,7 @@
 (defmacro defproxy (name)
   "Define node derived from proxy"
   `(progn
-     (defclass# ,name (proxy) (values subnodes))
+     (defclass# ,name (proxy) (values subnodes parent))
      (make-instance# ,name () ())))
 
 (defmacro defleaf (name values)

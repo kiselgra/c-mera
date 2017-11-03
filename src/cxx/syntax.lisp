@@ -86,9 +86,13 @@
     (let ((qualifiers (reverse (rest (symbol-name-in-list "->" (reverse rest))))))
       (destructuring-bind (type &body body) (rest (symbol-name-in-list "->" rest))
 	(flet ((qualifier-there (Q)
-		 (symbol-name-in-list Q qualifiers)))
-	  (let* ((pure    (if (qualifier-there "pure") t nil))
-		 (virtual (if (or (qualifier-there "virtual") pure) t nil)))
+		 (let ((there (symbol-name-in-list Q qualifiers)))
+		   (if there
+		       (setf qualifiers (remove-if (lambda (x) (eql x (first there)))
+						   qualifiers)))
+		   (if there t nil))))
+	  (let* ((pure    (qualifier-there "pure"))
+		 (virtual (or (qualifier-there "virtual") pure)))
 	    `(function-definition
 	      ,pure
 	      ,virtual
@@ -106,6 +110,9 @@
 	      ;; parameter list
 	      (parameter-list
 	       (make-nodelist ,parameters :prepend make-declaration-node))
+	      ,(if qualifiers
+		   `(specifier (make-nodelist ,qualifiers))
+		   nil)
 	      ;; body
 	      ,(if pure
 		   `(cmu-c::set nil 0)
