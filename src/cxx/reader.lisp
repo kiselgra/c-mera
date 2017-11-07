@@ -4,7 +4,8 @@
   "extended c pre processor"
   (if (symbolp item)
       (cond ((or (eql item 'cmu-c++::new[])
-		 (eql item 'cmu-c++::delete[]))
+		 (eql item 'cmu-c++::delete[])
+		 (eql item 'cmu-c++::operator[]))
 	     item)
 	    ((and (> (length (symbol-name item)) 1)
 		  (not (eql (first (coerce (symbol-name item) 'list)) #\&))
