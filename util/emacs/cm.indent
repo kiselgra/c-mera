@@ -9,8 +9,13 @@
 (constructor 1)
 (destructor 0)
 
-:keywords (for decl function class continue return sizeof private protected public template instantiate typedef virtual
-	   void int float double long char unsigned signed short auto bool
+:keywords (for decl function continue return sizeof typedef 
+	   void int float double long char unsigned signed short auto bool enum struct while
+	   switch
+	   include pragma comment
        inline const volatile
        true false
+	   private protected public 
+	   class template instantiate constructor destructor typename virtual pure cout endl
+	   	using-namespace from-namespace :init
 	   main printf)
