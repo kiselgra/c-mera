@@ -10,6 +10,7 @@ and the different versions based on C-Mera's core illustrate that this is a simp
 1. [Usage](#Usage)
 	1. [Build Instructions](#BuildInstructions)
 	1. [Emacs Integration](#EmacsIntegration)
+	1. [Vim Integration](#VimIntegration)
 	1. [Examples](#Examples)
 	1. [Compilation Process](#CompilationProcess)
 	1. [Programming Guide](#ProgGuide)
@@ -111,6 +112,18 @@ To load it automatically you can add a mode specification to the top of your fil
 You can extend the indentation and keyword information by having an additional file called `cm.indent` along your source files, see the provided `cm.indent` for the layout.
 
 Our cm-mode ist still rather basic and we are open for extensions (e.g. better syntax matching). 
+
+
+### Vim Integration<a name="VimIntegration">
+
+With Vim 8 asyc processes spawned Vlime, a project that strives to provide a Slime-like worlflow for Vim. We use is (via a small plugin) to drive indentation of C-Mera code. With Vim set up for Vlime you only have to drop the plugin in the appropriate place:
+
+    $ ln -s <path-to-cmera>/util/vim/lisp_cmera.vim ~/.vim/ftplugin/
+    
+To get the default behavior (see Emacs integraion) it still has to be told where to look for the `cm.indent` file. This can be set in your `~/.vimrc`
+
+    let g:cmera_base_indent_file = '/home/kai/.emacs.d/cm.indent'
+
 
 ### Publications<a name="papers">
 - C-Mera was introduced as "cgen" at ELS'14: [*Defmacro for C: Lightweight, Ad Hoc Code Generation*](http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/)
