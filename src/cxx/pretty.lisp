@@ -307,6 +307,8 @@
 
     (defprettymethod :before catch
       (format stream "~&~acatch (" indent)
+      (if (node-slot all)
+	  (format stream "..."))
       (make-proxy decl-item decl-item))
 
     (defproxyprint :after decl-item

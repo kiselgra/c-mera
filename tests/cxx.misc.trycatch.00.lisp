@@ -14,6 +14,9 @@
 (function bar4 () -> int
   (return 123))
 
+(function bar5 () -> int
+  (throw 0.0f))
+
 (typedef int (fpointer fn ()))
 
 (function foo ((fn f)) -> int
@@ -22,7 +25,9 @@
 	     ((runtime_error &e)
 	      (<< cout "runtime error: " (e.what) endl))
 	     ((exception &e)
-	      (<< cout "base exception: " (e.what) endl)))
+	      (<< cout "base exception: " (e.what) endl))
+	     (t
+	       (<< cout "whatever!" endl)))
     (decl ((int got = (f)))
       (<< cout "got value: " got endl)
       (return got))))
@@ -32,9 +37,11 @@
   (foo bar2)
   (foo bar3)
   (foo bar4)
+  (foo bar5)
   (return 0))
 
 ;;## caught int: 1
 ;;## base exception: not logical
 ;;## runtime error: error
 ;;## got value: 123
+;;## whatever!

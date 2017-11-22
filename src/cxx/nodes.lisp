@@ -17,7 +17,7 @@
 (defstatement using () (item))
 (defstatement template () (parameters body))
 (defstatement try-block () (body catches))
-(defstatement catch () (decl-item body))
+(defstatement catch (all) (decl-item body))
 
 (defexpression from-namespace () (namespace name))
 (defexpression instantiate () (template arguments))

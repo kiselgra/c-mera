@@ -217,9 +217,12 @@
     ,(when item `(make-node ,item))))
 
 (defmacro make-catch-decl-item ((args &body body))
-  `(catch
-     (make-declaration-node ,args)
-     (make-block ,body)))
+  (let ((all (eq args t)))
+    `(catch
+       ,all
+       ,(if (not all)
+	    `(make-declaration-node ,args))
+       (make-block ,body))))
 
 (c++syntax catching (clauses &body body)
   `(try-block
