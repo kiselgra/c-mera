@@ -140,12 +140,16 @@
 
 (c++syntax destructor (name &body body)
   "Destructor"
-  `(destructor
-    ;; destructor name
-    (make-node ,name)
-    ;; body
-    ,(when body
-	   `(make-block ,body))))
+  (let* ((first (first body))
+	 (virtual (and (listp body) (symbolp first) (equal (symbol-name first) "VIRTUAL")))
+	 (body    (if virtual (rest body) body)))
+    `(destructor
+       ,virtual
+       ;; destructor name
+       (make-node ,name)
+       ;; body
+       ,(when body
+	  `(make-block ,body)))))
 
 (c++syntax class (name superclasses &body body)
   "Define a c++ class with c'tor and d'ctor mactoler"

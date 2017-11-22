@@ -187,8 +187,10 @@
 
     (defprettymethod :before destructor
       (format stream "~&~%~a" indent)
+      (when (node-slot virtual)
+	(format stream "virtual "))
       (when (typep (node-slot name) 'identifier)
-	(format stream " ~~"))
+	(format stream "~~"))
       (make-proxy name name)
       (push-info 'destructor))
 

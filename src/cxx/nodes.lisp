@@ -10,7 +10,7 @@
 
 (defstatement class () (name superclasses body))
 (defstatement constructor () (name parameter initializer body))
-(defstatement destructor () (name body))
+(defstatement destructor (virtual) (name body))
 (defstatement access-specifier (specifier) (body))
 (defstatement namespace () (namespace body))
 (defstatement using-namespace () (namespace))
