@@ -344,7 +344,7 @@
 (defpackage* :cm-c++
   (:shadow-symbols () :export-symbols c++backend)
   (:use :c-mera :cm-c)
-  (:shadow :delete :class :switch-reader :cl-reader :cm-reader :decompose-declaration)
+  (:shadow :delete :class :catch :switch-reader :cl-reader :cm-reader :decompose-declaration)
   (:import-from :cl-user :c++symbols :c++swap)
   (:nicknames :cm-cxx)
   (:export :decompose-declaration))
@@ -387,7 +387,7 @@
 (defpackage* :cmu-c++
   (:shadow-symbols () :export-symbols c++exports)
   (:use :cmu-c)
-  (:shadow :class :delete :vector :function)
+  (:shadow :class :delete :vector :throw :catch :function)
   (:import-from :cm-c++ :decompose-declaration)
   (:shadowing-import-from :cm-c++ :switch-reader
 			  :cl-reader :cm-reader)

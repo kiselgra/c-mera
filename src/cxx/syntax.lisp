@@ -206,6 +206,22 @@
     ',tag
     (make-node ,item)))
 
+(c++syntax throw (item)
+  "Throw is just a jump statement"
+  `(jump-statement
+    (make-node ,tag)
+    ,(when item `(make-node ,item))))
+
+(defmacro make-catch-decl-item ((args &body body))
+  `(catch
+     (make-declaration-node ,args)
+     (make-block ,body)))
+
+(c++syntax catching (clauses &body body)
+  `(try-block
+     (make-block ,body)
+     (make-nodelist ,clauses :prepend make-catch-decl-item)))
+
 (c++syntax from-namespace (&rest rest)
   "From namesapce ::foo // foo::bar"
   ;; set last item

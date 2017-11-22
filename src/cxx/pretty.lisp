@@ -294,3 +294,22 @@
       (if (eql (top-sign) 'skip-first-template)
 	  (pop-sign)
 	  (format stream ", ")))))
+
+(with-pp
+  (defprettymethod :before try-block
+    (format stream "~&~atry" indent)))
+
+
+(with-pp
+  (with-proxynodes (decl-item)
+
+    (defprettymethod :before catch
+      (format stream "~&~acatch (" indent)
+      (make-proxy decl-item decl-item))
+
+    (defproxyprint :after decl-item
+      (format stream ")"))
+
+    (defprettymethod :after catch
+      (del-proxy decl-item))))
+
