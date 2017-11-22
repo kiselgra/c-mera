@@ -122,8 +122,8 @@
       (make-proxy attribute attribute)
       (if (eql (top-sign) 'first-superclass)
 	  (progn (pop-sign)
-		 (format stream "~&~a : " indent))
-	  (format stream "~&~a , " indent)))
+		 (format stream " : "))
+	  (format stream ", ")))
 
     (defproxyprint :after attribute
       (format stream " "))
