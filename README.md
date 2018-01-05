@@ -236,7 +236,7 @@ For the old version see its branch. Here we only shortly list the major differen
 
 #### Conditionals
 
-`if` statements have exactly two or three subforms. The thrid one is optional, and if present, represents the `else` part. The following examples is thus not correct:
+`if` statements have exactly two or three subforms. The third subform represents the `else` part and is optional. Thus, the following example is not correct:
 
 	(if (!= a 0)
 	    (printf "all is safe")
