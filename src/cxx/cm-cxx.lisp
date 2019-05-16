@@ -25,6 +25,7 @@
    decl-blocker
    renamer
    virtualizer
+   access-respecifier
    ))
 
 ;; Define a save function

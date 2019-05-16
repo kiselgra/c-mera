@@ -66,3 +66,50 @@
 	  (setf nodes (remove-if (lambda (x) (eql x node-to-delete)) nodes)))))))
 
 
+;;; Identify nested or cascaded sets of access specifiers and resolve
+(defclass access-respecifier ()
+  ((parent-spec :initform '(nil))
+   (sibling-spec :initform '(nil))))
+
+
+(defmethod traverser :before ((ar access-respecifier) (cd class) level)
+  "Push parrent and sibling specifiers"
+  (with-slots (parent-spec sibling-spec) ar
+  (push 'private parent-spec)
+  (push 'private sibling-spec)))
+
+(defmethod traverser :after ((ar access-respecifier) (cd class) level)
+  "Pop hints"
+  (with-slots (parent-spec sibling-spec) ar
+  (pop parent-spec)
+  (pop sibling-spec)))
+
+(defmethod traverser :before ((ar access-respecifier) (sd struct-definition) level)
+  "Push parent and sibling specifiers"
+  (with-slots (parent-spec sibling-spec) ar
+  (push 'public parent-spec)
+  (push 'public sibling-spec)))
+
+(defmethod traverser :after ((ar access-respecifier) (sd struct-definition) level)
+  "Pop hints"
+  (with-slots (parent-spec sibling-spec) ar
+  (pop parent-spec)
+  (pop sibling-spec)))
+
+(defmethod traverser :before ((ar access-respecifier) (as access-specifier) level)
+  "Push current parent and sibling according to own specifier"
+  (with-slots (parent-spec sibling-spec) ar
+  (with-slots (specifier) as
+    (when (not specifier)
+    (when (not (eql (first sibling-spec) (first parent-spec)))
+      (setf specifier (first parent-spec))))
+    (when specifier
+    (push specifier parent-spec)
+    (setf (first sibling-spec) specifier)))))
+
+(defmethod traverser :after ((ar access-respecifier) (as access-specifier) level)
+  "Pop parent/sibling and set current sibling for subsequent nodes"
+  (with-slots (specifier) as
+  (when specifier
+    (with-slots (parent-spec sibling-spec) ar
+    (pop parent-spec)))))

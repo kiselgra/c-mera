@@ -151,27 +151,52 @@
        ,(when body
 	  `(make-block ,body)))))
 
+(defun wrap-statements (list)
+  "Wrap all elements in list in expression-statement and
+   access-specifier, apply quoty and combine into nodelist"
+   `(make-nodelist 
+      ,(loop for i in list collect 
+         `(access-specifier nil
+            (expression-statement nil
+              (quoty ,i))))))
+
 (c++syntax class (name superclasses &body body)
   "Define a c++ class with c'tor and d'ctor mactoler"
   ;; macrolet for locally defined c'tor and d'tor
   `(macrolet ((cmu-c++::constructor (args &body body)
-		`(cms-c++::constructor ,',name ,args ,@body))
-	      (cmu-c++::destructor (&body body)
-		`(cms-c++::destructor ,',name ,@body)))
+    `(cms-c++::constructor ,',name ,args ,@body))
+        (cmu-c++::destructor (&body body)
+    `(cms-c++::destructor ,',name ,@body)))
      (class
       ;; class name
       (make-node ,name)
       ;; superclasses
       (make-nodelist
        ,superclasses :prepend decompose-superclass)
-      ;; compund statement with single expr statements
-	  ,(if body
-		 `(make-block ,body)
-		 nil))))
+      ;; compund statement with individual expr statements
+    ,(if body
+     `(compound-statement
+      ;; curly braces
+      t 
+      ;; prepared body
+      ,(wrap-statements body))
+     nil))))
+
+(c++syntax struct (name &body body)
+  "Struct redefinition, required for access specifiers"
+  `(struct-definition
+   ;; struct name
+   (make-node ,name)
+   ,(when body
+    `(compound-statement
+       ;; curly braces
+       t
+       ;; modified body
+       ,(wrap-statements body)))))
 
 (c++syntax (private public protected) (&body body)
   "Class access specifier"
-  `(access-specifier ',tag  (make-expressions ,body)))
+  `(access-specifier ',tag ,(wrap-statements body)))
 
 (c++syntax namespace (namespace &body body)
   "Make new namespace"

@@ -153,7 +153,7 @@
 ;; extend c-symbols with c++ symbols /shadowed
 (defparameter c++symbols
   (append c-symbols
-	  '(delete decl)))
+	  '(delete decl struct)))
 
 ;; symbols not shadowed but exported
 (defparameter c++syntax
