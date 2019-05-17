@@ -153,7 +153,7 @@
 ;; extend c-symbols with c++ symbols /shadowed
 (defparameter c++symbols
   (append c-symbols
-	  '(delete decl struct)))
+	  '(delete decl struct for)))
 
 ;; symbols not shadowed but exported
 (defparameter c++syntax
@@ -387,7 +387,8 @@
 (defpackage* :cmu-c++
   (:shadow-symbols () :export-symbols c++exports)
   (:use :cmu-c)
-  (:shadow :class :delete :vector :throw :catch :function)
+  (:shadow :class :delete :vector :throw :catch :function 
+			  :for struct)
   (:import-from :cm-c++ :decompose-declaration)
   (:shadowing-import-from :cm-c++ :switch-reader
 			  :cl-reader :cm-reader)

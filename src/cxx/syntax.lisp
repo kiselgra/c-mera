@@ -288,6 +288,22 @@
   "Postfix & operator (reference"
   `(postfix-expression '& (make-node ,item)))
 
+(c++syntax for (init &body body)
+  "Similar to c version but with foreach support"
+  `(for-statement
+    ;; check if initialization present
+    ,(when (first init)
+     ;; set init
+     `(make-declaration-node ,(first init)))
+    ;; test / foreach container
+    (make-node ,(second init))
+    ;; check if step present
+    ,(when (third init)
+     ;; set step
+     `(make-node ,(third init)))
+    ;; the loop body
+    (make-block ,body)))
+
 (build-context-switches
  :user-package :cmu-c++
  :symbols c++symbols)

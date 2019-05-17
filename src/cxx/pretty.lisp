@@ -99,6 +99,53 @@
 	(format stream " ")))))
 
 
+;; Override for-loop / support 'foreach'
+(with-pp
+  (with-proxynodes (common-init default-init foreach-init test step container)
+
+    (defprettymethod :before for-statement
+      (push-info 'for)
+      (make-proxy init common-init) ;; common init
+      (if (node-slot step)
+        (progn ;; default for-loop
+          (make-proxy init default-init)
+          (make-proxy test test)
+          (make-proxy step step))
+        (progn ;; foreach
+          (make-proxy init foreach-init)
+          (make-proxy test container))))
+
+    (defprettymethod :after for-statement
+      (pop-info)
+      (del-proxy init)  ;; default-init / foreach-init
+      (del-proxy init)  ;; common init
+      (del-proxy test)
+      (when (node-slot step)
+        (del-proxy step)))
+
+    (defproxyprint :before common-init
+      (format stream "~&~afor(" indent))
+
+    (defproxyprint :after default-init
+      (format stream "; "))
+
+    (defproxyprint :after foreach-init
+      (format stream " : "))
+
+    (defproxyprint :after test
+      (format stream "; "))
+
+    (defproxyprint :after container
+      (format stream ")"))
+
+    (defproxyprint :before step
+      (push-info 'for-head))
+
+    (defproxyprint :after step
+      (pop-info)
+      (format stream ")"))))
+
+
 
 ;;; ===================
 ;;; c++ pretty printing
