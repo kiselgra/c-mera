@@ -62,33 +62,38 @@
 (defun sharp-colon-reader (stream c1 c2)
   (declare (ignore c1 c2))
   (flet ((valid-id-char (c)
-	   (not (or (char= #\( c)
-		    (char= #\) c)
-		    (char= #\} c)
-		    (char= #\{ c)
-		    (char= #\; c)
-		    (char= #\Space c)
-		    (char= #\Newline c)
-		    (char= #\Tab c)))))
+           (not (or (char= #\( c)
+              (char= #\) c)
+              (char= #\} c)
+              (char= #\{ c)
+              (char= #\; c)
+              (char= #\Space c)
+              (char= #\Newline c)
+              (char= #\Tab c)))))
     ;; accumulation target
     (let ((str (make-array 0 :element-type 'character
-			   :fill-pointer 0
-			   :adjustable t)))
+                             :fill-pointer 0
+                             :adjustable t)))
       ;; read char-by-char, unread terminating char
       (loop for c = (read-char-no-hang stream)
-	then    (read-char-no-hang stream)
-	while   (valid-id-char c)
-	do      (vector-push-extend c str)
-	finally (unread-char c stream))
+            then    (read-char-no-hang stream)
+            while   (valid-id-char c)
+            do      (vector-push-extend c str)
+            finally (unread-char c stream))
       ;; build fn-form by parsing the read string
-      (let ((x `(cmu-c++::from-namespace
-		 ,@(loop for s in (loop for i = 0 then (1+ j)
-				     as j = (position #\: str :start i)
-				     collect (subseq str i j)
-				     while j)
-		      if (string/= s "")
-		      collect (dissect (cintern s) :quoty t)))))
-	x))))
+      (let* ((raw-items 
+               ;; collect namespaces and skip ":" and "::"
+               (loop for s in (loop for i = 0 then (1+ j)
+                                    as j = (position #\: str :start i)
+                                    collect (subseq str i j)
+                                    while j) 
+                     if (string/= s "")
+                     collect (dissect (cintern s) :quoty t)))
+             ;; add a 'nil' if no namespace defined -> global scope
+             (fixed-items (if (second raw-items)
+                               raw-items
+                               `(nil ,@raw-items))))
+        `(cmu-c++::from-namespace ,@fixed-items)))))
 
 (defun left-brace-reader (stream char)
   "Read cxx initializer list '{...}' and emit double list '((...))'"
