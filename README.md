@@ -4,6 +4,8 @@ that utilizes Lisp's macro system for meta programming of C-like languages.
 One of its main goals is to be easily extensible to other C-like languages
 and the different versions based on C-Mera's core illustrate that this is a simple process.
 
+Please note: C-Mera is in a good place and works for the things we use it for. There may be no commits for some stretches and it definitely is not our full-time job, but it is alive and well :) So please consier it slow, not dead. Set up an issue if you have problems, questions or feature-requests :)
+
 ## Contents
 1. [Overview](#Overview)
 1. [License](#License)
