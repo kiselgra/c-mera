@@ -637,12 +637,13 @@
       (format stream "("))
 
     (defproxyprint :before arguments
-      (if (eql (top-sign) 'skip-first-funcall)
-	  (pop-sign)
+      (when (not (eql (top-sign) 'skip-first-funcall))
 	  (format stream ", "))
       (push-info 'funcall))
 
     (defproxyprint :after arguments
+      (when (eql (top-sign) 'skip-first-funcall)
+	(pop-sign))
       (pop-info))))
       
 

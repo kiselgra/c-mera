@@ -335,6 +335,8 @@
 	   :if-blocker
            :decl-blocker
 
+	   :skip-first-funcall
+
 	   :switch-reader
 	   :cl-reader
 	   :cm-reader

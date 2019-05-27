@@ -3,19 +3,27 @@
 ;;; Add clean lists to decl-blocker stacks
 ;;; avoid extra braces in class defintion
 (decl-blocker-extra-nodes constructor)
+;;; avoid extra braces in if lambdas occur
+(decl-blocker-extra-nodes lambda-definition)
 
 
 ;;; Check if identifier is of type "operatorXX"
 ;;; and prevent renaming of cxx operator definition
 (defmethod check-and-get-name :before ((item renamer) check-name)
   (with-slots (name-map) item
+    ;; put unmodified operator into name-map
+    ;; -> this will be used later directly without check
     (let ((operatorXX (symbol-name check-name)))
       (when (and (>= (length operatorXX) 8)
 	     (string-equal "operator" operatorXX :start2 0 :end2 8))
 	(when   (not (gethash operatorXX name-map)))
-	;; put unmodified operator into name-map
-	;; -> this will be used later directly without check
-	(setf (gethash operatorXX name-map) check-name)))))
+	(setf (gethash operatorXX name-map) check-name)))
+
+    ;; put unmodified '=' and '&' into name-map -> used for labda captures
+    (let ((x (symbol-name check-name)))
+      (when (or (string-equal "=" x) (string-equal "&" x))
+	(when (not (gethash x name-map))
+	  (setf (gethash x name-map) check-name))))))
 	
 
 ;;; Insert virtual for functions declared as pure

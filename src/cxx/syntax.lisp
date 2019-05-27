@@ -78,11 +78,15 @@
 	 ;; make single expression statements
 	 `(make-expressions ,body))))
 
+
+;; function, lambda funciton helper
+(defun symbol-name-in-list (symbol list)
+  (member-if (lambda(x) (when (symbolp x) (equal (symbol-name x) (string-upcase symbol)))) list))
+
+
 ;; copy/extend  for pure virtual functions
 (c++syntax function (name parameters &rest rest &environment env)
   "Define c++ function"
-  (flet ((symbol-name-in-list (S L)
-	   (member-if (lambda (x) (when (symbolp x) (equal (symbol-name x) (string-upcase S)))) L)))
     (let ((qualifiers (reverse (rest (symbol-name-in-list "->" (reverse rest))))))
       (destructuring-bind (type &body body) (rest (symbol-name-in-list "->" rest))
 	(flet ((qualifier-there (Q)
@@ -117,7 +121,52 @@
 	      ,(if pure
 		   `(cmu-c::set nil 0)
 		   (when body
-		     `(make-block ,body))))))))))
+		     `(make-block ,body)))))))));)
+
+(c++syntax lambda-function (capture parameters &rest rest &environment env)
+  "Define c++11 lambda function"
+  (let ((qualifiers (reverse (rest (symbol-name-in-list "->" (reverse rest)))))
+	(ret-body (rest (symbol-name-in-list "->" rest)))
+	(body rest)
+	(type nil))
+    (when ret-body
+      (setf body (rest ret-body))
+      (setf type (first ret-body)))
+    `(lambda-definition
+       ;; caputre
+       (parameter-list
+	 (make-nodelist 
+	   ;; check if macro/function or list
+	   ,(loop for i in capture collect
+	     (if (and (listp i) (not (fboundp! (first i) env)))
+		 ;; element is is simple list and not bound 
+		 i
+		 ;; element is bound
+		 `(,i)))
+	   :prepend make-declaration-node))
+       ;; parameter
+       (parameter-list
+	 (make-nodelist ,parameters :prepend make-declaration-node))
+       ;; qualifiers
+       ,(if qualifiers
+	  `(specifier (make-nodelist ,qualifiers))
+	  nil)
+       ;; return type
+       ,(if type
+       	    (if (listp type)
+	        ;; chedk if macro/funciton or list
+	        (let ((First (first type)))
+	               (if (and (not (listp first)) (fboundp! first env))
+	                 ;; type is macro or function
+	                 `(make-declaration-node (,type nil))
+	                 ;; type is list with type information
+	                 `(make-declaration-node (,@type nil))))
+	        ;; type is single symbol
+	        `(make-declaration-node (,type nil))) ;; no name -> nil
+	    nil)
+       ;; body
+       ,(when body
+	  `(make-block ,body)))))
 
 (c++syntax constructor (name args &body body)
   "Constructor with initializer list"

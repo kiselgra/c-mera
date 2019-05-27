@@ -357,3 +357,56 @@
     (defprettymethod :after catch
       (del-proxy decl-item))))
 
+
+;; Lambda function // quite similar to function-definition
+(with-pp
+  (with-proxynodes (captures parameters type)
+
+    ;; Begin new line and add proxy-nodes.
+    (defprettymethod :before lambda-definition
+      (make-proxy parameter parameters)
+      (make-proxy capture captures)
+      (when (node-slot type)
+      	(make-proxy type type))
+      ++indent)
+
+    ;; Remove temporary proxy-nodes
+    (defprettymethod :after lambda-definition
+      (del-proxy parameter)
+      (del-proxy capture)
+      (when (node-slot type)
+      	(del-proxy type))
+      --indent)
+
+    ;; Begin capture-list
+    (defproxyprint :before captures
+      (if (or (eql (top-sign) 'skip-first-funcall)
+	      (eql (top-info) 'declaration-item))
+	(format stream "[")
+	(format stream "~&~a[" indent)))
+
+    ;; Close capture-list
+    (defproxyprint :after captures
+      (format stream "]"))
+    
+    ;; Begin parameter-list.
+    (defproxyprint :before parameters
+      (format stream "("))
+    
+    ;; Close parameter-list.
+    (defproxyprint :after parameters
+      (format stream ")")
+      (when (slot-value parent 'tail-qualifiers)
+	(format stream " ")))
+
+    ;; individual parameters already handled by function-definition
+    ;; i.e. parameter-list and paramter
+
+    ;; Print "->"
+    (defproxyprint :before type
+      (when (not (slot-value parent 'tail-qualifiers))
+	(format stream " "))
+      (format stream "-> "))))
+
+
+

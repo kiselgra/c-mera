@@ -23,3 +23,4 @@
 (defexpression instantiate () (template arguments))
 (defexpression new (operator) (specifier type))
 (defexpression delete (operator) (object))
+(defexpression lambda-definition () (capture parameter tail-qualifiers type body))
