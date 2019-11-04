@@ -360,6 +360,14 @@
     ;; body expressions
     (make-block ,body)))
 
+(c-syntax do-while (test &body body)
+   "The c do-whiel loop"
+   `(do-statement
+     ;; body expressions
+     (make-block ,body)
+     ;; while cluase
+     (make-node ,test)))
+
 (c-syntax typedef (&rest rest)
   "Typedef for c types"
   `(typedef

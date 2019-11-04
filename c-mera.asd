@@ -107,7 +107,7 @@
   '(and or not > <
     set = /= <= >=
     + - * /
-    for while
+    for while do-while
     return break continue
     if cond when
     array aref

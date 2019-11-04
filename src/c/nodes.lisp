@@ -72,7 +72,7 @@
 ;;; Loops
 (defstatement for-statement () (init test step body))
 (defstatement while-statement () (test body))
-(defstatement do-statement () (test body))
+(defstatement do-statement () (body test))
 
 
 ;;; Comment. Leading chars ('//' or other) can also be defined explicitly.

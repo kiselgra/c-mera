@@ -34,6 +34,7 @@
 	  ;; do not start new line for these cases
 	  (if (or (eql (top-info) 'for)
 		  (eql (top-info) 'while)
+		  (eql (top-info) 'do)
 		  (eql (top-info) 'if)
 		  (eql (top-info) 'else))
 	      ;; simply append brace
@@ -289,6 +290,22 @@
       (format stream " ("))
     (defproxyprint :after test 
       (format stream ") "))))
+
+;;; Do statement
+(with-pp
+  (with-proxynodes (test)
+    (defprettymethod :before do-statement
+      (push-info 'do)
+      (format stream "~&~ado" indent)
+      (make-proxy test test))
+    (defprettymethod :after do-statement
+      (pop-info)
+      (del-proxy test))
+    (defproxyprint :before test
+      (format stream " while("))
+    (defproxyprint :after test
+      (format stream ");"))))
+
 
 ;;; If-statement
 ;;; Handle normal and nested ifs.
