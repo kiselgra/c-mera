@@ -29,6 +29,9 @@
                         (check-underscore (x) (eql #\_ x))
                         (check-tilde (x) (eql #\~ x))
                         (check-num (x) (digit-char-p x))
+			(check-hex (x) (and (eql #\0 (first x))
+					    (or (eql #\x (second x))
+						(eql #\X (second x)))))
                         (check-all (x)
                          (or
                            (check-char x)
@@ -41,10 +44,11 @@
                                        (concatenate 'list
                                          '(#\~)
                                          (substitute-if #\_ #'check-nall (rest identifier-l)))
-                                       (substitute-if #\_ #'check-nall identifier-l)))
+				       (substitute-if #\_ #'check-nall identifier-l)))
                         (changed (concatenate 'string changed-l)))
 
-                   (when (check-num (first changed-l))
+                   (when (and (check-num (first changed-l))
+			      (not (check-hex changed-l)))
                      (setf (first changed-l) #\_)
                      (setf changed (concatenate 'string changed-l)))
 
