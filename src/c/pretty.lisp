@@ -632,6 +632,7 @@
       (make-proxy function function)
       (when (eql (info-size) 0)
 	(format stream "~&"))
+      (push-sign 'nested-funcall-sentinel)
       (push-sign 'skip-first-funcall))
 
     (defprettymethod :after function-call
@@ -640,6 +641,9 @@
       (format stream ")")
       (when (eql (top-sign) 'skip-first-funcall)
 	(pop-sign))
+      (if (eql (top-sign) 'nested-funcall-sentinel)
+	(pop-sign)
+	(warn "funcall top-sign missmatch"))
       (when (eql (info-size) 0)
 	(format stream ";")))
 
