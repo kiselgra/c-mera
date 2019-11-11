@@ -333,6 +333,10 @@
     (make-nodelist
      ,arguments :prepend cm-c:decompose-type)))
 
+(c++syntax instantiate-explicit (item)
+  "Explicit template instantiateio"
+  `(instantiate-explicit ,item))
+
 (c++syntax reference-type (item)
   "Postfix & operator (reference"
   `(postfix-expression '& (make-node ,item)))

@@ -14,9 +14,10 @@
     ;; Begin new line and add proxy-nodes.
     (defprettymethod :before function-definition
       (make-proxy parameter parameters)
-      (if (eql (top-info) 'template)
-	  (format stream "~&")
-	  (format stream "~&~%"))
+      (cond
+	((eql (top-info) 'template) (format stream "~&"))
+	((eql (top-info) 'template-explicit)) ; do nothing
+	(t (format stream "~&~%")))
       (push-info 'function-definition)
       (format stream "~a" indent)
       (if (node-slot virtual)
@@ -157,9 +158,10 @@
     
     (defprettymethod :before class
       (push-sign 'first-superclass)
-      (if (eql (top-info) 'template)
-	  (format stream "~&")
-	  (format stream "~&~%"))
+      (cond
+	((eql (top-info) 'template) (format stream "~&"))
+	((eql (top-info) 'template-explicit)) ; do nothing
+	(t (format stream "~&~%")))
       (format stream "~aclass " indent))
 
     (defprettymethod :after class
@@ -336,6 +338,14 @@
       (if (eql (top-sign) 'skip-first-template)
 	  (pop-sign)
 	  (format stream ", ")))))
+
+(with-pp
+  (defprettymethod :before instantiate-explicit
+    (push-info 'template-explicit)
+    (format stream "~&template "))
+  (defprettymethod :after instantiate-explicit
+    (pop-info)))
+
 
 (with-pp
   (defprettymethod :before try-block

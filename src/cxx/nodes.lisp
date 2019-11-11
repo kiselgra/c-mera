@@ -21,6 +21,7 @@
 
 (defexpression from-namespace () (namespace name))
 (defexpression instantiate () (template arguments))
+(defexpression instantiate-explicit () (item))
 (defexpression new (operator) (specifier type))
 (defexpression delete (operator) (object))
 (defexpression lambda-definition () (capture parameter tail-qualifiers type body))
