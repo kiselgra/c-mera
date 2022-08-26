@@ -465,7 +465,7 @@
 	       (:file "src/c-mera/traverser")
 	       (:file "src/c-mera/pretty")
 	       (:file "src/c-mera/c-mera"))
-  :depends-on ("net.didierverna.clon"))
+  :depends-on ("net.didierverna.clon.core"))
 
 
 ;;; backends
