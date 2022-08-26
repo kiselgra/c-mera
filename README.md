@@ -4,7 +4,7 @@ that utilizes Lisp's macro system for meta programming of C-like languages.
 One of its main goals is to be easily extensible to other C-like languages
 and the different versions based on C-Mera's core illustrate that this is a simple process.
 
-Please note: C-Mera is in a good place and works for the things we use it for. There may be no commits for some stretches and it definitely is not our full-time job, but it is alive and well :) So please consier it slow, not dead. Set up an issue if you have problems, questions or feature-requests :)
+**Please note:** C-Mera is in a good place and works for the things we use it for. There may be no commits for some stretches and it definitely is not our full-time job, but it is alive and well :) So please consier it slow, not dead. Set up an issue if you have problems, questions or feature-requests :)
 
 ## Contents
 1. [Overview](#Overview)
@@ -128,14 +128,15 @@ To get the default behavior (see Emacs integraion) it still has to be told where
 
 
 ### Publications<a name="papers">
-- C-Mera was introduced as "cgen" at ELS'14: [*Defmacro for C: Lightweight, Ad Hoc Code Generation*](http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/)
-- We showed how advanced programming paradigms can be implemented on top of it (in this case, Feature Oriented Programming) at GPCE'15: [*Lightweight, Generative Variant Exploration for High-Performance Graphics Applications*](http://dl.acm.org/citation.cfm?id=2814220)
-- At ELS'16 we showcased its proformance for implementing comptetitive DSLs: [*A High-Performance Image Processing DSL for Heterogeneous Architectures*](http://dl.acm.org/citation.cfm?id=3005734)
-- as well as for exploring implementation variants: [*A Case Study in Implementation-Space Exploration*](http://dl.acm.org/citation.cfm?id=3005739)
+- C-Mera was introduced as "cgen" at ELS'14: [*Defmacro for C: Lightweight, Ad Hoc Code Generation*](https://selgrad.org/publications/2014_els_SLWLS.pdf)
+- We showed how advanced programming paradigms can be implemented on top of it (in this case, Feature Oriented Programming) at GPCE'15: [*Lightweight, Generative Variant Exploration for High-Performance Graphics Applications*](https://selgrad.org/publications/2015_gpce_SLKSL.pdf)
+- At ELS'16 we showcased its proformance for implementing comptetitive DSLs: [*A High-Performance Image Processing DSL for Heterogeneous Architectures*](https://selgrad.org/publications/2016_els_SLDRS.pdf)
+- as well as for exploring implementation variants: [*A Case Study in Implementation-Space Exploration*](https://selgrad.org/publications/2016_els_LFSS.pdf)
+- We describe some of the techniques used in our implementation in our ELS'17 paper: [*DIY Meta Languages with Common Lisp*](https://selgrad.org/publications/2017_els_LSS.pdf)
 
 ### Examples<a name="Examples">
 In the following we show a few examples of how to use C-Mera.
-Note that we give also give it thorough treatment in [our ELS paper](http://lgdv.cs.fau.de/publications/publication/Pub.2014.tech.IMMD.IMMD9.defmac/).
+Note that we give also give it thorough treatment in [our first ELS paper](https://selgrad.org/publications/2014_els_SLWLS.pdf).
 
 #### Implementation of `strcmp(3)`
 This example illustrates the basic function definition syntax.  It's a
