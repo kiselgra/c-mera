@@ -22,6 +22,7 @@ exec ros -Q -L sbcl-bin -m c-mera -- $0 "$@"
 
 (defvar *supported* '("c" "c++" "cxx" "glsl" "ocl" "opencl" "cuda"))
 (defvar *abbrev* '(("cxx" . "c++") ("ocl" . "opencl")))
+(defvar *processor* '(("c++" . "cxx")))
 
 (defun main (&rest argv)
   (let ((gen "c")
@@ -42,9 +43,11 @@ exec ros -Q -L sbcl-bin -m c-mera -- $0 "$@"
           ((find (first argv) '("--version" "-V") :test 'equal)
            (setf version t))
           (t (setf help t)))
-    (let ((*package* (find-package (read-from-string (format nil ":cmu-~A" gen)))))
+    (let ((*package* (find-package (read-from-string (format nil ":cmu-~A" gen))))
+          (processor-name (or (cdr (assoc gen *processor* :test #'equal))
+                              gen)))
       (setf (readtable-case *readtable*) :invert)
-      (funcall (read-from-string(format nil "cm-~A::~A-processor" gen gen))
+      (funcall (read-from-string (format nil "cm-~A::~A-processor" gen processor-name))
                (cond
                  (version '("--version"))
                  (help '("--help"))

@@ -12,7 +12,7 @@
     
 ;; Define a start-up function
 (define-processor 
-  :name c-processor
+  :name opencl-processor
   :file-reader   read-in-file
   :string-reader read-in-string
   :extra-traverser
@@ -25,7 +25,7 @@
  ;; Define a save function
 (save-generator
  :name save 
- :start-function c-processor 
+ :start-function opencl-processor
  :in-package :cmu-opencl)
 
 ;;; Define a reader switch with c++ pre-processing
