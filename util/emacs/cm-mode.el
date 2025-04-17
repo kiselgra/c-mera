@@ -18,7 +18,8 @@
 			  (symbolp (car exp))
 			  (numberp (cadr exp))
 			  (= (length exp) 2))
-		 (put (car exp) 'lisp-indent-function (cadr exp))))
+		 ;; prior to 2022 lisp-mode relied on 'lisp-indent-function
+		 (put (car exp) 'common-lisp-indent-function (cadr exp))))
 	     t))))
 
 (defun load-indent-kw-file-if-exists (filename)
