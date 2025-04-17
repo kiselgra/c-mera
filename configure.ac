@@ -1,12 +1,11 @@
 # Process this file with autoconf to produce a configure script.
-AC_PREREQ(2.61)
-AC_INIT([c-mera], [1.0.1])
+AC_INIT([c-mera],[1.0.1])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([c-mera.asd])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES(Makefile
 				util/build/dump-c.lisp    util/build/dump-cuda.lisp util/build/dump-cxx.lisp
 				util/build/dump-glsl.lisp util/build/dump-opencl.lisp)
@@ -18,9 +17,6 @@ AC_PROG_CC
 ## find a compatible lisp.
 ## we are currently quite focused on sbcl.
 ##
-LISP_LOAD_ARG=
-AC_CHECK_PROGS(LISP_PROG, [ccl sbcl lisp], no)
-
 AC_ARG_WITH([ccl],
 			[AS_HELP_STRING([--with-ccl], [Use clozure lisp as generator.])],
 			LISP_PROG="ccl")
@@ -29,8 +25,16 @@ AC_ARG_WITH([sbcl],
 			[AS_HELP_STRING([--with-sbcl], [Use sbcl as generator.])],
 			LISP_PROG="sbcl")
 
-					
+if test "x$LISP_PROG" == "sbcl" ; then
+	AC_CHECK_PROGS(LISP_PROG, [sbcl], no)
+elif test "x$LISP_PROG" == "ccl" ; then
+	AC_CHECK_PROGS(LISP_PROG, [ccl], no)
+else
+	AC_CHECK_PROGS(LISP_PROG, [ccl sbcl lisp], no)
+fi
 
+
+LISP_LOAD_ARG=
 if test "x$LISP_PROG" == "xno" ; then
 	AC_MSG_ERROR([Cannot find any suitable lisp.]) ;
 elif test "x$LISP_PROG" == "xccl" ; then
