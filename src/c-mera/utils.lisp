@@ -111,7 +111,7 @@
     ((stringp item) (string-literal item))
     ((characterp item) (character-literal item))
     ;; Item is not a known atom
-    (t (error "C-Mara encountered an unknown atom: ~a" item))))
+    (t (error "C-Mera encountered an unknown atom: ~a" item))))
 
 ;;; From "let over lambda":
 (defun flatten (x)
