@@ -73,6 +73,10 @@
   "Taget-of or dereferencing pointer"
   `(prefix-expression '* (make-node ,item)))
 
+(c-syntax ptr-to (item)
+  "Specify pointer type"
+  `(postfix-expression '* (make-node ,item)))
+
 (c-syntax prefix++ (item)
   "Prefix operator ++"
   `(prefix-expression '++ (make-node ,item)))

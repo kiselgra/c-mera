@@ -126,7 +126,7 @@
 (defparameter c-syntax
   '(set *= %= += -= >>= <<= &= ^= \|=
     == != \| \|\| % << >> ^ & && ~ ! ?
-    addr-of targ-of dref switch
+    addr-of targ-of dref ptr-to switch
     prefix++ prefix--
     postfix-- postfix++ postfix*
     struct enum oref pref specifier
