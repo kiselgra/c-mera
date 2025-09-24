@@ -201,17 +201,12 @@
 	       (and (symbolp symbol)
 		    (equal (symbol-name symbol) str)))))
 
-    (format t "~&---> ~a~%" item)
-    (format t "~&---> ~a~%" (penultimate item))
-    (format t "~&---> ~a~%" (symbolp (penultimate item)))
-
     ;; transparently remove comment from ITEM
     (multiple-value-bind (comment item)
 	(if (suffix-is "COMMENT" item)
 	    (values (first (last item)) (butlast item 2))
 	    (values nil item))
 
-      (format t "~&---> ~a / ~a~%" item comment)
       ;; check initialization
       (if (suffix-is "=" item)
 
