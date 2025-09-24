@@ -235,7 +235,11 @@
       (format stream "~&~a" indent))
 
     (defproxyprint :after declaration-item
-      (format stream ";"))))
+      (format stream ";")
+      (let ((comment (slot-value (node-slot proxy-subnode) 'comment)))
+	(when comment
+	  (format stream "~c" #\tab)
+	  (traverser c-mera::pp comment (1+ c-mera::level)))))))
 
 ;;; Declaration item
 ;;; Handle declaration assignment.
@@ -708,10 +712,11 @@
 ;;; Comment
 (with-pp
   (defprettymethod :self comment
-    (when (node-slot linebreak)
-      (format stream "~&~a" indent))
-    (format stream "~a" (node-slot chars))
-    (format stream "~a"  (node-slot comment))))
+    (unless (eq (top-info) 'declaration-item) ;; don't print comments of declaration items, they are handled after the #\; was emitted
+      (when (node-slot linebreak)
+	(format stream "~&~a" indent))
+      (format stream "~a" (node-slot chars))
+      (format stream "~a" (node-slot comment)))))
     
     ;(format stream "~&~a" indent)))
 

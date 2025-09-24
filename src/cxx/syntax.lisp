@@ -24,36 +24,49 @@
     (make-node ,(second item))))
 
 (defun decompose-declaration (item)
-  "Decompose initializer list / quite like declaration item. The last
+  "Decompose initializer list / quite like declaration item. The butlast
    value returnd specifies if the declaration actually used an
    initializer list or not."
   ;; check if initialization is present
-  (let ((val (first (last item))))
-    (if (and (listp val)
-	     (eql (length val) 1)
-	     (listp (car val))
-	     (eql (length (car val)) 1)
-	     (listp (caar val)))
-	;; decompose arg list with list initializer
-	(let ((spec+type+id (butlast item))
-	      (inits        (caar val)))
-	  (let ((specifier (butlast spec+type+id 2))
-		(type+id   (last    spec+type+id 2)))
-	    (values specifier (first type+id) (second type+id) inits t)))
+  (labels ((penultimate (list) ;; second-last item in LIST
+	     (first (last (butlast list))))
+	   (suffix-is (str list) ;; check if LIST ends with (... STR something)
+	     (let ((symbol (penultimate list)))
+	       (and (symbolp symbol)
+		    (equal (symbol-name symbol) str)))))
 
-	;; pass to standard declaration decomposition
-	(multiple-value-bind (spec type name init) (cm-c:decompose-declaration item)
-	  (values spec type name init nil)))))
+    ;; transparently remove comment from ITEM
+    (multiple-value-bind (comment item)
+	(if (suffix-is "comment" item)
+	    (values (butlast item) (butlast item 2))
+	    (values nil item))
+
+      (let ((val (first (last item))))
+	(if (and (listp val)
+		 (eql (length val) 1)
+		 (listp (car val))
+		 (eql (length (car val)) 1)
+		 (listp (caar val)))
+	    ;; decompose arg list with list initializer
+	    (let ((spec+type+id (butlast item))
+		  (inits        (caar val)))
+	      (let ((specifier (butlast spec+type+id 2))
+		    (type+id   (last    spec+type+id 2)))
+		(values specifier (first type+id) (second type+id) inits t comment)))
+
+	    ;; pass to standard declaration decomposition
+	    (multiple-value-bind (spec type name init comment) (cm-c:decompose-declaration item)
+	      (values spec type name init nil comment)))))))
 
 (defmacro make-declaration-node/with-list-initializer (item)
   "Decompose initializer list and instantiate nodes / quite like declaration item"
-   (multiple-value-bind (specifier type id init initializer-list-p)
-       (decompose-declaration item)
+  (multiple-value-bind (specifier type id init initializer-list-p comment)
+      (decompose-declaration item)
     `(declaration-item
       ;; set specifiers
       ,(when specifier
-	     `(specifier
-	       (make-nodelist ,specifier)))
+	 `(specifier
+	   (make-nodelist ,specifier)))
       ;; set type
       (type (make-node ,type))
       ;; set identifier
@@ -63,6 +76,10 @@
 	   (if initializer-list-p
 	       `(declaration-list-initializer (make-nodelist ,init))
 	       `(declaration-value (make-node ,init)))
+	   nil)
+      ;; set comment
+      ,(if comment
+	   `(comment "//" ,comment nil)
 	   nil))))
 
 (c++syntax decl (bindings &body body)

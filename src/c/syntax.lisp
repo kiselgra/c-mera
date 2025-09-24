@@ -193,45 +193,65 @@
     ,linebreak))
 
 (defun decompose-declaration (item)
-  "Decompose declaration item into its SPECIFIERS, TYPE, NAME and INITIALIZER"
-  (if (let ((symbol (first (last (butlast item)))))
-	(and (symbolp symbol)
-	     (equal (symbol-name symbol) "=")))
+  "Decompose declaration item into its SPECIFIERS, TYPE, NAME, INITIALIZER, and, optionally, DOCUMENTATION"
+  (labels ((penultimate (list) ;; second-last item in LIST
+	     (first (last (butlast list))))
+	   (suffix-is (str list) ;; check if LIST ends with (... STR something)
+	     (let ((symbol (penultimate list)))
+	       (and (symbolp symbol)
+		    (equal (symbol-name symbol) str)))))
 
-      ;; decompose arg list with init
-      (let ((specifier (butlast item 4))
-	    (type+id+val (last item 4)))
-	(let ((type (first type+id+val))
-	      (id   (second type+id+val))
-	      (init (fourth type+id+val)))
-	  (values specifier type id init)))
+    (format t "~&---> ~a~%" item)
+    (format t "~&---> ~a~%" (penultimate item))
+    (format t "~&---> ~a~%" (symbolp (penultimate item)))
 
-      ;; decompose arg list without init
-      (let ((specifier (butlast item 2))
-	    (type+id (last item 2)))
-	(let ((type (first type+id))
-	      (id   (second type+id)))
-	  (values specifier type id nil)))))
+    ;; transparently remove comment from ITEM
+    (multiple-value-bind (comment item)
+	(if (suffix-is "COMMENT" item)
+	    (values (first (last item)) (butlast item 2))
+	    (values nil item))
+
+      (format t "~&---> ~a / ~a~%" item comment)
+      ;; check initialization
+      (if (suffix-is "=" item)
+
+	  ;; decompose arg list with init
+	  (let ((specifier (butlast item 4))
+		(type+id+val (last item 4)))
+	    (let ((type (first type+id+val))
+		  (id   (second type+id+val))
+		  (init (fourth type+id+val)))
+	      (values specifier type id init comment)))
+
+	  ;; decompose arg list without init
+	  (let ((specifier (butlast item 2))
+		(type+id (last item 2)))
+	    (let ((type (first type+id))
+		  (id   (second type+id)))
+	      (values specifier type id nil comment)))))))
 
 (defmacro make-declaration-node (item)
   "Decompose declaration item and instantiate nodes"
   (if (eql item '&rest)
     `(make-node '|...|)
-    (multiple-value-bind (specifier type id init) (decompose-declaration item)
+    (multiple-value-bind (specifier type id init comment) (decompose-declaration item)
       `(declaration-item
-        ;; set specifiers
-        ,(when specifier
-         `(specifier
-           (make-nodelist ,specifier)))
-        ;; set type
-        (type (make-node ,type))
-        ;; set identifier
-        (make-node ,id)
-        ;; set value
-        ,(if init 
-       `(declaration-value
-         (make-node ,init))
-       nil)))))
+	;; set specifiers
+	,(when specifier
+	   `(specifier
+	     (make-nodelist ,specifier)))
+	;; set type
+	(type (make-node ,type))
+	;; set identifier
+	(make-node ,id)
+	;; set value
+	,(if init
+	     `(declaration-value (make-node ,init))
+	     nil)
+	;; set comment
+	,(if comment
+	     `(comment "//" ,comment nil)
+	     nil)))))
  
 (defmacro decompose-type (item)
   "Decompose type like declaration but without name"
@@ -249,10 +269,13 @@
     ;; enum init
     ,(when (second item)
 	   `(declaration-value
-		 (make-node ,(second item))))))
+	     (make-node ,(second item))))
+    ;; comment (not supported, yet)
+    nil))
 
 (c-syntax decl (bindings &body body)
-  "Declare variables"
+  "Declare variables:
+   Each item in BINDINGS is expanded to a call of MAKE-DECLARATION-NODE using that item."
   `(declaration-list
     ;; braces t, adjusted later by traverser
     t
