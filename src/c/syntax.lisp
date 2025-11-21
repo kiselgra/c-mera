@@ -228,32 +228,24 @@
 (defmacro make-declaration-node (item)
   "Decompose declaration item and instantiate nodes"
   (if (eql item '&rest)
-    `(make-node '|...|)
-    (multiple-value-bind (specifier type id init comment) (decompose-declaration item)
-      `(values
-	(declaration-item
-	 ;; set specifiers
-	 ,(when specifier
-	    `(specifier
-	      (make-nodelist ,specifier)))
-	 ;; set type
-	 (type (make-node ,type))
-	 ;; set identifier
-	 (make-node ,id)
-	 ;; set value
-	 ,(if init
-	      `(declaration-value (make-node ,init))
-	      nil)
-	 ;; set comment
-	 ;;,(if comment
-	 ;;     `(comment "//" ,comment nil)
-	 ;;     nil)
-	 nil
-	 )
-	,(if comment
-	    `(comment "//" ,comment nil)
-	    nil)
-	))))
+      `(make-node '|...|)
+      (multiple-value-bind (specifier type id init comment) (decompose-declaration item)
+	`(values
+	  (declaration-item
+	   ;; set specifiers
+	   ,(when specifier
+	      `(specifier
+		(make-nodelist ,specifier)))
+	   ;; set type
+	   (type (make-node ,type))
+	   ;; set identifier
+	   (make-node ,id)
+	   ;; set value
+	   ,(if init
+		`(declaration-value (make-node ,init))
+		nil))
+	  ,@(if comment
+		`((comment "//" ,comment nil)))))))
  
 (defmacro decompose-type (item)
   "Decompose type like declaration but without name"

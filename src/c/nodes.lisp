@@ -17,7 +17,7 @@
 
 ;; variable declaration
 (defnode declaration-list (braces) (bindings body))
-(defnode declaration-item () (specifier type identifier value comment))
+(defnode declaration-item () (specifier type identifier value))
 (defnode declaration-value () (value))
 
 ;; essential bulding blocks

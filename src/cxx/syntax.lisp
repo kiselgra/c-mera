@@ -77,14 +77,8 @@
 	    (if initializer-list-p
 		`(declaration-list-initializer (make-nodelist ,init))
 		`(declaration-value (make-node ,init)))
-	    nil)
-       ;; set comment
-       ;;,(if comment
-       ;;	    `(comment "//" ,comment nil)
-       ;;	    nil))
-       nil)
-      ,(if comment `(comment "//" ,comment nil))
-      )))
+	    nil))
+      ,@(if comment `((comment "//" ,comment nil))))))
 
 (c++syntax decl (bindings &body body)
   "Declare variables"

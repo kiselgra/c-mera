@@ -72,13 +72,13 @@
   "Build general or specific nodelist."
   (let ((prepend (if (listp prepend) prepend `(,prepend))))
     `(nodelist
-      (delete nil (nconc ,@(loop for i in items collect
+      (nconc ,@(loop for i in items collect
 		     `(multiple-value-list
 		       ,(if prepend
 			    (if quoty
 				`(,@prepend (quoty ,i))
 				`(,@prepend ,i))
-			    `(make-node-function (quoty ,i))))))))))
+			    `(make-node-function (quoty ,i)))))))))
 		    ;`(make-node ,i)))))))
 
 ;;(defmacro make-nodelist (items &key (prepend nil) (quoty nil))

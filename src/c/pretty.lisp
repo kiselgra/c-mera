@@ -236,12 +236,7 @@
       (format stream "~&~a" indent))
 
     (defproxyprint :after declaration-item
-      (format stream ";")
-      ;;(let ((comment (slot-value (node-slot proxy-subnode) 'comment)))
-      ;;	(when comment
-      ;;	  (format stream "~c" #\tab)
-      ;;	  (traverser c-mera::pp comment (1+ c-mera::level))))
-      )))
+      (format stream ";"))))
 
 ;;; Declaration item
 ;;; Handle declaration assignment.
