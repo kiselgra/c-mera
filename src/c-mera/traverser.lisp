@@ -27,20 +27,23 @@
   (declare (ignore level)))
 
 ;;; Inserts a single proxy-node in the AST.
-(defmacro make-proxy (slot node-type &key (node-name 'item) (parent 'item))
+(defmacro make-proxy (slot node-type &key (node-name 'item) (parent 'item) for)
   "Add proxy nodes to slot. Note: all uses in c-mera and cm-c implicitly assue that the node is called ITEM."
   (let ((val (gensym)))
     `(if (or (eql (find-class 'nodelist) (class-of (slot-value ,node-name ',slot))))
   	 (let ((,val (slot-value (slot-value ,node-name ',slot) 'nodes)))
   	   (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
   		 (loop for i in ,val collect
-  		      (make-instance ,node-type
-				     :parent ,parent
-  				     :proxy-subnode i
-  				     :values '()
-  				     :subnodes '(proxy-subnode)))))
+		       (if (or (not ,for) (and ,for (funcall ,for i)))
+			   (make-instance ,node-type
+					  :parent ,parent
+					  :proxy-subnode i
+					  :values '()
+					  :subnodes '(proxy-subnode))
+			   i))))
   	 (let ((,val (slot-value ,node-name ',slot)))
   	   (if ,val
+	       ;; todo
   	       (setf (slot-value ,node-name ',slot)
   		     (make-instance ,node-type
 				    :parent ,parent
@@ -63,7 +66,9 @@
   	   (let ((,node-list (slot-value (slot-value ,node-name ',slot) 'nodes)))
  	     (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
   		   (loop for i in ,node-list collect
-  			(slot-value i 'proxy-subnode))))
+			 (if (equal (slot-value i 'subnodes) '(proxy-subnode))
+			     (slot-value i 'proxy-subnode)
+			     i))))
   	   (if ,val (setf (slot-value ,node-name ',slot)
   			  (slot-value ,val 'proxy-subnode)))))))
 

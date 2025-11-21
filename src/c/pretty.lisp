@@ -216,7 +216,8 @@
   (with-proxynodes (declaration-item)
 
     (defprettymethod :before declaration-list
-      (make-proxy bindings declaration-item)
+      (make-proxy bindings declaration-item
+		  :for (lambda (n) (typep n 'declaration-item)))
       (push-info 'decl)
       (if (node-slot braces)
 	  (progn
@@ -236,10 +237,11 @@
 
     (defproxyprint :after declaration-item
       (format stream ";")
-      (let ((comment (slot-value (node-slot proxy-subnode) 'comment)))
-	(when comment
-	  (format stream "~c" #\tab)
-	  (traverser c-mera::pp comment (1+ c-mera::level)))))))
+      ;;(let ((comment (slot-value (node-slot proxy-subnode) 'comment)))
+      ;;	(when comment
+      ;;	  (format stream "~c" #\tab)
+      ;;	  (traverser c-mera::pp comment (1+ c-mera::level))))
+      )))
 
 ;;; Declaration item
 ;;; Handle declaration assignment.

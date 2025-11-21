@@ -62,25 +62,29 @@
   "Decompose initializer list and instantiate nodes / quite like declaration item"
   (multiple-value-bind (specifier type id init initializer-list-p comment)
       (decompose-declaration item)
-    `(declaration-item
-      ;; set specifiers
-      ,(when specifier
-	 `(specifier
-	   (make-nodelist ,specifier)))
-      ;; set type
-      (type (make-node ,type))
-      ;; set identifier
-      (make-node ,id)
-      ;; set value
-      ,(if init 
-	   (if initializer-list-p
-	       `(declaration-list-initializer (make-nodelist ,init))
-	       `(declaration-value (make-node ,init)))
-	   nil)
-      ;; set comment
-      ,(if comment
-	   `(comment "//" ,comment nil)
-	   nil))))
+    `(values
+      (declaration-item
+       ;; set specifiers
+       ,(when specifier
+	  `(specifier
+	    (make-nodelist ,specifier)))
+       ;; set type
+       (type (make-node ,type))
+       ;; set identifier
+       (make-node ,id)
+       ;; set value
+       ,(if init 
+	    (if initializer-list-p
+		`(declaration-list-initializer (make-nodelist ,init))
+		`(declaration-value (make-node ,init)))
+	    nil)
+       ;; set comment
+       ;;,(if comment
+       ;;	    `(comment "//" ,comment nil)
+       ;;	    nil))
+       nil)
+      ,(if comment `(comment "//" ,comment nil))
+      )))
 
 (c++syntax decl (bindings &body body)
   "Declare variables"
