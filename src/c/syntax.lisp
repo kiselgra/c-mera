@@ -263,9 +263,7 @@
     ;; enum init
     ,(when (second item)
 	   `(declaration-value
-	     (make-node ,(second item))))
-    ;; comment (not supported, yet)
-    nil))
+	     (make-node ,(second item))))))
 
 (c-syntax decl (bindings &body body)
   "Declare variables:

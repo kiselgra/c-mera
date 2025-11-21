@@ -81,18 +81,6 @@
 			    `(make-node-function (quoty ,i)))))))))
 		    ;`(make-node ,i)))))))
 
-;;(defmacro make-nodelist (items &key (prepend nil) (quoty nil))
-;;  "Build general or specific nodelist."
-;;  (let ((prepend (if (listp prepend) prepend `(,prepend))))
-;;    `(nodelist
-;;      (list ,@(loop for i in items collect
-;;		(if prepend
-;;		    (if quoty
-;;			`(,@prepend (quoty ,i))
-;;			`(,@prepend ,i))
-;;		    `(make-node-function (quoty ,i))))))))
-;;		    ;`(make-node ,i)))))))
-
 ;;; the atom lists
 ;(defmacro make-node (item)
 ;  "Try to identify and make node object"
