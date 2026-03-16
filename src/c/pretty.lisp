@@ -216,7 +216,8 @@
   (with-proxynodes (declaration-item)
 
     (defprettymethod :before declaration-list
-      (make-proxy bindings declaration-item)
+      (make-proxy bindings declaration-item
+		  :for (lambda (n) (typep n 'declaration-item)))
       (push-info 'decl)
       (if (node-slot braces)
 	  (progn
@@ -708,10 +709,11 @@
 ;;; Comment
 (with-pp
   (defprettymethod :self comment
-    (when (node-slot linebreak)
-      (format stream "~&~a" indent))
-    (format stream "~a" (node-slot chars))
-    (format stream "~a"  (node-slot comment))))
+    (unless (eq (top-info) 'declaration-item) ;; don't print comments of declaration items, they are handled after the #\; was emitted
+      (when (node-slot linebreak)
+	(format stream "~&~a" indent))
+      (format stream "~a" (node-slot chars))
+      (format stream "~a" (node-slot comment)))))
     
     ;(format stream "~&~a" indent)))
 

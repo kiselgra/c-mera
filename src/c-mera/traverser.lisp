@@ -27,32 +27,36 @@
   (declare (ignore level)))
 
 ;;; Inserts a single proxy-node in the AST.
-(defmacro make-proxy (slot node-type &key (node-name 'item) (parent 'item))
-  "Add proxy nodes to slot. Note: all uses in c-mera and cm-c implicitly assue that the node is called ITEM."
+(defmacro make-proxy (slot node-type &key (node-name 'item) (parent 'item) for)
+  "Add proxy nodes to slot.
+   Note: all uses in c-mera and cm-c implicitly assue that the node is called ITEM.
+   FOR is used on slots that hold lists of nodes to filter where to insert a proxy node."
   (let ((val (gensym)))
     `(if (or (eql (find-class 'nodelist) (class-of (slot-value ,node-name ',slot))))
-  	 (let ((,val (slot-value (slot-value ,node-name ',slot) 'nodes)))
-  	   (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
-  		 (loop for i in ,val collect
-  		      (make-instance ,node-type
-				     :parent ,parent
-  				     :proxy-subnode i
-  				     :values '()
-  				     :subnodes '(proxy-subnode)))))
-  	 (let ((,val (slot-value ,node-name ',slot)))
-  	   (if ,val
-  	       (setf (slot-value ,node-name ',slot)
-  		     (make-instance ,node-type
+	 (let ((,val (slot-value (slot-value ,node-name ',slot) 'nodes)))
+	   (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
+		 (loop for i in ,val collect
+		       (if (or (not ,for) (and ,for (funcall ,for i)))
+			   (make-instance ,node-type
+					  :parent ,parent
+					  :proxy-subnode i
+					  :values '()
+					  :subnodes '(proxy-subnode))
+			   i))))
+	 (let ((,val (slot-value ,node-name ',slot)))
+	   (if ,val
+	       (setf (slot-value ,node-name ',slot)
+		     (make-instance ,node-type
 				    :parent ,parent
-  				    :proxy-subnode ,val
-  				    :values '()
-  				    :subnodes '(proxy-subnode)))
-  	       (setf (slot-value ,node-name ',slot)
-  	       	     (make-instance ,node-type
+				    :proxy-subnode ,val
+				    :values '()
+				    :subnodes '(proxy-subnode)))
+	       (setf (slot-value ,node-name ',slot)
+		     (make-instance ,node-type
 				    :parent ,parent
-  	       			    :proxy-subnode nil
-  	       			    :values '()
-  	       			    :subnodes '(proxy-subnode))))))))
+				    :proxy-subnode nil
+				    :values '()
+				    :subnodes '(proxy-subnode))))))))
 
 ;;; Deletes a single proxy-node from the AST.
 (defmacro del-proxy (slot &key (node-name 'item))
@@ -60,12 +64,14 @@
   (let ((val (gensym)) (node-list (gensym)))
     `(let ((,val (slot-value ,node-name ',slot)))
        (if (eql (find-class 'nodelist) (class-of (slot-value ,node-name ',slot)))
-  	   (let ((,node-list (slot-value (slot-value ,node-name ',slot) 'nodes)))
- 	     (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
-  		   (loop for i in ,node-list collect
-  			(slot-value i 'proxy-subnode))))
-  	   (if ,val (setf (slot-value ,node-name ',slot)
-  			  (slot-value ,val 'proxy-subnode)))))))
+	   (let ((,node-list (slot-value (slot-value ,node-name ',slot) 'nodes)))
+	     (setf (slot-value (slot-value ,node-name ',slot) 'nodes)
+		   (loop for i in ,node-list collect
+			 (if (equal (slot-value i 'subnodes) '(proxy-subnode))
+			     (slot-value i 'proxy-subnode)
+			     i))))
+	   (if ,val (setf (slot-value ,node-name ',slot)
+			  (slot-value ,val 'proxy-subnode)))))))
 
 ;;; Defines proxy nodes for local usage.
 ;;; These nodes can be used with 'add-proxy', 'del-proxy',
