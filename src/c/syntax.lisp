@@ -169,9 +169,15 @@
 	 (setf oref `(object-reference (make-node ,item) ,oref)))
     oref))
 
-(c-syntax pref (pointer component)
+(c-syntax pref (&rest rest)
   "Pointer reference"
-  `(pointer-reference (make-node ,pointer) (make-node ,component)))
+  (let* ((items (reverse rest))
+	 (last-item (pop items))
+	 (butlast-item (pop items))
+	 (pref `(pointer-reference (make-node ,butlast-item) (make-node ,last-item))))
+    (loop for item in items do
+	 (setf pref `(pointer-reference (make-node ,item) ,pref)))
+    pref))
 
 (c-syntax type (type)
   "C data type"
