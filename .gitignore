@@ -19,3 +19,6 @@ config.log
 #*
 *TAGS
 /util/build/*.lisp
+/tests/*.clog
+/tests/*.diff
+/tests/*.ok
