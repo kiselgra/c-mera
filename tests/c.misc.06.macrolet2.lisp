@@ -1,3 +1,5 @@
+(include <stdio.h>)
+
 (defmacro with-bindings (&body body)
   `(macrolet ((foo (x) `(set ,x (+ ,x 1))))
      (progn
